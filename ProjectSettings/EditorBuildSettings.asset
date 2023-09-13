@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/strategy-map/strategy-map-scene.unity
+    guid: 8057591683e0d934ca36e3f3b9912540
+  - enabled: 1
+    path: Assets/Scenes/strategy-map/strategy-map-scene/Entities.unity
+    guid: 465f4c58298cb00439d27aac3e331568
+  - enabled: 1
+    path: Assets/Scenes/battle-map/BattleScene.unity
+    guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/battle-map/Entities/EntitiesSubscene.unity
+    guid: fe32a9e7d66aa4e4f9fa48dc5ce295e1
+  m_configObjects: {}

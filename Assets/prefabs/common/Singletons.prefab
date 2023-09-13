@@ -1,0 +1,129 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6739565054550127064
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4973750142404943601}
+  - component: {fileID: 8224191087988254325}
+  - component: {fileID: 3159691350942970040}
+  - component: {fileID: 6392189820920183374}
+  - component: {fileID: 442624313456061439}
+  m_Layer: 0
+  m_Name: Singletons
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4973750142404943601
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6739565054550127064}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8224191087988254325
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6739565054550127064}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9aa93905a8868aa40b380ce9af238f33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CellSize:
+    x: 1
+    y: 1
+    z: 1
+--- !u!114 &3159691350942970040
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6739565054550127064}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26ee583c00ee49f39b310f5dd2a586bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  soldierPrefab: {fileID: 6204767375348508951, guid: 72fc281800d310d478046da4ac7e2150,
+    type: 3}
+  archerPrefab: {fileID: 9022584833727407300, guid: 4016089c2e052a24ca92d622a6e684c1,
+    type: 3}
+  arrowPrefab: {fileID: 2111139898745459607, guid: 9d90d2316f0d87a4ead0b278362066a2,
+    type: 3}
+  armyPrefab: {fileID: 2920907526688042789, guid: eed3d21c315ac8041b7077f614681f6b,
+    type: 3}
+  battleMapPrefab: {fileID: 3069423838959518595, guid: bb5470a34a4a9aa4cb40251ac801346c,
+    type: 3}
+--- !u!114 &6392189820920183374
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6739565054550127064}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a83ce2efc804a7683fb013404c99247, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  teamColors:
+  - team: 0
+    color:
+      x: 0
+      y: 0
+      z: 0.1
+  - team: 1
+    color:
+      x: 0.1
+      y: 0
+      z: 0
+--- !u!114 &442624313456061439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6739565054550127064}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7c8f13e68224126b8e4a11ebf4b6135, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CameraSettings:
+  - gameCameraType: 0
+    minValues:
+      x: 30
+      y: 30
+      z: 60
+    maxValues:
+      x: 170
+      y: 250
+      z: 140
+  - gameCameraType: 1
+    minValues:
+      x: -10
+      y: 10
+      z: -10
+    maxValues:
+      x: 10
+      y: 40
+      z: 10
