@@ -17,11 +17,17 @@ namespace _Monobehaviors.ui.menu
 
         public void onExitToMainMenu()
         {
+            StateManagerForMonos.getInstance().updateStatusFromMonos(SystemStatus.RESTART);
         }
 
         public void onExit()
         {
-            onContinue();
+#if UNITY_STANDALONE
+            Application.Quit();
+#endif
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#endif
         }
     }
 }
