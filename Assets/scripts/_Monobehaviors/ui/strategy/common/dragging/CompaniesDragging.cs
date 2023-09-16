@@ -39,8 +39,8 @@ namespace _Monobehaviors.ui
         private void drag()
         {
             var currentPosition = Input.mousePosition;
-            currentPosition.x -= 50;
-            currentPosition.y -= 60;
+            currentPosition.x -= 35;
+            currentPosition.y -= 45;
             transform.position = currentPosition;
         }
     }

@@ -15,6 +15,13 @@ namespace _Monobehaviors.ui
         [SerializeField] private GameObject panel;
         [SerializeField] private GameObject panelImage;
         [SerializeField] private GameObject companyTabPrefab;
+        private float cardHeight = 90;
+        private float cardOffsetX = 26;
+        private float cardOffsetY = 15;
+
+        private float cardStepX = 5;
+
+        private float cardWidth = 70;
         private EntityQuery companyMergeBufferQuery;
 
         //id - company, soldierCount, tabLink
@@ -26,11 +33,17 @@ namespace _Monobehaviors.ui
         private bool fixNeeded;
         private bool lockUiPanel;
 
+        private float minX;
+        private float minY = 0;
+        private float panelHeight = 120;
+        private float panelWidth = 800;
+
         private void Awake()
         {
             entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
             companyMergeBufferQuery = entityManager.CreateEntityQuery(typeof(CompanyMergeBuffer));
             createNewArmyEventQuery = entityManager.CreateEntityQuery(typeof(CreateNewArmyEvent));
+            minX = Screen.width / 2 - (panelWidth / 2);
             instance = this;
         }
 
@@ -43,7 +56,7 @@ namespace _Monobehaviors.ui
         {
             fixNeeded = true;
 
-            if (targetPosition.y > 130 && companyTabs.Count > 1)
+            if (targetPosition.y > minY + cardHeight + cardOffsetY && companyTabs.Count > 1)
             {
                 createNewArmy(companyId);
                 lockUi(companyId);
@@ -96,19 +109,21 @@ namespace _Monobehaviors.ui
 
         private int getSlotFromPosition(Vector3 position)
         {
-            if (position.y < 20 - 60 || position.y > 130 - 60 || position.x < 35 - 50)
+            if (position.y < minY + cardOffsetY - (cardHeight / 2) ||
+                position.y > minY + cardHeight + cardOffsetY - (cardHeight / 2) ||
+                position.x < minX + cardOffsetX - (cardWidth / 2))
             {
                 return -1;
             }
 
-            return (int) (position.x - 35 + 50) / 105;
+            return (int) ((position.x - minX - cardOffsetX + (cardWidth / 2)) / (cardWidth + cardStepX));
         }
 
         private Vector3 getPositionFromSlot(int slot)
         {
             var result = new Vector3();
-            result.x = 35 + slot * 105;
-            result.y = 20;
+            result.x = minX + cardOffsetX + slot * (cardWidth + cardStepX);
+            result.y = minY + cardOffsetY;
             return result;
         }
 
