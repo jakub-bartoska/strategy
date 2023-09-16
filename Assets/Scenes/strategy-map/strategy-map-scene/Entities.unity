@@ -1452,13 +1452,13 @@ MonoBehaviour:
       z: 10100
   - gameCameraType: 1
     minValues:
-      x: -30
+      x: -70
       y: 10
-      z: -25
+      z: -100
     maxValues:
-      x: 10
-      y: 40
-      z: 15
+      x: 70
+      y: 60
+      z: 100
 --- !u!4 &2540283949787963599
 Transform:
   m_ObjectHideFlags: 0
