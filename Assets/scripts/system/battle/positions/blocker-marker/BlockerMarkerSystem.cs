@@ -37,6 +37,9 @@ namespace system.positions.blocker_marker
 
         public void OnUpdate(ref SystemState state)
         {
+            //todo oddelat
+            state.Enabled = false;
+
             var battleSoldierCounts = SystemAPI.GetSingleton<BattleSoldierCounts>();
             var totalSoldiers = battleSoldierCounts.team1Count + battleSoldierCounts.team2Count;
             var positionHolder = SystemAPI.GetSingleton<PositionHolder>();

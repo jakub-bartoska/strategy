@@ -30,6 +30,8 @@ namespace system.positions.position_holder
 
         public void OnUpdate(ref SystemState state)
         {
+            //todo oddelat
+            state.Enabled = false;
             var positionHolder = SystemAPI.GetSingleton<PositionHolderConfig>();
 
             drawGrid(positionHolder);

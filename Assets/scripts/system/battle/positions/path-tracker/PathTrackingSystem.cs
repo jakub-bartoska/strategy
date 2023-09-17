@@ -23,6 +23,9 @@ namespace system.positions.path_tracker
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            //todo oddelat
+            state.Enabled = false;
+
             var deltaTime = SystemAPI.Time.DeltaTime;
             new PositionTrackerJob
             {
