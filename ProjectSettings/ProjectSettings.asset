@@ -794,6 +794,7 @@ PlayerSettings:
   webGLPowerPreference: 2
   scriptingDefineSymbols:
     Standalone: UNITY_PHYSICS_CUSTOM
+    Windows Store Apps: UNITY_PHYSICS_CUSTOM
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}
@@ -814,11 +815,11 @@ PlayerSettings:
   m_MobileRenderingPath: 1
   metroPackageName: My project
   metroPackageVersion: 
-  metroCertificatePath: 
+  metroCertificatePath: Assets/WSATestCertificate.pfx
   metroCertificatePassword: 
-  metroCertificateSubject: 
-  metroCertificateIssuer: 
-  metroCertificateNotAfter: 0000000000000000
+  metroCertificateSubject: mamaku
+  metroCertificateIssuer: mamaku
+  metroCertificateNotAfter: 807204ca9508db01
   metroApplicationDescription: My project
   wsaImages: {}
   metroTileShortName: 

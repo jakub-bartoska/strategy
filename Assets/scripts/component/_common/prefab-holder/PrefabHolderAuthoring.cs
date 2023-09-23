@@ -15,6 +15,7 @@ namespace component.authoring_pairs.PrefabHolder
         public GameObject markerPrefab;
         public GameObject townTeamMarkerTeam1Prefab;
         public GameObject townTeamMarkerTeam2Prefab;
+        public GameObject millPrefab;
     }
 
     public class PrefabHolderBaker : Baker<PrefabHolderAuthoring>
@@ -43,6 +44,8 @@ namespace component.authoring_pairs.PrefabHolder
                 townTeamMarkerTeam1Prefab = GetEntity(authoring.townTeamMarkerTeam1Prefab,
                     TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic),
                 townTeamMarkerTeam2Prefab = GetEntity(authoring.townTeamMarkerTeam2Prefab,
+                    TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic),
+                millPrefab = GetEntity(authoring.millPrefab,
                     TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic)
             });
         }

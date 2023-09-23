@@ -1,4 +1,5 @@
-﻿using component;
+﻿using _Monobehaviors.ui.player_resources;
+using component;
 using component._common.camera;
 using component._common.general;
 using component._common.system_switchers;
@@ -11,6 +12,7 @@ using component.strategy.army_components;
 using component.strategy.army_components.ui;
 using component.strategy.events;
 using component.strategy.general;
+using component.strategy.minor_objects;
 using component.strategy.player_resources;
 using system._common.army_to_spawn_switcher.common;
 using system.strategy.utils;
@@ -68,6 +70,14 @@ namespace system.strategy.spawner
                 }.Schedule(state.Dependency)
                 .Complete();
 
+            var minorsToSpawn =
+                new NativeParallelMultiHashMap<SpawnMinorMapObject, SpawnResourceGenerator>(1000, Allocator.TempJob);
+            new FetchMinorsToSpawnJob
+                {
+                    ecb = ecb,
+                    minorsToSpawn = minorsToSpawn
+                }.Schedule(state.Dependency)
+                .Complete();
 
             foreach (var army in getUniqueKeys(armiesToSpawn))
             {
@@ -106,6 +116,19 @@ namespace system.strategy.spawner
                 companies.Dispose();
             }
 
+            foreach (var minor in getUniqueKeysForMinors(minorsToSpawn))
+            {
+                var resources = new NativeList<SpawnResourceGenerator>(Allocator.TempJob);
+                foreach (var resource in minorsToSpawn.GetValuesForKey(minor))
+                {
+                    resources.Add(resource);
+                }
+
+                SpawnUtilsMinorObjects.spawnMinor(minor.team, minor.position, minor.type, resources, ecb, prefabHolder,
+                    idGenerator);
+
+                resources.Dispose();
+            }
 
             ecb.Playback(state.EntityManager);
             ecb.Dispose();
@@ -126,6 +149,15 @@ namespace system.strategy.spawner
             return keys.GetSubArray(0, uniqueCount);
         }
 
+        private NativeArray<SpawnMinorMapObject> getUniqueKeysForMinors(
+            NativeParallelMultiHashMap<SpawnMinorMapObject, SpawnResourceGenerator> map)
+        {
+            var keys = map.GetKeyArray(Allocator.TempJob);
+            var uniqueCount = keys.Unique();
+            return keys.GetSubArray(0, uniqueCount);
+        }
+
+
         private void setupSingleton(EntityCommandBuffer ecb)
         {
             var singletonEntity = ecb.CreateEntity();
@@ -134,13 +166,7 @@ namespace system.strategy.spawner
             {
                 nextIdToBeUsed = 1,
                 nextCompanyIdToBeUsed = 1,
-            };
-
-            var goldHolder = new GoldHolder
-            {
-                gold = 1000,
-                goldPerSecond = 6,
-                timeRemaining = 1
+                nextMinorIdToBeUsed = 1
             };
             var marker = new SelectionMarkerState
             {
@@ -163,7 +189,6 @@ namespace system.strategy.spawner
             ecb.AddComponent(singletonEntity, playerSettings);
             ecb.AddComponent(singletonEntity, interfaceState);
             ecb.AddComponent(singletonEntity, idGenerator);
-            ecb.AddComponent(singletonEntity, goldHolder);
             ecb.AddComponent(singletonEntity, camera);
             ecb.AddComponent(singletonEntity, new StrategySingletonEntityTag());
             ecb.AddComponent(singletonEntity, new StrategyCleanupTag());
@@ -173,6 +198,27 @@ namespace system.strategy.spawner
             ecb.AddBuffer<Damage>(singletonEntity);
             ecb.AddBuffer<CompanyMergeBuffer>(singletonEntity);
             ecb.AddBuffer<CompanyToDifferentState>(singletonEntity);
+            var resourceBuffer = ecb.AddBuffer<ResourceHolder>(singletonEntity);
+            resourceBuffer.Add(new ResourceHolder
+            {
+                type = ResourceType.GOLD,
+                value = 0
+            });
+            resourceBuffer.Add(new ResourceHolder
+            {
+                type = ResourceType.WOOD,
+                value = 0
+            });
+            resourceBuffer.Add(new ResourceHolder
+            {
+                type = ResourceType.STONE,
+                value = 0
+            });
+            resourceBuffer.Add(new ResourceHolder
+            {
+                type = ResourceType.FOOD,
+                value = 0
+            });
         }
 
         private bool containsArmySpawn(DynamicBuffer<SystemSwitchBlocker> blockers)
@@ -239,6 +285,30 @@ namespace system.strategy.spawner
             ecb.AddComponent(newEntity, townToSpawn);
             var buffer = ecb.AddBuffer<SpawnTownCompanyBuffer>(newEntity);
             buffer.AddRange(companies.ToNativeArray(Allocator.Temp));
+
+            ecb.DestroyEntity(oldEntity);
+        }
+    }
+
+    [BurstCompile]
+    public partial struct FetchMinorsToSpawnJob : IJobEntity
+    {
+        public EntityCommandBuffer ecb;
+        public NativeParallelMultiHashMap<SpawnMinorMapObject, SpawnResourceGenerator> minorsToSpawn;
+
+        private void Execute(SpawnMinorMapObject spawnMinor, DynamicBuffer<SpawnResourceGenerator> resourceGenerator,
+            Entity oldEntity)
+        {
+            foreach (var generator in resourceGenerator)
+            {
+                minorsToSpawn.Add(spawnMinor, generator);
+            }
+
+            //during first spawn I have to remove mesh from map + add component again for restart
+            var newEntity = ecb.CreateEntity();
+            ecb.AddComponent(newEntity, spawnMinor);
+            var buffer = ecb.AddBuffer<SpawnResourceGenerator>(newEntity);
+            buffer.AddRange(resourceGenerator.ToNativeArray(Allocator.Temp));
 
             ecb.DestroyEntity(oldEntity);
         }

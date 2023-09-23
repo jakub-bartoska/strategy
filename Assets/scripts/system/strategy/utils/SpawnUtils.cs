@@ -1,10 +1,12 @@
 ﻿using System;
+using _Monobehaviors.ui.player_resources;
 using component;
 using component.authoring_pairs.PrefabHolder;
 using component.config.game_settings;
 using component.general;
 using component.strategy.army_components;
 using component.strategy.general;
+using component.strategy.player_resources;
 using component.strategy.selection;
 using component.strategy.town_components;
 using component.strategy.ui;
@@ -25,7 +27,7 @@ namespace system.strategy.utils
             var newEntity = ecb.Instantiate(prefab);
             var transform = LocalTransform.FromPosition(position);
 
-            var idHodler = new IdHolder
+            var idHolder = new IdHolder
             {
                 id = idGenerator.ValueRW.nextIdToBeUsed++,
                 type = HolderType.ARMY
@@ -59,11 +61,11 @@ namespace system.strategy.utils
                 movementType = MovementType.IDLE
             };
 
-            ecb.SetName(newEntity, "Army " + idHodler.id);
+            ecb.SetName(newEntity, "Army " + idHolder.id);
 
             //add component
             ecb.AddComponent(newEntity, color);
-            ecb.AddComponent(newEntity, idHodler);
+            ecb.AddComponent(newEntity, idHolder);
             ecb.AddComponent(newEntity, uiLabel);
             ecb.AddComponent(newEntity, armyMovementStatus);
             ecb.AddComponent(newEntity, teamComponent);
@@ -124,6 +126,15 @@ namespace system.strategy.utils
             //add buffer
             var companyBuffer = ecb.AddBuffer<ArmyCompany>(newEntity);
             companyBuffer.AddRange(companies.AsArray());
+
+            var resourceGenerator = ecb.AddBuffer<ResourceGenerator>(newEntity);
+            resourceGenerator.Add(new ResourceGenerator
+            {
+                type = ResourceType.GOLD,
+                value = 10,
+                defaultTimer = 3,
+                timeRemaining = 3
+            });
 
             spawnTownDeployer(ecb, idGenerator, transform, teamComponent);
         }

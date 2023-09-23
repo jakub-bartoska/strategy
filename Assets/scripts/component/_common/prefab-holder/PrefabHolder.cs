@@ -14,5 +14,6 @@ namespace component.authoring_pairs.PrefabHolder
         public Entity markerPrefab;
         public Entity townTeamMarkerTeam1Prefab;
         public Entity townTeamMarkerTeam2Prefab;
+        public Entity millPrefab;
     }
 }
