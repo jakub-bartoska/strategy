@@ -29,6 +29,8 @@ namespace system.strategy.utils
             {
                 team = team
             };
+            var townTeamMarker = SpawnUtils.spawnTeamMarker(ecb, teamComponent, newEntity, prefabHolder);
+            teamComponent.teamMarker = townTeamMarker;
 
             ecb.SetName(newEntity, "Mill " + idHolder.id);
 

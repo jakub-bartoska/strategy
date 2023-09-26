@@ -139,7 +139,7 @@ namespace system.strategy.utils
             spawnTownDeployer(ecb, idGenerator, transform, teamComponent);
         }
 
-        private static Entity spawnTeamMarker(EntityCommandBuffer ecb, TeamComponent team, Entity townEntity,
+        public static Entity spawnTeamMarker(EntityCommandBuffer ecb, TeamComponent team, Entity townEntity,
             PrefabHolder prefabHolder)
         {
             var prefab = team.team == Team.TEAM1

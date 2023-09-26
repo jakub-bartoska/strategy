@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using component._common.general;
 using component._common.system_switchers;
+using component.authoring_pairs.PrefabHolder;
 using component.config.game_settings;
 using component.strategy.army_components;
 using component.strategy.general;
 using component.strategy.town_components;
 using ProjectDawn.Navigation;
+using system.strategy.utils;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -21,6 +23,7 @@ namespace component.strategy.interactions
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
+            state.RequireForUpdate<PrefabHolder>();
             state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
             state.RequireForUpdate<ArmyToSpawn>();
             state.RequireForUpdate<GamePlayerSettings>();
@@ -130,12 +133,14 @@ namespace component.strategy.interactions
                 }
             }
 
+            var prefabHolder = SystemAPI.GetSingleton<PrefabHolder>();
             var minorsToChangeTeam = selectOutMinorCaptures(interactions);
-
             new ChangeTeamForMinors
                 {
-                    minorsToChangeTeam = minorsToChangeTeam
-                }.ScheduleParallel(state.Dependency)
+                    minorsToChangeTeam = minorsToChangeTeam,
+                    ecb = ecb,
+                    prefabHolder = prefabHolder
+                }.Schedule(state.Dependency)
                 .Complete();
 
             var onlyMerges = new NativeList<(long, long, InteractionType)>(interactions.Length, Allocator.TempJob);
@@ -632,8 +637,10 @@ namespace component.strategy.interactions
     public partial struct ChangeTeamForMinors : IJobEntity
     {
         [ReadOnly] public NativeArray<long> minorsToChangeTeam;
+        [ReadOnly] public PrefabHolder prefabHolder;
+        public EntityCommandBuffer ecb;
 
-        private void Execute(IdHolder idHolder, ref TeamComponent team)
+        private void Execute(IdHolder idHolder, ref TeamComponent team, Entity entity)
         {
             if (!minorsToChangeTeam.Contains(idHolder.id)) return;
 
@@ -647,6 +654,9 @@ namespace component.strategy.interactions
             {
                 team.team = Team.TEAM1;
             }
+
+            var townTeamMarker = SpawnUtils.spawnTeamMarker(ecb, team, entity, prefabHolder);
+            team.teamMarker = townTeamMarker;
         }
     }
 }
