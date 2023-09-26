@@ -1507,6 +1507,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: mill-spawner-team2
       objectReference: {fileID: 0}
+    - target: {fileID: 8162483938038789153, guid: e863ab4fd5d34ce4f912be18b124261e,
+        type: 3}
+      propertyPath: team
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8162483938038789153, guid: e863ab4fd5d34ce4f912be18b124261e,
+        type: 3}
+      propertyPath: type
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1683,6 +1693,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: mill-spawner-team1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8162483938038789153, guid: e863ab4fd5d34ce4f912be18b124261e,
+        type: 3}
+      propertyPath: team
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8162483938038789153, guid: e863ab4fd5d34ce4f912be18b124261e,
+        type: 3}
+      propertyPath: type
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

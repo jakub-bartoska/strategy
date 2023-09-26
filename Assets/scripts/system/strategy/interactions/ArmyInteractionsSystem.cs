@@ -12,6 +12,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 
 namespace component.strategy.interactions
 {
@@ -42,33 +43,27 @@ namespace component.strategy.interactions
                 .CreateCommandBuffer(state.WorldUnmanaged);
 
             //todo 1000 capacity je blbe
-            var team1 = new NativeParallelMultiHashMap<long, float3>(1000, Allocator.TempJob);
-            var team2 = new NativeParallelMultiHashMap<long, float3>(1000, Allocator.TempJob);
-            var team1Towns = new NativeParallelMultiHashMap<long, float3>(1000, Allocator.TempJob);
-            var team2Towns = new NativeParallelMultiHashMap<long, float3>(1000, Allocator.TempJob);
+            var entities = new NativeParallelMultiHashMap<long, (float3, IdHolder, Team)>(1000, Allocator.TempJob);
             var armyCompanies = new NativeParallelMultiHashMap<long, ArmyCompany>(1000, Allocator.TempJob);
             var armyTownPairs = new NativeParallelMultiHashMap<long, long>(1000, Allocator.TempJob);
             var armyDistanceToDestination = new NativeParallelMultiHashMap<long, float>(1000, Allocator.TempJob);
             new ArmyPositionsGatherJob
                 {
-                    team1 = team1.AsParallelWriter(),
-                    team2 = team2.AsParallelWriter(),
                     armySizes = armyCompanies.AsParallelWriter(),
                     armyTownPairs = armyTownPairs.AsParallelWriter(),
                     armyDistanceToDestination = armyDistanceToDestination.AsParallelWriter()
                 }.ScheduleParallel(state.Dependency)
                 .Complete();
-            new TownPositionsGatherJob
+            new EntitiesCollectorJob
                 {
-                    team1towns = team1Towns.AsParallelWriter(),
-                    team2towns = team2Towns.AsParallelWriter(),
+                    entities = entities.AsParallelWriter(),
                 }.ScheduleParallel(state.Dependency)
                 .Complete();
 
             //todo do configu
             var minDistance = 1;
             var interactions = new NativeList<(long, long, InteractionType)>(300, Allocator.TempJob);
-            findInteractions(team1, team2, team1Towns, team2Towns, minDistance, interactions);
+            findInteractions(entities, minDistance, interactions);
 
             if (interactions.Length == 0)
             {
@@ -135,11 +130,18 @@ namespace component.strategy.interactions
                 }
             }
 
+            var minorsToChangeTeam = selectOutMinorCaptures(interactions);
+
+            new ChangeTeamForMinors
+                {
+                    minorsToChangeTeam = minorsToChangeTeam
+                }.ScheduleParallel(state.Dependency)
+                .Complete();
 
             var onlyMerges = new NativeList<(long, long, InteractionType)>(interactions.Length, Allocator.TempJob);
             foreach (var (army1, army2, interactionType) in interactions)
             {
-                if (interactionType != InteractionType.ANY_ARMY_WITH_ARMY_INTERACTION)
+                if (interactionType != InteractionType.ANY_ARMY_MERGE)
                 {
                     continue;
                 }
@@ -159,7 +161,6 @@ namespace component.strategy.interactions
                     onlyMerges.Add((army1, army2, interactionType));
                 }
             }
-
 
             //now I know there is no fight in interaction List
             var validMerges = new NativeList<(long, long, InteractionType)>(onlyMerges.Length, Allocator.TempJob);
@@ -201,8 +202,7 @@ namespace component.strategy.interactions
                     changes = changes,
                     ecb = ecb.AsParallelWriter(),
                     armyCompanies = armyCompanies,
-                    team1 = team1,
-                    team2 = team2,
+                    entities = entities,
                     armyEnteringTownList = enterTownInteractions
                 }.Schedule(state.Dependency)
                 .Complete();
@@ -215,6 +215,25 @@ namespace component.strategy.interactions
                 .Complete();
         }
 
+        private NativeArray<long> selectOutMinorCaptures(NativeList<(long, long, InteractionType)> interactions)
+        {
+            var captures = new NativeHashMap<long, (long, InteractionType)>(interactions.Length, Allocator.TempJob);
+            foreach (var (armyId, secondEntityId, interaction) in interactions)
+            {
+                if (interaction != InteractionType.CAPTURE_MINOR) continue;
+
+                captures.Add(secondEntityId, (armyId, interaction));
+            }
+
+            foreach (var (armyId, secondEntityId, interaction) in interactions)
+            {
+                if (interaction != InteractionType.DEFEND_MINOR) continue;
+                captures.Remove(secondEntityId);
+            }
+
+            return captures.GetKeyArray(Allocator.TempJob);
+        }
+
         private bool isBattleRunning()
         {
             var armyToSpawnBuffer = SystemAPI.GetSingletonBuffer<ArmyToSpawn>();
@@ -222,89 +241,83 @@ namespace component.strategy.interactions
         }
 
         private void findInteractions(
-            NativeParallelMultiHashMap<long, float3> team1,
-            NativeParallelMultiHashMap<long, float3> team2,
-            NativeParallelMultiHashMap<long, float3> team1Towns,
-            NativeParallelMultiHashMap<long, float3> team2Towns,
+            NativeParallelMultiHashMap<long, (float3, IdHolder, Team)> entities,
             int minDistance,
             NativeList<(long, long, InteractionType)> interactions)
         {
-            //fights
-            foreach (var t1 in team1)
+            var keys = entities.GetKeyArray(Allocator.TempJob);
+            foreach (var key1 in keys)
             {
-                foreach (var t2 in team2)
+                entities.TryGetFirstValue(key1, out var item1, out _);
+                if (item1.Item2.type != HolderType.ARMY)
                 {
-                    if (math.distance(t1.Value, t2.Value) < minDistance)
-                    {
-                        interactions.Add((t1.Key, t2.Key, InteractionType.FIGHT));
-                    }
-                }
-            }
-
-            //army merges
-            findMergeInteractions(interactions, team1, minDistance);
-            findMergeInteractions(interactions, team2, minDistance);
-
-            //enter town
-            foreach (var army1 in team1)
-            {
-                foreach (var town1 in team1Towns)
-                {
-                    if (math.distance(army1.Value, town1.Value) < minDistance)
-                    {
-                        interactions.Add((army1.Key, town1.Key, InteractionType.ENTER_TOWN));
-                    }
+                    continue;
                 }
 
-                foreach (var town2 in team2Towns)
+                foreach (var key2 in keys)
                 {
-                    if (math.distance(army1.Value, town2.Value) < minDistance)
-                    {
-                        interactions.Add((army1.Key, town2.Key, InteractionType.FIGHT_TOWN));
-                    }
-                }
-            }
+                    entities.TryGetFirstValue(key2, out var item2, out _);
+                    if (item1.Item2.id == item2.Item2.id) continue;
+                    if (item2.Item2.type == HolderType.ARMY && item1.Item2.id > item2.Item2.id) continue;
 
-            foreach (var army2 in team2)
-            {
-                foreach (var town1 in team1Towns)
-                {
-                    if (math.distance(army2.Value, town1.Value) < minDistance)
+                    if (math.distance(item1.Item1, item2.Item1) < minDistance)
                     {
-                        interactions.Add((army2.Key, town1.Key, InteractionType.FIGHT_TOWN));
-                    }
-                }
-
-                foreach (var town2 in team2Towns)
-                {
-                    if (math.distance(army2.Value, town2.Value) < minDistance)
-                    {
-                        interactions.Add((army2.Key, town2.Key, InteractionType.ENTER_TOWN));
+                        var interactionType = getIntercations(item1, item2);
+                        interactions.Add((key1, key2, interactionType));
                     }
                 }
             }
         }
 
-        private void findMergeInteractions(NativeList<(long, long, InteractionType)> interactions,
-            NativeParallelMultiHashMap<long, float3> team, int minDistance)
+        private InteractionType getIntercations(
+            (float3, IdHolder, Team) entity1,
+            (float3, IdHolder, Team) entity2)
         {
-            foreach (var army1 in team)
+            switch (entity2.Item2.type)
             {
-                foreach (var army2 in team)
-                {
-                    //remove duplicity interactions
-                    //remove interactions when army2 has the same ID as army1
-                    if (army2.Key >= army1.Key)
-                    {
-                        continue;
-                    }
-
-                    if (math.distance(army1.Value, army2.Value) < minDistance)
-                    {
-                        interactions.Add((army1.Key, army2.Key, InteractionType.ANY_ARMY_WITH_ARMY_INTERACTION));
-                    }
-                }
+                case HolderType.ARMY:
+                    return getArmyInteraction(entity1, entity2);
+                case HolderType.TOWN:
+                    return getTownInteraction(entity1, entity2);
+                case HolderType.MILL:
+                case HolderType.GOLD_MINE:
+                case HolderType.STONE_MINE:
+                case HolderType.LUMBERJACK_HUT:
+                    return getMinorInteraction(entity1, entity2);
+                default:
+                    throw new Exception("unknown interaction type" + entity2.Item2.type);
             }
+        }
+
+        private InteractionType getArmyInteraction((float3, IdHolder, Team) entity1,
+            (float3, IdHolder, Team) entity2)
+        {
+            if (entity1.Item3 == entity2.Item3)
+            {
+                return InteractionType.ANY_ARMY_MERGE;
+            }
+
+            return InteractionType.FIGHT;
+        }
+
+        private InteractionType getTownInteraction((float3, IdHolder, Team) entity1, (float3, IdHolder, Team) entity2)
+        {
+            if (entity1.Item3 == entity2.Item3)
+            {
+                return InteractionType.ENTER_TOWN;
+            }
+
+            return InteractionType.FIGHT_TOWN;
+        }
+
+        private InteractionType getMinorInteraction((float3, IdHolder, Team) entity1, (float3, IdHolder, Team) entity2)
+        {
+            if (entity1.Item3 == entity2.Item3)
+            {
+                return InteractionType.DEFEND_MINOR;
+            }
+
+            return InteractionType.CAPTURE_MINOR;
         }
 
         public class SortByLowestId : IComparer<(long, long, InteractionType)>
@@ -332,8 +345,6 @@ namespace component.strategy.interactions
     [BurstCompile]
     public partial struct ArmyPositionsGatherJob : IJobEntity
     {
-        public NativeParallelMultiHashMap<long, float3>.ParallelWriter team1;
-        public NativeParallelMultiHashMap<long, float3>.ParallelWriter team2;
         public NativeParallelMultiHashMap<long, ArmyCompany>.ParallelWriter armySizes;
         public NativeParallelMultiHashMap<long, long>.ParallelWriter armyTownPairs;
         public NativeParallelMultiHashMap<long, float>.ParallelWriter armyDistanceToDestination;
@@ -341,15 +352,6 @@ namespace component.strategy.interactions
         private void Execute(ArmyTag tag, LocalTransform localTransform, DynamicBuffer<ArmyCompany> companies,
             TeamComponent team, ArmyMovementStatus movementStatus, IdHolder idHolder, AgentBody agentBody)
         {
-            if (team.team == Team.TEAM1)
-            {
-                team1.Add(idHolder.id, localTransform.Position);
-            }
-            else
-            {
-                team2.Add(idHolder.id, localTransform.Position);
-            }
-
             foreach (var armyCompany in companies)
             {
                 armySizes.Add(idHolder.id, armyCompany);
@@ -366,21 +368,14 @@ namespace component.strategy.interactions
     }
 
     [BurstCompile]
-    public partial struct TownPositionsGatherJob : IJobEntity
+    public partial struct EntitiesCollectorJob : IJobEntity
     {
-        public NativeParallelMultiHashMap<long, float3>.ParallelWriter team1towns;
-        public NativeParallelMultiHashMap<long, float3>.ParallelWriter team2towns;
+        public NativeParallelMultiHashMap<long, (float3, IdHolder, Team)>.ParallelWriter entities;
 
-        private void Execute(TownTag tag, LocalTransform localTransform, TeamComponent team, IdHolder idHolder)
+        private void Execute(LocalTransform localTransform, TeamComponent team, IdHolder idHolder)
         {
-            if (team.team == Team.TEAM1)
-            {
-                team1towns.Add(idHolder.id, localTransform.Position);
-            }
-            else
-            {
-                team2towns.Add(idHolder.id, localTransform.Position);
-            }
+            if (idHolder.type == HolderType.TOWN_DEPLOYER) return;
+            entities.Add(idHolder.id, (localTransform.Position, idHolder, team.team));
         }
     }
 
@@ -512,13 +507,12 @@ namespace component.strategy.interactions
         public EntityCommandBuffer.ParallelWriter ecb;
         public NativeHashMap<long, (long, InteractionType)> changes;
         public NativeParallelMultiHashMap<long, ArmyCompany> armyCompanies;
-        public NativeParallelMultiHashMap<long, float3> team1;
-        public NativeParallelMultiHashMap<long, float3> team2;
+        public NativeParallelMultiHashMap<long, (float3, IdHolder, Team)> entities;
         [ReadOnly] public NativeList<(long, long)> armyEnteringTownList;
 
         private void Execute(ArmyTag tag, ref DynamicBuffer<ArmyInteraction> interactions, Entity entity,
             DynamicBuffer<Child> childs, ref LocalTransform transform, ref ArmyMovementStatus movementStatus,
-            ref DynamicBuffer<ArmyCompany> companies, TeamComponent team, IdHolder idHolder)
+            ref DynamicBuffer<ArmyCompany> companies, IdHolder idHolder)
         {
             foreach (var (armyId, _) in armyEnteringTownList)
             {
@@ -555,7 +549,7 @@ namespace component.strategy.interactions
 
                     if (change.Value.Item2 == InteractionType.MERGE_TOGETHER)
                     {
-                        var otherArmyPosition = getMergingArmyPosition(change.Value.Item1, team.team);
+                        var otherArmyPosition = getMergingArmyPosition(change.Value.Item1);
                         var mergeToPosition = (otherArmyPosition + transform.Position) / 2;
                         transform.Position = mergeToPosition;
                     }
@@ -604,18 +598,10 @@ namespace component.strategy.interactions
             interactions.AddRange(newResult.AsArray());
         }
 
-        private float3 getMergingArmyPosition(long otherArmyId, Team team)
+        private float3 getMergingArmyPosition(long otherArmyId)
         {
-            if (team == Team.TEAM1)
-            {
-                team1.TryGetFirstValue(otherArmyId, out var position, out _);
-                return position;
-            }
-            else
-            {
-                team2.TryGetFirstValue(otherArmyId, out var position, out _);
-                return position;
-            }
+            entities.TryGetFirstValue(otherArmyId, out var position, out _);
+            return position.Item1;
         }
     }
 
@@ -638,6 +624,28 @@ namespace component.strategy.interactions
                 {
                     companies.Add(armyCompany);
                 }
+            }
+        }
+    }
+
+    [BurstCompile]
+    public partial struct ChangeTeamForMinors : IJobEntity
+    {
+        [ReadOnly] public NativeArray<long> minorsToChangeTeam;
+
+        private void Execute(IdHolder idHolder, ref TeamComponent team)
+        {
+            if (!minorsToChangeTeam.Contains(idHolder.id)) return;
+
+            Debug.Log("changing team for " + idHolder.id);
+
+            if (team.team == Team.TEAM1)
+            {
+                team.team = Team.TEAM2;
+            }
+            else
+            {
+                team.team = Team.TEAM1;
             }
         }
     }

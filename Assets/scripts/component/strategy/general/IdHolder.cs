@@ -12,6 +12,10 @@ namespace component.strategy.general
     {
         ARMY,
         TOWN,
-        TOWN_DEPLOYER
+        TOWN_DEPLOYER,
+        MILL,
+        GOLD_MINE,
+        STONE_MINE,
+        LUMBERJACK_HUT
     }
 }

@@ -12,7 +12,7 @@ namespace system.strategy.utils
 {
     public class SpawnUtilsMinorObjects
     {
-        public static void spawnMinor(Team team, float3 position, MinorObjectType type,
+        public static void spawnMinor(Team team, float3 position, HolderType type,
             NativeList<SpawnResourceGenerator> resourceGenerators,
             EntityCommandBuffer ecb, PrefabHolder prefabHolder, RefRW<IdGenerator> idGenerator)
         {
@@ -20,9 +20,9 @@ namespace system.strategy.utils
             var newEntity = ecb.Instantiate(prefab);
             var transform = LocalTransform.FromPosition(position);
 
-            var idHolder = new MinorIdHolder
+            var idHolder = new IdHolder()
             {
-                id = idGenerator.ValueRW.nextMinorIdToBeUsed++,
+                id = idGenerator.ValueRW.nextIdToBeUsed++,
                 type = type
             };
             var teamComponent = new TeamComponent

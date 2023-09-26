@@ -6,6 +6,5 @@ namespace component.strategy.general
     {
         public long nextIdToBeUsed;
         public long nextCompanyIdToBeUsed;
-        public long nextMinorIdToBeUsed;
     }
 }

@@ -165,8 +165,7 @@ namespace system.strategy.spawner
             var idGenerator = new IdGenerator
             {
                 nextIdToBeUsed = 1,
-                nextCompanyIdToBeUsed = 1,
-                nextMinorIdToBeUsed = 1
+                nextCompanyIdToBeUsed = 1
             };
             var marker = new SelectionMarkerState
             {

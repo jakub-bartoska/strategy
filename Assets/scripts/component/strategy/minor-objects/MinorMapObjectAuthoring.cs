@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using _Monobehaviors.ui.player_resources;
+using component.strategy.general;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
@@ -10,21 +11,13 @@ namespace component.strategy.minor_objects
     public class MinorMapObjectAuthoring : MonoBehaviour
     {
         public Team team;
-        public MinorObjectType type;
+        public HolderType type;
         public List<SpawnResourceGenerator> resourceGenerators = new();
-    }
-
-    public enum MinorObjectType
-    {
-        MILL,
-        GOLD_MINE,
-        STONE_MINE,
-        LUMBERJACK_HUT
     }
 
     public struct SpawnMinorMapObject : IComponentData, IEquatable<SpawnMinorMapObject>
     {
-        public MinorObjectType type;
+        public HolderType type;
         public Team team;
         public float3 position;
 
@@ -36,7 +29,7 @@ namespace component.strategy.minor_objects
 
     public struct MinorMapObject : IComponentData
     {
-        public MinorObjectType type;
+        public HolderType type;
     }
 
     [Serializable]
@@ -57,7 +50,7 @@ namespace component.strategy.minor_objects
                 type = authoring.type,
                 position = authoring.transform.position
             });
-            var buffer = AddBuffer<SpawnResourceGenerator>();
+            var buffer = AddBuffer<SpawnResourceGenerator>(entity);
             authoring.resourceGenerators.ForEach(rg => buffer.Add(rg));
         }
     }

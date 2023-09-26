@@ -10,11 +10,13 @@ namespace component.strategy.army_components
 
     public enum InteractionType
     {
-        MERGE_TOGETHER,
         FIGHT,
-        MERGE_ME_INTO,
-        ENTER_TOWN,
         FIGHT_TOWN,
-        ANY_ARMY_WITH_ARMY_INTERACTION
+        ENTER_TOWN,
+        ANY_ARMY_MERGE,
+        MERGE_TOGETHER,
+        MERGE_ME_INTO,
+        DEFEND_MINOR,
+        CAPTURE_MINOR
     }
 }
