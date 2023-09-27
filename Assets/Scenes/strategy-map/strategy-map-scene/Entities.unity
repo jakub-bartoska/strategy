@@ -1455,7 +1455,7 @@ PrefabInstance:
     - target: {fileID: 3634636078044523603, guid: e863ab4fd5d34ce4f912be18b124261e,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -20.39
+      value: -14.66
       objectReference: {fileID: 0}
     - target: {fileID: 3634636078044523603, guid: e863ab4fd5d34ce4f912be18b124261e,
         type: 3}
@@ -1465,7 +1465,7 @@ PrefabInstance:
     - target: {fileID: 3634636078044523603, guid: e863ab4fd5d34ce4f912be18b124261e,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -19.86
+      value: -6.51
       objectReference: {fileID: 0}
     - target: {fileID: 3634636078044523603, guid: e863ab4fd5d34ce4f912be18b124261e,
         type: 3}
@@ -1505,7 +1505,7 @@ PrefabInstance:
     - target: {fileID: 5552476675119395440, guid: e863ab4fd5d34ce4f912be18b124261e,
         type: 3}
       propertyPath: m_Name
-      value: mill-spawner-team2
+      value: mill-spawner-team1-2
       objectReference: {fileID: 0}
     - target: {fileID: 8162483938038789153, guid: e863ab4fd5d34ce4f912be18b124261e,
         type: 3}

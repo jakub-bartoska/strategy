@@ -33,10 +33,10 @@
     "SystemMemorySizeMB": 0
   },
   "Editor": {
-    "Version": "2022.3.8f1",
+    "Version": "2022.3.10f1",
     "Branch": "2022.3/staging",
-    "Changeset": "b5eafc012955",
-    "Date": 1692109459
+    "Changeset": "ff3792e53c62",
+    "Date": 1694554373
   },
   "Dependencies": [
     "com.unity.collab-proxy@2.0.7",
@@ -45,7 +45,7 @@
     "com.unity.ide.rider@3.0.25",
     "com.unity.ide.visualstudio@2.0.18",
     "com.unity.ide.vscode@1.2.5",
-    "com.unity.inputsystem@1.6.3",
+    "com.unity.inputsystem@1.7.0",
     "com.unity.memoryprofiler@1.0.0",
     "com.unity.physics@1.0.16",
     "com.unity.probuilder@5.1.1",
@@ -100,7 +100,7 @@
     "com.unity.serialization@3.1.1",
     "com.unity.test-framework.performance@3.0.2",
     "com.unity.nuget.mono-cecil@1.11.4",
-    "com.unity.scriptablebuildpipeline@1.21.8",
+    "com.unity.scriptablebuildpipeline@1.21.9",
     "com.unity.profiling.core@1.0.2",
     "com.unity.searcher@4.9.2"
   ],
