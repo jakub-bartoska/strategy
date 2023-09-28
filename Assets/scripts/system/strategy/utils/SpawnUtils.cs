@@ -124,7 +124,27 @@ namespace system.strategy.utils
             ecb.SetComponent(newEntity, transform);
 
             //add buffer
-            ecb.AddBuffer<ResourceHolder>(newEntity);
+            var resourceHolders = ecb.AddBuffer<ResourceHolder>(newEntity);
+            resourceHolders.Add(new ResourceHolder
+            {
+                type = ResourceType.GOLD,
+                value = 100
+            });
+            resourceHolders.Add(new ResourceHolder
+            {
+                type = ResourceType.WOOD,
+                value = 90
+            });
+            resourceHolders.Add(new ResourceHolder
+            {
+                type = ResourceType.STONE,
+                value = 80
+            });
+            resourceHolders.Add(new ResourceHolder
+            {
+                type = ResourceType.FOOD,
+                value = 70
+            });
             var companyBuffer = ecb.AddBuffer<ArmyCompany>(newEntity);
             companyBuffer.AddRange(companies.AsArray());
 
