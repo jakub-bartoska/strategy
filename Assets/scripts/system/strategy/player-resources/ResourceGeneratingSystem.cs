@@ -1,7 +1,4 @@
-﻿using _Monobehaviors.ui.player_resources;
-using component;
-using component._common.system_switchers;
-using component.strategy.general;
+﻿using component._common.system_switchers;
 using component.strategy.player_resources;
 using Unity.Burst;
 using Unity.Collections;
@@ -9,7 +6,7 @@ using Unity.Entities;
 
 namespace system.strategy.player_resources
 {
-    public partial struct GoldManagementSystem : ISystem
+    public partial struct ResourceGeneratingSystem : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)
@@ -22,31 +19,20 @@ namespace system.strategy.player_resources
         public void OnUpdate(ref SystemState state)
         {
             var deltaTime = SystemAPI.Time.DeltaTime;
-            var resourceHolder = SystemAPI.GetSingletonBuffer<ResourceHolder>();
-
             new ProcessResourceGenerators
                 {
                     deltaTime = deltaTime,
-                    resources = resourceHolder
                 }.Schedule(state.Dependency)
                 .Complete();
-
-            foreach (var holder in resourceHolder)
-            {
-                ResourcesUi.instance.updateResource(holder.type, holder.value);
-            }
         }
 
         [BurstCompile]
         public partial struct ProcessResourceGenerators : IJobEntity
         {
             [ReadOnly] public float deltaTime;
-            public DynamicBuffer<ResourceHolder> resources;
 
-            private void Execute(ref DynamicBuffer<ResourceGenerator> resourceGenerators, TeamComponent team)
+            private void Execute(ref DynamicBuffer<ResourceGenerator> resourceGenerators, ref DynamicBuffer<ResourceHolder> resources)
             {
-                if (team.team != Team.TEAM1) return;
-
                 for (var i = 0; i < resourceGenerators.Length; i++)
                 {
                     var resource = resourceGenerators[i];
@@ -54,12 +40,24 @@ namespace system.strategy.player_resources
                     if (resource.timeRemaining < 0)
                     {
                         resource.timeRemaining += resourceGenerators[i].defaultTimer;
+                        var containsResource = false;
                         for (int j = 0; j < resources.Length; j++)
                         {
                             if (resources[j].type != resource.type) continue;
                             var newResourceHolder = resources[j];
                             newResourceHolder.value += resource.value;
                             resources[j] = newResourceHolder;
+                            containsResource = true;
+                        }
+
+                        if (!containsResource)
+                        {
+                            var newResource = new ResourceHolder
+                            {
+                                type = resource.type,
+                                value = resource.value
+                            };
+                            resources.Add(newResource);
                         }
                     }
 

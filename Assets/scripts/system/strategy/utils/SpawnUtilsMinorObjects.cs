@@ -38,6 +38,7 @@ namespace system.strategy.utils
             ecb.AddComponent(newEntity, idHolder);
             ecb.AddComponent(newEntity, teamComponent);
 
+            ecb.AddBuffer<ResourceHolder>(newEntity);
             var resourceBuffer = ecb.AddBuffer<ResourceGenerator>(newEntity);
             foreach (var spawnResourceGenerator in resourceGenerators)
             {

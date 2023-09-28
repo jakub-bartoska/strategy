@@ -1,5 +1,4 @@
-﻿using _Monobehaviors.ui.player_resources;
-using component;
+﻿using component;
 using component._common.camera;
 using component._common.general;
 using component._common.system_switchers;
@@ -13,7 +12,6 @@ using component.strategy.army_components.ui;
 using component.strategy.events;
 using component.strategy.general;
 using component.strategy.minor_objects;
-using component.strategy.player_resources;
 using system._common.army_to_spawn_switcher.common;
 using system.strategy.utils;
 using Unity.Burst;
@@ -197,27 +195,6 @@ namespace system.strategy.spawner
             ecb.AddBuffer<Damage>(singletonEntity);
             ecb.AddBuffer<CompanyMergeBuffer>(singletonEntity);
             ecb.AddBuffer<CompanyToDifferentState>(singletonEntity);
-            var resourceBuffer = ecb.AddBuffer<ResourceHolder>(singletonEntity);
-            resourceBuffer.Add(new ResourceHolder
-            {
-                type = ResourceType.GOLD,
-                value = 0
-            });
-            resourceBuffer.Add(new ResourceHolder
-            {
-                type = ResourceType.WOOD,
-                value = 0
-            });
-            resourceBuffer.Add(new ResourceHolder
-            {
-                type = ResourceType.STONE,
-                value = 0
-            });
-            resourceBuffer.Add(new ResourceHolder
-            {
-                type = ResourceType.FOOD,
-                value = 0
-            });
         }
 
         private bool containsArmySpawn(DynamicBuffer<SystemSwitchBlocker> blockers)

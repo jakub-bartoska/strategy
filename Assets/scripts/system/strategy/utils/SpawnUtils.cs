@@ -124,6 +124,7 @@ namespace system.strategy.utils
             ecb.SetComponent(newEntity, transform);
 
             //add buffer
+            ecb.AddBuffer<ResourceHolder>(newEntity);
             var companyBuffer = ecb.AddBuffer<ArmyCompany>(newEntity);
             companyBuffer.AddRange(companies.AsArray());
 
