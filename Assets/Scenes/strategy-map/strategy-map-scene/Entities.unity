@@ -1631,6 +1631,8 @@ MonoBehaviour:
     type: 3}
   millPrefab: {fileID: 166821489385838160, guid: 87774f7952e34a84e828a4b529561fd1,
     type: 3}
+  caravanPrefab: {fileID: 2300254611346211799, guid: edc41e51d0e2f7040871ecdad6da24be,
+    type: 3}
 --- !u!1001 &3892244867579997360
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1703,6 +1705,11 @@ PrefabInstance:
         type: 3}
       propertyPath: type
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8162483938038789153, guid: e863ab4fd5d34ce4f912be18b124261e,
+        type: 3}
+      propertyPath: resourceGenerators.Array.data[0].value
+      value: 100
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
