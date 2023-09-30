@@ -14,7 +14,6 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
 
 namespace component.strategy.interactions
 {
@@ -643,8 +642,6 @@ namespace component.strategy.interactions
         private void Execute(IdHolder idHolder, ref TeamComponent team, Entity entity)
         {
             if (!minorsToChangeTeam.Contains(idHolder.id)) return;
-
-            Debug.Log("changing team for " + idHolder.id);
 
             if (team.team == Team.TEAM1)
             {

@@ -30,8 +30,7 @@ namespace system.strategy.movement
         {
             var marker = SystemAPI.GetSingletonRW<SelectionMarkerState>();
             var interfaceState = SystemAPI.GetSingletonRW<InterfaceState>();
-            var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
-                .CreateCommandBuffer(state.WorldUnmanaged);
+            var ecb = new EntityCommandBuffer(Allocator.TempJob);
 
             switch (marker.ValueRO.state)
             {
@@ -54,6 +53,8 @@ namespace system.strategy.movement
                     interfaceState.ValueRW.oldState = interfaceState.ValueRW.state;
                     interfaceState.ValueRW.state = UIState.GET_NEW_STATE;
                     marker.ValueRW.state = MarkerState.IDLE;
+                    ecb.Playback(state.EntityManager);
+                    ecb.Dispose();
                     return;
                 default:
                     throw new ArgumentOutOfRangeException();
