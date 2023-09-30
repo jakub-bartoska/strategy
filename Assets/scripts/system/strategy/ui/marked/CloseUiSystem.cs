@@ -3,7 +3,6 @@ using component.strategy.army_components.ui;
 using component.strategy.selection;
 using Unity.Burst;
 using Unity.Entities;
-using UnityEngine;
 
 namespace system.strategy.ui.marked
 {
@@ -38,8 +37,6 @@ namespace system.strategy.ui.marked
                 .CalculateEntityCount();
 
             if (markedEntitiesCount > 0) return;
-
-            Debug.Log("Close all ui");
 
             if (interfaceState.ValueRW.state == UIState.GET_NEW_STATE)
             {

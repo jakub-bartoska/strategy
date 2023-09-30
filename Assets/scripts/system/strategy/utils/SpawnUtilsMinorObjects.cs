@@ -30,6 +30,7 @@ namespace system.strategy.utils
             {
                 team = team
             };
+            var minorTag = new MinorTag();
             var markableEntity = new MarkableEntity();
             var townTeamMarker = SpawnUtils.spawnTeamMarker(ecb, teamComponent, newEntity, prefabHolder);
             teamComponent.teamMarker = townTeamMarker;
@@ -40,6 +41,7 @@ namespace system.strategy.utils
             ecb.AddComponent(newEntity, idHolder);
             ecb.AddComponent(newEntity, teamComponent);
             ecb.AddComponent(newEntity, markableEntity);
+            ecb.AddComponent(newEntity, minorTag);
 
             ecb.AddBuffer<ResourceHolder>(newEntity);
             var resourceBuffer = ecb.AddBuffer<ResourceGenerator>(newEntity);

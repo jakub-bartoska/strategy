@@ -13,6 +13,7 @@ namespace component.strategy.army_components.ui
         ALL_CLOSED,
         TOWN_UI,
         ARMY_UI,
+        MINOR_UI,
         GET_NEW_STATE
     }
 }

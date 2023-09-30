@@ -1,4 +1,5 @@
 ﻿using System;
+using _Monobehaviors.minor_ui;
 using _Monobehaviors.ui;
 using component._common.system_switchers;
 using component.strategy.army_components;
@@ -43,6 +44,10 @@ namespace system.strategy.ui
                     removeOldMarks(state, interfaceState.ValueRO);
                     TownUi.instance.changeActive(false);
                     break;
+                case UIState.MINOR_UI:
+                    removeOldMarks(state, interfaceState.ValueRO);
+                    MinorUi.instance.changeActive(false);
+                    break;
                 case UIState.ALL_CLOSED:
                 case UIState.GET_NEW_STATE:
                     break;
@@ -62,11 +67,6 @@ namespace system.strategy.ui
 
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
                 .CreateCommandBuffer(state.WorldUnmanaged);
-            new RemoveOldMarkersJob
-                {
-                    ecb = ecb.AsParallelWriter()
-                }.ScheduleParallel(state.Dependency)
-                .Complete();
             new RemoveOldMarkersJob
                 {
                     ecb = ecb.AsParallelWriter()

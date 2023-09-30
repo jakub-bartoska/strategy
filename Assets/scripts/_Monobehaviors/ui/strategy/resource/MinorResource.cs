@@ -1,8 +1,8 @@
 ﻿namespace _Monobehaviors.resource
 {
-    public class TownResource : CommonResourceTab
+    public class MinorResource : CommonResourceTab
     {
-        public static TownResource instance;
+        public static MinorResource instance;
 
         private void Awake()
         {

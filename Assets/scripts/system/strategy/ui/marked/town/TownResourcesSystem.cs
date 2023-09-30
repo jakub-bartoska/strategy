@@ -10,7 +10,7 @@ using Unity.Entities;
 
 namespace system.strategy.ui
 {
-    public partial struct TownResources : ISystem
+    public partial struct TownResourcesSystem : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)
@@ -26,7 +26,7 @@ namespace system.strategy.ui
             if (interfaceState.state != UIState.TOWN_UI) return;
 
             var markedTownResources = new NativeList<ResourceHolder>(10, Allocator.TempJob);
-            new CollectMArkedTownResources
+            new CollectMarkedTownResources
                 {
                     markedTownResources = markedTownResources
                 }.Schedule(state.Dependency)
@@ -35,7 +35,7 @@ namespace system.strategy.ui
             TownResource.instance.updateResources(markedTownResources);
         }
 
-        public partial struct CollectMArkedTownResources : IJobEntity
+        public partial struct CollectMarkedTownResources : IJobEntity
         {
             public NativeList<ResourceHolder> markedTownResources;
 
