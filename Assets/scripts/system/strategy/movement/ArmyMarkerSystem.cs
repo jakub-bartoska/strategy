@@ -1,11 +1,7 @@
 ﻿using System;
-using component;
 using component._common.general;
 using component._common.system_switchers;
 using component.authoring_pairs.PrefabHolder;
-using component.config.game_settings;
-using component.general;
-using component.strategy.army_components;
 using component.strategy.army_components.ui;
 using component.strategy.general;
 using component.strategy.selection;
@@ -33,8 +29,6 @@ namespace system.strategy.movement
         public void OnUpdate(ref SystemState state)
         {
             var marker = SystemAPI.GetSingletonRW<SelectionMarkerState>();
-            var teamColors = SystemAPI.GetSingletonBuffer<TeamColor>();
-            var playerSettings = SystemAPI.GetSingleton<GamePlayerSettings>();
             var interfaceState = SystemAPI.GetSingletonRW<InterfaceState>();
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
                 .CreateCommandBuffer(state.WorldUnmanaged);
@@ -42,24 +36,10 @@ namespace system.strategy.movement
             switch (marker.ValueRO.state)
             {
                 case MarkerState.RUNNING:
-                    new ArmyMarkerJob
-                        {
-                            MarkerState = marker.ValueRO,
-                            colors = teamColors,
-                            gamePlayerSettings = playerSettings
-                        }.ScheduleParallel(state.Dependency)
-                        .Complete();
                     return;
                 case MarkerState.IDLE:
                     return;
                 case MarkerState.FINISHED:
-                    new ArmyMarkerJob
-                        {
-                            MarkerState = marker.ValueRO,
-                            colors = teamColors,
-                            gamePlayerSettings = playerSettings
-                        }.ScheduleParallel(state.Dependency)
-                        .Complete();
                     new UiCloserSystem.RemoveOldMarkersJob
                         {
                             ecb = ecb.AsParallelWriter()
@@ -70,15 +50,7 @@ namespace system.strategy.movement
                             ecb = ecb.AsParallelWriter()
                         }.ScheduleParallel(state.Dependency)
                         .Complete();
-                    var markerPrefab = SystemAPI.GetSingleton<PrefabHolder>().markerPrefab;
-                    new MarkEntitiesJob
-                        {
-                            markerState = marker.ValueRO,
-                            gamePlayerSettings = playerSettings,
-                            ecb = ecb.AsParallelWriter(),
-                            markerprefab = markerPrefab
-                        }.ScheduleParallel(state.Dependency)
-                        .Complete();
+                    markProperEntities(marker, ecb, state);
                     interfaceState.ValueRW.oldState = interfaceState.ValueRW.state;
                     interfaceState.ValueRW.state = UIState.GET_NEW_STATE;
                     marker.ValueRW.state = MarkerState.IDLE;
@@ -87,48 +59,45 @@ namespace system.strategy.movement
                     throw new ArgumentOutOfRangeException();
             }
         }
-    }
 
-    [BurstCompile]
-    public partial struct ArmyMarkerJob : IJobEntity
-    {
-        [ReadOnly] public SelectionMarkerState MarkerState;
-        [ReadOnly] public DynamicBuffer<TeamColor> colors;
-        [ReadOnly] public GamePlayerSettings gamePlayerSettings;
-
-        private void Execute(LocalTransform transform, ref MaterialColorComponent materialColor, ArmyTag tag,
-            TeamComponent team)
+        /// <summary>
+        /// If there is at least 1 army, mark armies only.
+        /// If there is exactly 1 town, mark this 1 town.
+        /// If there is exactly 1 minor, mark minor.
+        /// </summary>
+        private void markProperEntities(RefRW<SelectionMarkerState> marker, EntityCommandBuffer ecb, SystemState state)
         {
-            if (team.team != gamePlayerSettings.playerTeam)
-            {
-                return;
-            }
-
-            var minX = math.min(MarkerState.min.x, MarkerState.max.x);
-            var maxX = math.max(MarkerState.min.x, MarkerState.max.x);
-            var minZ = math.min(MarkerState.min.z, MarkerState.max.z);
-            var maxZ = math.max(MarkerState.min.z, MarkerState.max.z);
-
-            if (transform.Position.x > minX && transform.Position.x < maxX &&
-                transform.Position.z > minZ && transform.Position.z < maxZ)
-            {
-                materialColor.Value = getColor(team.team) * 3;
-            }
-            else
-            {
-                materialColor.Value = getColor(team.team);
-            }
-        }
-
-        private float4 getColor(Team team)
-        {
-            foreach (var color in colors)
-            {
-                if (color.team == team)
-                    return color.color;
-            }
-
-            throw new Exception("unknown team");
+            var markerPrefab = SystemAPI.GetSingleton<PrefabHolder>().markerPrefab;
+            var playerSettings = SystemAPI.GetSingleton<GamePlayerSettings>();
+            var entitiesCounts = new NativeArray<long>(3, Allocator.TempJob);
+            //count entities in mark rectange
+            new MarkEntitiesJob
+                {
+                    markerState = marker.ValueRO,
+                    gamePlayerSettings = playerSettings,
+                    ecb = ecb.AsParallelWriter(),
+                    markerprefab = markerPrefab,
+                    entitiesCounts = entitiesCounts,
+                }.Schedule(state.Dependency)
+                .Complete();
+            //at least 1 army
+            var shouldMarkArmy = entitiesCounts[0] > 0;
+            //army should not be marked + exactly 1 town
+            var shouldMarkTown = !shouldMarkArmy && entitiesCounts[1] == 1;
+            //army and town should not be marked + exactly 1 town
+            var shouldMarkMinor = !shouldMarkArmy && !shouldMarkTown && entitiesCounts[2] == 1;
+            new MarkEntitiesJob
+                {
+                    markerState = marker.ValueRO,
+                    gamePlayerSettings = playerSettings,
+                    ecb = ecb.AsParallelWriter(),
+                    markerprefab = markerPrefab,
+                    entitiesCounts = entitiesCounts,
+                    shouldMarkArmy = shouldMarkArmy,
+                    shouldMarkTown = shouldMarkTown,
+                    shouldMarkMinor = shouldMarkMinor
+                }.Schedule(state.Dependency)
+                .Complete();
         }
     }
 
@@ -138,7 +107,16 @@ namespace system.strategy.movement
         [ReadOnly] public SelectionMarkerState markerState;
         [ReadOnly] public GamePlayerSettings gamePlayerSettings;
         public EntityCommandBuffer.ParallelWriter ecb;
+
         public Entity markerprefab;
+
+        // id 0 - army count
+        // id 1 - town count
+        // id 2 - minor count
+        public NativeArray<long> entitiesCounts;
+        public bool shouldMarkArmy;
+        public bool shouldMarkTown;
+        public bool shouldMarkMinor;
 
         private void Execute(LocalTransform transform, MarkableEntity markableEntity, Entity entity, TeamComponent team,
             IdHolder idHolder)
@@ -157,14 +135,36 @@ namespace system.strategy.movement
             if (transform.Position.x > minX && transform.Position.x < manX &&
                 transform.Position.z > minZ && transform.Position.z < manZ)
             {
-                ecb.AddComponent(entity.Index + 10000, entity, new Marked());
-
-                if (idHolder.type != HolderType.ARMY)
+                switch (idHolder.type)
                 {
-                    return;
-                }
+                    case HolderType.ARMY:
+                        entitiesCounts[0] += 1;
+                        if (shouldMarkArmy)
+                        {
+                            ecb.AddComponent(entity.Index + 10000, entity, new Marked());
+                            addMarker(entity);
+                        }
 
-                addMarker(entity);
+                        break;
+                    case HolderType.TOWN:
+                        entitiesCounts[1] += 1;
+                        if (shouldMarkTown)
+                            ecb.AddComponent(entity.Index + 10000, entity, new Marked());
+                        break;
+                    case HolderType.GOLD_MINE:
+                    case HolderType.MILL:
+                    case HolderType.STONE_MINE:
+                    case HolderType.LUMBERJACK_HUT:
+                        entitiesCounts[2] += 1;
+                        if (shouldMarkMinor)
+                            ecb.AddComponent(entity.Index + 10000, entity, new Marked());
+                        break;
+                    case HolderType.TOWN_DEPLOYER:
+                        if (shouldMarkTown)
+                            ecb.AddComponent(entity.Index + 10000, entity, new Marked());
+                        break;
+                    default: throw new Exception("Unknown type");
+                }
             }
         }
 

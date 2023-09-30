@@ -3,6 +3,7 @@ using component.authoring_pairs.PrefabHolder;
 using component.strategy.general;
 using component.strategy.minor_objects;
 using component.strategy.player_resources;
+using component.strategy.selection;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -29,6 +30,7 @@ namespace system.strategy.utils
             {
                 team = team
             };
+            var markableEntity = new MarkableEntity();
             var townTeamMarker = SpawnUtils.spawnTeamMarker(ecb, teamComponent, newEntity, prefabHolder);
             teamComponent.teamMarker = townTeamMarker;
 
@@ -37,6 +39,7 @@ namespace system.strategy.utils
             ecb.AddComponent(newEntity, transform);
             ecb.AddComponent(newEntity, idHolder);
             ecb.AddComponent(newEntity, teamComponent);
+            ecb.AddComponent(newEntity, markableEntity);
 
             ecb.AddBuffer<ResourceHolder>(newEntity);
             var resourceBuffer = ecb.AddBuffer<ResourceGenerator>(newEntity);
