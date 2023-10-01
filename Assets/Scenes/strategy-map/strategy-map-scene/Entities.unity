@@ -1631,7 +1631,7 @@ MonoBehaviour:
     type: 3}
   millPrefab: {fileID: 166821489385838160, guid: 87774f7952e34a84e828a4b529561fd1,
     type: 3}
-  caravanPrefab: {fileID: 2300254611346211799, guid: edc41e51d0e2f7040871ecdad6da24be,
+  caravanPrefab: {fileID: 140445901179791745, guid: 845955b9bfd739c49ad278582265b759,
     type: 3}
 --- !u!1001 &3892244867579997360
 PrefabInstance:

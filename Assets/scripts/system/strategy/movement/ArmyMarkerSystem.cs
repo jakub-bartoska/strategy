@@ -169,13 +169,13 @@ namespace system.strategy.movement
             }
         }
 
-        private void addMarker(Entity amyEntity)
+        private void addMarker(Entity armyEntity)
         {
-            var newEntity = ecb.Instantiate(amyEntity.Index + 20000, markerprefab);
-            ecb.SetName(amyEntity.Index + 40000, newEntity, "Marker");
-            ecb.AddComponent(amyEntity.Index + 30000, newEntity, new Parent
+            var newEntity = ecb.Instantiate(armyEntity.Index + 20000, markerprefab);
+            ecb.SetName(armyEntity.Index + 40000, newEntity, "Marker");
+            ecb.AddComponent(armyEntity.Index + 30000, newEntity, new Parent
             {
-                Value = amyEntity
+                Value = armyEntity
             });
         }
     }

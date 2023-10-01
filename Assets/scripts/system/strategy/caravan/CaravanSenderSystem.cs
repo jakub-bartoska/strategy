@@ -30,9 +30,9 @@ namespace system.strategy.minors
             new CollectMarkedTownResources
                 {
                     caravanThreshold = caravanThreshold,
-                    ecb = ecb.AsParallelWriter(),
-                    prefabholder = prefabHolder
-                }.ScheduleParallel(state.Dependency)
+                    ecb = ecb,
+                    prefabholder = prefabHolder,
+                }.Schedule(state.Dependency)
                 .Complete();
         }
 
@@ -40,7 +40,7 @@ namespace system.strategy.minors
         {
             [ReadOnly] public long caravanThreshold;
             public PrefabHolder prefabholder;
-            public EntityCommandBuffer.ParallelWriter ecb;
+            public EntityCommandBuffer ecb;
 
             private void Execute(IdHolder idHolder, ref DynamicBuffer<ResourceHolder> resources, LocalTransform transform, TeamComponent team)
             {
@@ -85,12 +85,14 @@ namespace system.strategy.minors
 
                 if (resourcesForCaravan.Length == 0) return;
 
-                var caravanEntity = ecb.Instantiate((int) idHolder.id, prefabholder.caravanPrefab);
-                ecb.AddComponent((int) idHolder.id + 10000, caravanEntity, new InitCaravanSetting());
-                var caravanResources = ecb.AddBuffer<ResourceHolder>((int) idHolder.id + 100000, caravanEntity);
+                var caravanEntity = ecb.Instantiate(prefabholder.caravanPrefab);
+                ecb.AddComponent(caravanEntity, new InitCaravanSetting());
+                var caravanResources = ecb.AddBuffer<ResourceHolder>(caravanEntity);
                 caravanResources.AddRange(resourcesForCaravan);
-                ecb.AddComponent((int) idHolder.id + 1000000, caravanEntity, transform);
-                ecb.AddComponent((int) idHolder.id + 10000000, caravanEntity, team);
+                var newTransform = LocalTransform.FromPosition(transform.Position);
+                newTransform.Scale = 0.2f;
+                ecb.SetComponent(caravanEntity, newTransform);
+                ecb.AddComponent(caravanEntity, team);
             }
         }
     }

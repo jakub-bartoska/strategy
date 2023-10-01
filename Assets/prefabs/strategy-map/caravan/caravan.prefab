@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &2300254611346211799
+--- !u!1 &2085885181814696229
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,10 +8,10 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4338233817574513438}
-  - component: {fileID: 6657508337896913842}
-  - component: {fileID: 266089248452696434}
-  - component: {fileID: 2411674847130317146}
+  - component: {fileID: 925615129115775963}
+  - component: {fileID: 4700176701707825421}
+  - component: {fileID: 8168382771727850401}
+  - component: {fileID: 5252451942691234302}
   m_Layer: 0
   m_Name: caravan
   m_TagString: Untagged
@@ -19,29 +19,29 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4338233817574513438
+--- !u!4 &925615129115775963
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2300254611346211799}
+  m_GameObject: {fileID: 2085885181814696229}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 4278965125208688901}
+  - {fileID: 2164471645192935760}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6657508337896913842
+--- !u!114 &4700176701707825421
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2300254611346211799}
+  m_GameObject: {fileID: 2085885181814696229}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 825ee44755f2e4846a6229365ed8d44c, type: 3}
@@ -53,13 +53,13 @@ MonoBehaviour:
   AngularSpeed: 0
   StoppingDistance: 0
   AutoBreaking: 1
---- !u!114 &266089248452696434
+--- !u!114 &8168382771727850401
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2300254611346211799}
+  m_GameObject: {fileID: 2085885181814696229}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fed5c6dd07c7d6e4f857b420fa8f559a, type: 3}
@@ -67,13 +67,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Radius: 0.1
   Height: 0.2
---- !u!114 &2411674847130317146
+--- !u!114 &5252451942691234302
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2300254611346211799}
+  m_GameObject: {fileID: 2085885181814696229}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 00fe6fc1ebf8ff240ad5b12ad70ce1c2, type: 3}
@@ -86,7 +86,7 @@ MonoBehaviour:
     x: 1
     y: 1
     z: 1
---- !u!1 &8044681764159366441
+--- !u!1 &4429556751098919224
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -94,10 +94,10 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4278965125208688901}
-  - component: {fileID: 732544418261305413}
-  - component: {fileID: 6700499022943199143}
-  - component: {fileID: 1026592335237282536}
+  - component: {fileID: 2164471645192935760}
+  - component: {fileID: 2895923049735579756}
+  - component: {fileID: 8609547500829310384}
+  - component: {fileID: 344076600958842532}
   m_Layer: 0
   m_Name: caravan-model
   m_TagString: Untagged
@@ -105,36 +105,36 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4278965125208688901
+--- !u!4 &2164471645192935760
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8044681764159366441}
+  m_GameObject: {fileID: 4429556751098919224}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 4338233817574513438}
+  m_Father: {fileID: 925615129115775963}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &732544418261305413
+--- !u!33 &2895923049735579756
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8044681764159366441}
+  m_GameObject: {fileID: 4429556751098919224}
   m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &6700499022943199143
+--- !u!23 &8609547500829310384
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8044681764159366441}
+  m_GameObject: {fileID: 4429556751098919224}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -170,13 +170,13 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &1026592335237282536
+--- !u!136 &344076600958842532
 CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8044681764159366441}
+  m_GameObject: {fileID: 4429556751098919224}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
