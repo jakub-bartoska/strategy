@@ -21,7 +21,6 @@ namespace system.strategy.utils
             RefRW<IdGenerator> idGenerator
         )
         {
-            //todo pridat id
             var newEntity = ecb.Instantiate(prefabHolder.caravanPrefab);
             var newTransform = LocalTransform.FromPosition(position);
             newTransform.Scale = 0.2f;
