@@ -16,6 +16,7 @@ namespace component.strategy.general
         MILL,
         GOLD_MINE,
         STONE_MINE,
-        LUMBERJACK_HUT
+        LUMBERJACK_HUT,
+        CARAVAN
     }
 }

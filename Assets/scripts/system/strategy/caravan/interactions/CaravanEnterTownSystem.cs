@@ -65,11 +65,12 @@ namespace system.strategy.minors.interactions
             public EntityCommandBuffer.ParallelWriter ecb;
             public NativeParallelMultiHashMap<long, ResourceHolder>.ParallelWriter townIdResourceHolderToAdd;
 
-            private void Execute(CaravanTarget target, LocalTransform transform, Entity entity, DynamicBuffer<ResourceHolder> resourceHolder)
+            private void Execute(CaravanTarget target, LocalTransform transform, Entity entity, DynamicBuffer<ResourceHolder> resourceHolder, TeamComponent team)
             {
                 townPositions.TryGetValue(target.targetId, out var townTransform);
                 if (math.distance(transform.Position, townTransform.Position) > 0.3f) return;
 
+                ecb.DestroyEntity((int) transform.Position.x + 10000, team.teamMarker);
                 ecb.DestroyEntity((int) transform.Position.x, entity);
                 foreach (var holder in resourceHolder)
                 {

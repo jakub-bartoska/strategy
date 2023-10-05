@@ -1,12 +1,14 @@
 ﻿using System;
+using component;
 using component._common.system_switchers;
 using component.authoring_pairs.PrefabHolder;
-using component.strategy.caravan;
 using component.strategy.general;
 using component.strategy.player_resources;
+using system.strategy.utils;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Transforms;
 
 namespace system.strategy.minors
@@ -23,24 +25,43 @@ namespace system.strategy.minors
         public void OnUpdate(ref SystemState state)
         {
             var caravanThreshold = 100;
-            var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
-                .CreateCommandBuffer(state.WorldUnmanaged);
-            var prefabHolder = SystemAPI.GetSingleton<PrefabHolder>();
 
+            var caravansToSpawn = new NativeParallelMultiHashMap<long, (float3, Team, ResourceHolder)>(1000, Allocator.TempJob);
             new CollectMarkedTownResources
                 {
                     caravanThreshold = caravanThreshold,
-                    ecb = ecb,
-                    prefabholder = prefabHolder,
+                    caravansToSpawn = caravansToSpawn
                 }.Schedule(state.Dependency)
                 .Complete();
+
+            if (caravansToSpawn.IsEmpty) return;
+
+            var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
+                .CreateCommandBuffer(state.WorldUnmanaged);
+            var prefabHolder = SystemAPI.GetSingleton<PrefabHolder>();
+            var idGenerator = SystemAPI.GetSingletonRW<IdGenerator>();
+
+            var keys = caravansToSpawn.GetKeyArray(Allocator.Temp);
+            foreach (var key in keys)
+            {
+                var position = new float3();
+                var team = Team.TEAM1;
+                var resourceHolders = new NativeList<ResourceHolder>(Allocator.Temp);
+                foreach (var (position2, team2, resource2) in caravansToSpawn.GetValuesForKey(key))
+                {
+                    position = position2;
+                    team = team2;
+                    resourceHolders.Add(resource2);
+                }
+
+                CaravanSpawner.spawnCaravan(prefabHolder, ecb, position, team, resourceHolders, idGenerator);
+            }
         }
 
         public partial struct CollectMarkedTownResources : IJobEntity
         {
             [ReadOnly] public long caravanThreshold;
-            public PrefabHolder prefabholder;
-            public EntityCommandBuffer ecb;
+            public NativeParallelMultiHashMap<long, (float3, Team, ResourceHolder)> caravansToSpawn;
 
             private void Execute(IdHolder idHolder, ref DynamicBuffer<ResourceHolder> resources, LocalTransform transform, TeamComponent team)
             {
@@ -49,6 +70,7 @@ namespace system.strategy.minors
                     case HolderType.ARMY:
                     case HolderType.TOWN:
                     case HolderType.TOWN_DEPLOYER:
+                    case HolderType.CARAVAN:
                         return;
                     case HolderType.GOLD_MINE:
                     case HolderType.STONE_MINE:
@@ -58,7 +80,6 @@ namespace system.strategy.minors
                     default: throw new Exception("Unknown holder type");
                 }
 
-                var resourcesForCaravan = new NativeList<ResourceHolder>(10, Allocator.Temp);
                 var oldResources = resources.ToNativeArray(Allocator.Temp);
                 resources.Clear();
                 foreach (var resource in oldResources)
@@ -76,23 +97,8 @@ namespace system.strategy.minors
                         value = newValue
                     };
                     resources.Add(newResource);
-                    resourcesForCaravan.Add(new ResourceHolder
-                    {
-                        type = resource.type,
-                        value = caravanThreshold
-                    });
+                    caravansToSpawn.Add(idHolder.id, (transform.Position, team.team, resource));
                 }
-
-                if (resourcesForCaravan.Length == 0) return;
-
-                var caravanEntity = ecb.Instantiate(prefabholder.caravanPrefab);
-                ecb.AddComponent(caravanEntity, new InitCaravanSetting());
-                var caravanResources = ecb.AddBuffer<ResourceHolder>(caravanEntity);
-                caravanResources.AddRange(resourcesForCaravan);
-                var newTransform = LocalTransform.FromPosition(transform.Position);
-                newTransform.Scale = 0.2f;
-                ecb.SetComponent(caravanEntity, newTransform);
-                ecb.AddComponent(caravanEntity, team);
             }
         }
     }
