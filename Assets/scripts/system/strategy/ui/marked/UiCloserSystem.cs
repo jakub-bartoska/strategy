@@ -1,5 +1,6 @@
 ﻿using System;
 using _Monobehaviors.minor_ui;
+using _Monobehaviors.resource;
 using _Monobehaviors.ui;
 using component._common.system_switchers;
 using component.strategy.army_components;
@@ -39,6 +40,7 @@ namespace system.strategy.ui
                 case UIState.ARMY_UI:
                     removeOldMarks(state, interfaceState.ValueRO);
                     CompaniesPanel.instance.changeActive(false);
+                    ArmyResource.instance.changeActive(false);
                     break;
                 case UIState.TOWN_UI:
                     removeOldMarks(state, interfaceState.ValueRO);

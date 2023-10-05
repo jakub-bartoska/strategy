@@ -81,6 +81,22 @@ namespace system.strategy.utils
             ecb.AddBuffer<ArmyInteraction>(newEntity);
             var companyBuffer = ecb.AddBuffer<ArmyCompany>(newEntity);
             companyBuffer.AddRange(companies.AsArray());
+            var resources = ecb.AddBuffer<ResourceHolder>(newEntity);
+            resources.Add(new ResourceHolder
+            {
+                value = 100,
+                type = ResourceType.GOLD
+            });
+            resources.Add(new ResourceHolder
+            {
+                value = 150,
+                type = ResourceType.FOOD
+            });
+            resources.Add(new ResourceHolder
+            {
+                value = 200,
+                type = ResourceType.WOOD
+            });
         }
 
         public static void spawnTown(float3 position, Team team, PrefabHolder prefabHolder, EntityCommandBuffer ecb,

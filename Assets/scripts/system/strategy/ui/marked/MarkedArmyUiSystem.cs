@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
+using _Monobehaviors.resource;
 using _Monobehaviors.ui;
 using component._common.system_switchers;
 using component.strategy.army_components;
 using component.strategy.army_components.ui;
+using component.strategy.general;
+using component.strategy.player_resources;
 using component.strategy.selection;
 using Unity.Burst;
 using Unity.Collections;
@@ -36,9 +39,13 @@ namespace system.strategy.ui.marked
             }
 
             var markedCompanies = new NativeList<ArmyCompany>(Allocator.TempJob);
+            var resources = new NativeList<ResourceHolder>(Allocator.TempJob);
+            var armyIds = new NativeList<long>(Allocator.TempJob);
             new CollectMarkedArmiesJob
                 {
-                    markedCompanies = markedCompanies
+                    markedCompanies = markedCompanies,
+                    resources = resources,
+                    armyIds = armyIds
                 }.Schedule(state.Dependency)
                 .Complete();
 
@@ -61,6 +68,17 @@ namespace system.strategy.ui.marked
                 markedCompanies.Sort(new ArmyCompanySorter());
 
                 CompaniesPanel.instance.displayCompanies(markedCompanies.AsArray());
+
+                //display resource tab only if 1 army is marked
+                if (armyIds.Length == 1)
+                {
+                    ArmyResource.instance.changeActive(true);
+                    ArmyResource.instance.updateResources(resources);
+                }
+                else
+                {
+                    ArmyResource.instance.changeActive(false);
+                }
             }
         }
     }
@@ -76,9 +94,13 @@ namespace system.strategy.ui.marked
     public partial struct CollectMarkedArmiesJob : IJobEntity
     {
         public NativeList<ArmyCompany> markedCompanies;
+        public NativeList<ResourceHolder> resources;
+        public NativeList<long> armyIds;
 
-        private void Execute(ArmyTag tag, DynamicBuffer<ArmyCompany> companies, Marked marked)
+        private void Execute(ArmyTag tag, DynamicBuffer<ArmyCompany> companies, Marked marked, DynamicBuffer<ResourceHolder> resourceBuffer, IdHolder idHolder)
         {
+            armyIds.Add(idHolder.id);
+            resources.AddRange(resourceBuffer.AsNativeArray());
             markedCompanies.AddRange(companies.AsNativeArray());
         }
     }
