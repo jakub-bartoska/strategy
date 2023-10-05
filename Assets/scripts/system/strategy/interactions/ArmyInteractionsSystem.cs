@@ -6,6 +6,7 @@ using component.authoring_pairs.PrefabHolder;
 using component.config.game_settings;
 using component.strategy.army_components;
 using component.strategy.general;
+using component.strategy.player_resources;
 using component.strategy.town_components;
 using ProjectDawn.Navigation;
 using system.strategy.utils;
@@ -47,13 +48,15 @@ namespace component.strategy.interactions
             //todo 1000 capacity je blbe
             var entities = new NativeParallelMultiHashMap<long, (float3, IdHolder, Team)>(1000, Allocator.TempJob);
             var armyCompanies = new NativeParallelMultiHashMap<long, ArmyCompany>(1000, Allocator.TempJob);
+            var armyResources = new NativeParallelMultiHashMap<long, ResourceHolder>(1000, Allocator.TempJob);
             var armyTownPairs = new NativeParallelMultiHashMap<long, long>(1000, Allocator.TempJob);
             var armyDistanceToDestination = new NativeParallelMultiHashMap<long, float>(1000, Allocator.TempJob);
             new ArmyPositionsGatherJob
                 {
                     armySizes = armyCompanies.AsParallelWriter(),
                     armyTownPairs = armyTownPairs.AsParallelWriter(),
-                    armyDistanceToDestination = armyDistanceToDestination.AsParallelWriter()
+                    armyDistanceToDestination = armyDistanceToDestination.AsParallelWriter(),
+                    armyResources = armyResources.AsParallelWriter()
                 }.ScheduleParallel(state.Dependency)
                 .Complete();
             new EntitiesCollectorJob
@@ -207,14 +210,16 @@ namespace component.strategy.interactions
                     ecb = ecb.AsParallelWriter(),
                     armyCompanies = armyCompanies,
                     entities = entities,
-                    armyEnteringTownList = enterTownInteractions
+                    armyEnteringTownList = enterTownInteractions,
+                    armyResources = armyResources
                 }.Schedule(state.Dependency)
                 .Complete();
 
             new UpdateTownCompanies
                 {
                     armyEnteringTownList = enterTownInteractions,
-                    armyCompanies = armyCompanies
+                    armyCompanies = armyCompanies,
+                    armyResources = armyResources
                 }.Schedule(state.Dependency)
                 .Complete();
         }
@@ -352,13 +357,25 @@ namespace component.strategy.interactions
         public NativeParallelMultiHashMap<long, ArmyCompany>.ParallelWriter armySizes;
         public NativeParallelMultiHashMap<long, long>.ParallelWriter armyTownPairs;
         public NativeParallelMultiHashMap<long, float>.ParallelWriter armyDistanceToDestination;
+        public NativeParallelMultiHashMap<long, ResourceHolder>.ParallelWriter armyResources;
 
-        private void Execute(ArmyTag tag, LocalTransform localTransform, DynamicBuffer<ArmyCompany> companies,
-            TeamComponent team, ArmyMovementStatus movementStatus, IdHolder idHolder, AgentBody agentBody)
+        private void Execute(ArmyTag tag,
+            LocalTransform localTransform,
+            DynamicBuffer<ArmyCompany> companies,
+            ArmyMovementStatus movementStatus,
+            IdHolder idHolder,
+            AgentBody agentBody,
+            DynamicBuffer<ResourceHolder> resourceHolder
+        )
         {
             foreach (var armyCompany in companies)
             {
                 armySizes.Add(idHolder.id, armyCompany);
+            }
+
+            foreach (var resource in resourceHolder)
+            {
+                armyResources.Add(idHolder.id, resource);
             }
 
             if (movementStatus.movementType == MovementType.ENTER_TOWN)
@@ -511,12 +528,19 @@ namespace component.strategy.interactions
         public EntityCommandBuffer.ParallelWriter ecb;
         public NativeHashMap<long, (long, InteractionType)> changes;
         public NativeParallelMultiHashMap<long, ArmyCompany> armyCompanies;
+        public NativeParallelMultiHashMap<long, ResourceHolder> armyResources;
         public NativeParallelMultiHashMap<long, (float3, IdHolder, Team)> entities;
         [ReadOnly] public NativeList<(long, long)> armyEnteringTownList;
 
-        private void Execute(ArmyTag tag, ref DynamicBuffer<ArmyInteraction> interactions, Entity entity,
-            DynamicBuffer<Child> childs, ref LocalTransform transform, ref ArmyMovementStatus movementStatus,
-            ref DynamicBuffer<ArmyCompany> companies, IdHolder idHolder)
+        private void Execute(ArmyTag tag,
+            ref DynamicBuffer<ArmyInteraction> interactions,
+            Entity entity,
+            DynamicBuffer<Child> childs,
+            ref LocalTransform transform,
+            ref ArmyMovementStatus movementStatus,
+            ref DynamicBuffer<ArmyCompany> companies,
+            ref DynamicBuffer<ResourceHolder> resources,
+            IdHolder idHolder)
         {
             foreach (var (armyId, _) in armyEnteringTownList)
             {
@@ -528,9 +552,12 @@ namespace component.strategy.interactions
                     }
 
                     ecb.DestroyEntity((int) idHolder.id, entity);
+                    return;
                 }
             }
 
+            var oldResources = resources.ToNativeArray(Allocator.Temp);
+            resources.Clear();
             foreach (var change in changes)
             {
                 if (change.Value.Item1 == idHolder.id)
@@ -551,6 +578,25 @@ namespace component.strategy.interactions
                         companies.Add(armyCompany);
                     }
 
+                    foreach (var resource in armyResources.GetValuesForKey(change.Value.Item1))
+                    {
+                        var containsResource = false;
+                        foreach (var oldResource in oldResources)
+                        {
+                            if (oldResource.type != resource.type) continue;
+
+                            resources.Add(new ResourceHolder
+                            {
+                                type = resource.type,
+                                value = oldResource.value + resource.value
+                            });
+                            containsResource = true;
+                        }
+
+                        if (!containsResource)
+                            resources.Add(resource);
+                    }
+
                     if (change.Value.Item2 == InteractionType.MERGE_TOGETHER)
                     {
                         var otherArmyPosition = getMergingArmyPosition(change.Value.Item1);
@@ -558,6 +604,21 @@ namespace component.strategy.interactions
                         transform.Position = mergeToPosition;
                     }
                 }
+            }
+
+            //add old resources which were not updated
+            foreach (var resourceHolder in oldResources)
+            {
+                var containsResource = false;
+                foreach (var resource in resources)
+                {
+                    if (resource.type != resourceHolder.type) continue;
+                    containsResource = true;
+                }
+
+                if (containsResource) continue;
+
+                resources.Add(resourceHolder);
             }
 
             var newResult = new NativeList<ArmyInteraction>(interactions.Length, Allocator.TempJob);
@@ -614,20 +675,57 @@ namespace component.strategy.interactions
     {
         [ReadOnly] public NativeList<(long, long)> armyEnteringTownList;
         public NativeParallelMultiHashMap<long, ArmyCompany> armyCompanies;
+        public NativeParallelMultiHashMap<long, ResourceHolder> armyResources;
 
-        private void Execute(TownTag townTag, ref DynamicBuffer<ArmyCompany> companies, IdHolder idHolder)
+        private void Execute(TownTag townTag, ref DynamicBuffer<ArmyCompany> companies, IdHolder idHolder, ref DynamicBuffer<ResourceHolder> resources)
         {
+            var oldResources = resources.ToNativeArray(Allocator.Temp);
+            resources.Clear();
             foreach (var (armyId, townId) in armyEnteringTownList)
             {
                 if (townId != idHolder.id)
                 {
-                    return;
+                    continue;
                 }
 
                 foreach (var armyCompany in armyCompanies.GetValuesForKey(armyId))
                 {
                     companies.Add(armyCompany);
                 }
+
+                foreach (var resource in armyResources.GetValuesForKey(armyId))
+                {
+                    var containsResource = false;
+                    foreach (var oldResource in oldResources)
+                    {
+                        if (oldResource.type != resource.type) continue;
+
+                        resources.Add(new ResourceHolder
+                        {
+                            type = resource.type,
+                            value = oldResource.value + resource.value
+                        });
+                        containsResource = true;
+                    }
+
+                    if (!containsResource)
+                        resources.Add(resource);
+                }
+            }
+
+            //add old resources which were not updated
+            foreach (var resourceHolder in oldResources)
+            {
+                var containsResource = false;
+                foreach (var resource in resources)
+                {
+                    if (resource.type != resourceHolder.type) continue;
+                    containsResource = true;
+                }
+
+                if (containsResource) continue;
+
+                resources.Add(resourceHolder);
             }
         }
     }

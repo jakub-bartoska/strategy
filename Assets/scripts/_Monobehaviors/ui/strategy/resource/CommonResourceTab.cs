@@ -26,6 +26,8 @@ namespace _Monobehaviors.resource
                     if (value.Item1 == resourceHolder.value) continue;
 
                     value.Item3.text = resourceHolder.value.ToString();
+                    resourceTabs.Remove(resourceHolder.type);
+                    resourceTabs.Add(resourceHolder.type, (resourceHolder.value, value.Item2, value.Item3));
                 }
                 else
                 {
