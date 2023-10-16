@@ -136,6 +136,7 @@ namespace component.strategy.interactions
             }
 
             var prefabHolder = SystemAPI.GetSingleton<PrefabHolder>();
+            var caravansToDestroy = selectOutCaravanCaptures(interactions);
             var minorsToChangeTeam = selectOutMinorCaptures(interactions);
             new ChangeTeamForMinors
                 {
@@ -143,6 +144,24 @@ namespace component.strategy.interactions
                     ecb = ecb,
                     prefabHolder = prefabHolder
                 }.Schedule(state.Dependency)
+                .Complete();
+
+            var caravanResources = new NativeParallelMultiHashMap<long, ResourceHolder>(caravansToDestroy.Count * 5, Allocator.TempJob);
+            new DestroyCapturedCaravansJob
+                {
+                    caravansToDestroy = caravansToDestroy.GetKeyArray(Allocator.TempJob),
+                    caravanResources = caravanResources,
+                    ecb = ecb.AsParallelWriter()
+                }.Schedule(state.Dependency)
+                .Complete();
+
+            var armyIdToCaravanId = switchToArmyIdToCaravanId(caravansToDestroy);
+
+            new UpdateArmyResourcesJob
+                {
+                    armyIdToCaravanId = armyIdToCaravanId,
+                    caravanResources = caravanResources
+                }.ScheduleParallel(state.Dependency)
                 .Complete();
 
             var onlyMerges = new NativeList<(long, long, InteractionType)>(interactions.Length, Allocator.TempJob);
@@ -234,13 +253,43 @@ namespace component.strategy.interactions
                 captures.Add(secondEntityId, (armyId, interaction));
             }
 
-            foreach (var (armyId, secondEntityId, interaction) in interactions)
+            foreach (var (_, secondEntityId, interaction) in interactions)
             {
                 if (interaction != InteractionType.DEFEND_MINOR) continue;
                 captures.Remove(secondEntityId);
             }
 
             return captures.GetKeyArray(Allocator.TempJob);
+        }
+
+        private NativeHashMap<long, (long, InteractionType)> selectOutCaravanCaptures(NativeList<(long, long, InteractionType)> interactions)
+        {
+            var captures = new NativeHashMap<long, (long, InteractionType)>(interactions.Length, Allocator.TempJob);
+            foreach (var (armyId, secondEntityId, interaction) in interactions)
+            {
+                if (interaction != InteractionType.CAPTURE_CARAVAN) continue;
+
+                captures.Add(secondEntityId, (armyId, interaction));
+            }
+
+            foreach (var (_, secondEntityId, interaction) in interactions)
+            {
+                if (interaction != InteractionType.DEFEND_CARAVAN) continue;
+                captures.Remove(secondEntityId);
+            }
+
+            return captures;
+        }
+
+        private NativeHashMap<long, long> switchToArmyIdToCaravanId(NativeHashMap<long, (long, InteractionType)> caravansToDestroy)
+        {
+            var result = new NativeHashMap<long, long>(caravansToDestroy.Count, Allocator.TempJob);
+            foreach (var interaction in caravansToDestroy)
+            {
+                result.Add(interaction.Value.Item1, interaction.Key);
+            }
+
+            return result;
         }
 
         private bool isBattleRunning()
@@ -288,6 +337,8 @@ namespace component.strategy.interactions
                     return getArmyInteraction(entity1, entity2);
                 case HolderType.TOWN:
                     return getTownInteraction(entity1, entity2);
+                case HolderType.CARAVAN:
+                    return getCaravanInteraction(entity1, entity2);
                 case HolderType.MILL:
                 case HolderType.GOLD_MINE:
                 case HolderType.STONE_MINE:
@@ -317,6 +368,16 @@ namespace component.strategy.interactions
             }
 
             return InteractionType.FIGHT_TOWN;
+        }
+
+        private InteractionType getCaravanInteraction((float3, IdHolder, Team) entity1, (float3, IdHolder, Team) entity2)
+        {
+            if (entity1.Item3 == entity2.Item3)
+            {
+                return InteractionType.DEFEND_CARAVAN;
+            }
+
+            return InteractionType.CAPTURE_CARAVAN;
         }
 
         private InteractionType getMinorInteraction((float3, IdHolder, Team) entity1, (float3, IdHolder, Team) entity2)
@@ -752,6 +813,59 @@ namespace component.strategy.interactions
 
             var townTeamMarker = SpawnUtils.spawnTeamMarker(ecb, team, entity, prefabHolder);
             team.teamMarker = townTeamMarker;
+        }
+    }
+
+    [BurstCompile]
+    public partial struct DestroyCapturedCaravansJob : IJobEntity
+    {
+        [ReadOnly] public NativeArray<long> caravansToDestroy;
+        public NativeParallelMultiHashMap<long, ResourceHolder> caravanResources;
+        public EntityCommandBuffer.ParallelWriter ecb;
+
+        private void Execute(IdHolder idHolder, Entity entity, DynamicBuffer<ResourceHolder> resources, TeamComponent teamComponent)
+        {
+            if (!caravansToDestroy.Contains(idHolder.id)) return;
+
+            foreach (var resourceHolder in resources)
+            {
+                caravanResources.Add(idHolder.id, resourceHolder);
+            }
+
+            ecb.DestroyEntity((int) idHolder.id, entity);
+            ecb.DestroyEntity((int) idHolder.id + 10000, teamComponent.teamMarker);
+        }
+    }
+
+    [BurstCompile]
+    public partial struct UpdateArmyResourcesJob : IJobEntity
+    {
+        [ReadOnly] public NativeHashMap<long, long> armyIdToCaravanId;
+        [ReadOnly] public NativeParallelMultiHashMap<long, ResourceHolder> caravanResources;
+
+        private void Execute(IdHolder idHolder, ArmyTag armyTag, ref DynamicBuffer<ResourceHolder> resources)
+        {
+            if (!armyIdToCaravanId.TryGetValue(idHolder.id, out var caravanId)) return;
+
+            foreach (var resourceHolder in caravanResources.GetValuesForKey(caravanId))
+            {
+                var added = false;
+                for (var i = 0; i < resources.Length; i++)
+                {
+                    if (resources[i].type != resourceHolder.type) continue;
+                    resources[i] = new ResourceHolder
+                    {
+                        type = resources[i].type,
+                        value = resources[i].value + resourceHolder.value
+                    };
+                    added = true;
+                }
+
+                if (!added)
+                {
+                    resources.Add(resourceHolder);
+                }
+            }
         }
     }
 }
