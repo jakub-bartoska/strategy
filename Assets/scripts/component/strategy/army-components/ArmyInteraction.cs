@@ -17,6 +17,8 @@ namespace component.strategy.army_components
         MERGE_TOGETHER,
         MERGE_ME_INTO,
         DEFEND_MINOR,
-        CAPTURE_MINOR
+        CAPTURE_MINOR,
+        DEFEND_CARAVAN,
+        CAPTURE_CARAVAN
     }
 }

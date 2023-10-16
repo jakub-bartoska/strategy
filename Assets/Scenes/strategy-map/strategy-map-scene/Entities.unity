@@ -1517,6 +1517,11 @@ PrefabInstance:
       propertyPath: type
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 8162483938038789153, guid: e863ab4fd5d34ce4f912be18b124261e,
+        type: 3}
+      propertyPath: resourceGenerators.Array.data[1].value
+      value: 100
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
