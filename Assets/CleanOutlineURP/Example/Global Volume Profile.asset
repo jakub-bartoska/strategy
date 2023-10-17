@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: CleanOutline
   m_EditorClassIdentifier: 
   active: 1
+  m_AdvancedMode: 0
   standaloneActive:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 1
   debugMode:
     m_OverrideState: 1
@@ -22,6 +23,9 @@ MonoBehaviour:
   outlineColor:
     m_OverrideState: 1
     m_Value: {r: 0, g: 0, b: 0, a: 1}
+    hdr: 0
+    showAlpha: 1
+    showEyeDropper: 1
   outlineThickness:
     m_OverrideState: 1
     m_Value: 1
@@ -31,59 +35,77 @@ MonoBehaviour:
   closenessBoostThickness:
     m_OverrideState: 0
     m_Value: 1
+    min: 0.01
+    max: 5
   closenessBoostNear:
     m_OverrideState: 0
     m_Value: 0.3
+    min: 0
+    max: 1
   closenessBoostFar:
     m_OverrideState: 0
     m_Value: 0.7
+    min: 0.01
+    max: 1
   enableDistanceFade:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 1
   distanceFadeNear:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 0.323
+    min: 0
+    max: 1
   distanceFadeFar:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 0.6
+    min: 0.01
+    max: 1
   depthSampleType:
     m_OverrideState: 0
-    m_Value: 1
+    m_Value: 0
   depthThickness:
     m_OverrideState: 1
-    m_Value: 1
+    m_Value: 1.43
   depthMultiplier:
     m_OverrideState: 1
-    m_Value: 2
+    m_Value: 3.99
   depthBias:
     m_OverrideState: 1
-    m_Value: 1
+    m_Value: 2.47
   depthThreshold:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 0.087
+    min: 0
+    max: 1
   depth9TilesThreshold:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 0.5
+    min: 0
+    max: 1
   depth9TilesBottomFix:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 0.005
+    min: 0
+    max: 0.1
   normalThickness:
-    m_OverrideState: 0
-    m_Value: 0.5
+    m_OverrideState: 1
+    m_Value: 1
   normalCheckDirection:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 1
   normalMultiplier:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 11
   normalBias:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 10
   normalThreshold:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 0
+    min: 0
+    max: 1
   enableNormalOutline:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 1
 --- !u!114 &11400000
 MonoBehaviour:
