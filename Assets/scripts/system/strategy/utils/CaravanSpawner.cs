@@ -3,6 +3,7 @@ using component.authoring_pairs.PrefabHolder;
 using component.strategy.caravan;
 using component.strategy.general;
 using component.strategy.player_resources;
+using component.strategy.selection;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -25,6 +26,7 @@ namespace system.strategy.utils
             var newTransform = LocalTransform.FromPosition(position);
             newTransform.Scale = 0.2f;
             var initSettings = new InitCaravanSetting();
+            var markableEntity = new MarkableEntity();
             var teamComponent = new TeamComponent
             {
                 team = team
@@ -41,6 +43,7 @@ namespace system.strategy.utils
             ecb.AddComponent(newEntity, initSettings);
             ecb.AddComponent(newEntity, teamComponent);
             ecb.AddComponent(newEntity, idHolder);
+            ecb.AddComponent(newEntity, markableEntity);
 
             ecb.SetComponent(newEntity, newTransform);
 

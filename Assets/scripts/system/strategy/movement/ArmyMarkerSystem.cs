@@ -114,6 +114,7 @@ namespace system.strategy.movement
         // id 0 - army count
         // id 1 - town count
         // id 2 - minor count
+        // id 3 - caravan count
         public NativeArray<long> entitiesCounts;
         public bool shouldMarkArmy;
         public bool shouldMarkTown;
@@ -157,6 +158,11 @@ namespace system.strategy.movement
                     case HolderType.STONE_MINE:
                     case HolderType.LUMBERJACK_HUT:
                         entitiesCounts[2] += 1;
+                        if (shouldMarkMinor)
+                            ecb.AddComponent(entity.Index + 10000, entity, new Marked());
+                        break;
+                    case HolderType.CARAVAN:
+                        entitiesCounts[3] += 1;
                         if (shouldMarkMinor)
                             ecb.AddComponent(entity.Index + 10000, entity, new Marked());
                         break;
