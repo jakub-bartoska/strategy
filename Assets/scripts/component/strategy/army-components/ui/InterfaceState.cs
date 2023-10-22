@@ -14,6 +14,7 @@ namespace component.strategy.army_components.ui
         TOWN_UI,
         ARMY_UI,
         MINOR_UI,
+        CARAVAN_UI,
         GET_NEW_STATE
     }
 }

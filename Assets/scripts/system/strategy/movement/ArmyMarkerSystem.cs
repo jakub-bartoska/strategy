@@ -70,7 +70,7 @@ namespace system.strategy.movement
         {
             var markerPrefab = SystemAPI.GetSingleton<PrefabHolder>().markerPrefab;
             var playerSettings = SystemAPI.GetSingleton<GamePlayerSettings>();
-            var entitiesCounts = new NativeArray<long>(3, Allocator.TempJob);
+            var entitiesCounts = new NativeArray<long>(4, Allocator.TempJob);
             //count entities in mark rectange
             new MarkEntitiesJob
                 {
@@ -85,8 +85,9 @@ namespace system.strategy.movement
             var shouldMarkArmy = entitiesCounts[0] > 0;
             //army should not be marked + exactly 1 town
             var shouldMarkTown = !shouldMarkArmy && entitiesCounts[1] == 1;
-            //army and town should not be marked + exactly 1 town
+            //army, town and minor not marked + exactly 1 caravan
             var shouldMarkMinor = !shouldMarkArmy && !shouldMarkTown && entitiesCounts[2] == 1;
+            var shouldMarkCaravan = !shouldMarkArmy && !shouldMarkTown && !shouldMarkMinor && entitiesCounts[3] == 1;
             new MarkEntitiesJob
                 {
                     markerState = marker.ValueRO,
@@ -96,7 +97,8 @@ namespace system.strategy.movement
                     entitiesCounts = entitiesCounts,
                     shouldMarkArmy = shouldMarkArmy,
                     shouldMarkTown = shouldMarkTown,
-                    shouldMarkMinor = shouldMarkMinor
+                    shouldMarkMinor = shouldMarkMinor,
+                    shouldMarkCaravan = shouldMarkCaravan
                 }.Schedule(state.Dependency)
                 .Complete();
         }
@@ -119,6 +121,7 @@ namespace system.strategy.movement
         public bool shouldMarkArmy;
         public bool shouldMarkTown;
         public bool shouldMarkMinor;
+        public bool shouldMarkCaravan;
 
         private void Execute(LocalTransform transform, MarkableEntity markableEntity, Entity entity, TeamComponent team,
             IdHolder idHolder)
@@ -163,7 +166,7 @@ namespace system.strategy.movement
                         break;
                     case HolderType.CARAVAN:
                         entitiesCounts[3] += 1;
-                        if (shouldMarkMinor)
+                        if (shouldMarkCaravan)
                             ecb.AddComponent(entity.Index + 10000, entity, new Marked());
                         break;
                     case HolderType.TOWN_DEPLOYER:

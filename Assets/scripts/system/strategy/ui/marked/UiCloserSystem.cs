@@ -50,6 +50,10 @@ namespace system.strategy.ui
                     removeOldMarks(state, interfaceState.ValueRO);
                     MinorUi.instance.changeActive(false);
                     break;
+                case UIState.CARAVAN_UI:
+                    removeOldMarks(state, interfaceState.ValueRO);
+                    CaravanUi.instance.changeActive(false);
+                    break;
                 case UIState.ALL_CLOSED:
                 case UIState.GET_NEW_STATE:
                     break;
