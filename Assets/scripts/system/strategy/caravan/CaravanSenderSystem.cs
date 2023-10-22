@@ -92,7 +92,9 @@ namespace system.strategy.minors
                         value = newValue
                     };
                     resources[i] = newResource;
-                    caravansToSpawn.Add(idHolder.id, (transform.Position, team.team, resource));
+                    var resourceForCaravan = resource;
+                    resourceForCaravan.value = caravanThreshold;
+                    caravansToSpawn.Add(idHolder.id, (transform.Position, team.team, resourceForCaravan));
                 }
             }
         }
