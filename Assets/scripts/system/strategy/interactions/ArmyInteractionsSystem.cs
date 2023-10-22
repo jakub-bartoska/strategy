@@ -811,6 +811,7 @@ namespace component.strategy.interactions
                 team.team = Team.TEAM1;
             }
 
+            ecb.DestroyEntity(team.teamMarker);
             var townTeamMarker = SpawnUtils.spawnTeamMarker(ecb, team, entity, prefabHolder);
             team.teamMarker = townTeamMarker;
         }
