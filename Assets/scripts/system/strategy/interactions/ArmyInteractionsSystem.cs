@@ -281,9 +281,9 @@ namespace component.strategy.interactions
             return captures;
         }
 
-        private NativeHashMap<long, long> switchToArmyIdToCaravanId(NativeHashMap<long, (long, InteractionType)> caravansToDestroy)
+        private NativeParallelMultiHashMap<long, long> switchToArmyIdToCaravanId(NativeHashMap<long, (long, InteractionType)> caravansToDestroy)
         {
-            var result = new NativeHashMap<long, long>(caravansToDestroy.Count, Allocator.TempJob);
+            var result = new NativeParallelMultiHashMap<long, long>(caravansToDestroy.Count, Allocator.TempJob);
             foreach (var interaction in caravansToDestroy)
             {
                 result.Add(interaction.Value.Item1, interaction.Key);
@@ -840,30 +840,31 @@ namespace component.strategy.interactions
     [BurstCompile]
     public partial struct UpdateArmyResourcesJob : IJobEntity
     {
-        [ReadOnly] public NativeHashMap<long, long> armyIdToCaravanId;
+        [ReadOnly] public NativeParallelMultiHashMap<long, long> armyIdToCaravanId;
         [ReadOnly] public NativeParallelMultiHashMap<long, ResourceHolder> caravanResources;
 
         private void Execute(IdHolder idHolder, ArmyTag armyTag, ref DynamicBuffer<ResourceHolder> resources)
         {
-            if (!armyIdToCaravanId.TryGetValue(idHolder.id, out var caravanId)) return;
-
-            foreach (var resourceHolder in caravanResources.GetValuesForKey(caravanId))
+            foreach (var caravanId in armyIdToCaravanId.GetValuesForKey(idHolder.id))
             {
-                var added = false;
-                for (var i = 0; i < resources.Length; i++)
+                foreach (var resourceHolder in caravanResources.GetValuesForKey(caravanId))
                 {
-                    if (resources[i].type != resourceHolder.type) continue;
-                    resources[i] = new ResourceHolder
+                    var added = false;
+                    for (var i = 0; i < resources.Length; i++)
                     {
-                        type = resources[i].type,
-                        value = resources[i].value + resourceHolder.value
-                    };
-                    added = true;
-                }
+                        if (resources[i].type != resourceHolder.type) continue;
+                        resources[i] = new ResourceHolder
+                        {
+                            type = resources[i].type,
+                            value = resources[i].value + resourceHolder.value
+                        };
+                        added = true;
+                    }
 
-                if (!added)
-                {
-                    resources.Add(resourceHolder);
+                    if (!added)
+                    {
+                        resources.Add(resourceHolder);
+                    }
                 }
             }
         }

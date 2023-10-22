@@ -41,8 +41,8 @@ namespace system.strategy.minors
             var prefabHolder = SystemAPI.GetSingleton<PrefabHolder>();
             var idGenerator = SystemAPI.GetSingletonRW<IdGenerator>();
 
-            var keys = caravansToSpawn.GetKeyArray(Allocator.Temp);
-            foreach (var key in keys)
+            var keys = caravansToSpawn.GetUniqueKeyArray(Allocator.TempJob);
+            foreach (var key in keys.Item1.GetSubArray(0, keys.Item2))
             {
                 var position = new float3();
                 var team = Team.TEAM1;
@@ -80,15 +80,10 @@ namespace system.strategy.minors
                     default: throw new Exception("Unknown holder type");
                 }
 
-                var oldResources = resources.ToNativeArray(Allocator.Temp);
-                resources.Clear();
-                foreach (var resource in oldResources)
+                for (int i = 0; i < resources.Length; i++)
                 {
-                    if (caravanThreshold > resource.value)
-                    {
-                        resources.Add(resource);
-                        continue;
-                    }
+                    var resource = resources[i];
+                    if (caravanThreshold > resource.value) continue;
 
                     var newValue = resource.value - caravanThreshold;
                     var newResource = new ResourceHolder
@@ -96,7 +91,7 @@ namespace system.strategy.minors
                         type = resource.type,
                         value = newValue
                     };
-                    resources.Add(newResource);
+                    resources[i] = newResource;
                     caravansToSpawn.Add(idHolder.id, (transform.Position, team.team, resource));
                 }
             }
