@@ -144,22 +144,22 @@ namespace system.strategy.utils
             resourceHolders.Add(new ResourceHolder
             {
                 type = ResourceType.GOLD,
-                value = 100
+                value = 1000
             });
             resourceHolders.Add(new ResourceHolder
             {
                 type = ResourceType.WOOD,
-                value = 90
+                value = 900
             });
             resourceHolders.Add(new ResourceHolder
             {
                 type = ResourceType.STONE,
-                value = 80
+                value = 800
             });
             resourceHolders.Add(new ResourceHolder
             {
                 type = ResourceType.FOOD,
-                value = 70
+                value = 700
             });
             var companyBuffer = ecb.AddBuffer<ArmyCompany>(newEntity);
             companyBuffer.AddRange(companies.AsArray());

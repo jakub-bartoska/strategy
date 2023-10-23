@@ -2,6 +2,7 @@
 using component._common.general;
 using component._common.movement_agents;
 using component._common.system_switchers;
+using component.strategy.buy_army;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -42,6 +43,7 @@ namespace system._common
             ecb.AddComponent(singletonEntity, new AgentMovementAllowedTag());
             ecb.AddComponent(singletonEntity, new AgentMovementAllowedForBattleTag());
             ecb.AddBuffer<SystemSwitchBlocker>(singletonEntity);
+            ecb.AddBuffer<ArmyPurchase>(singletonEntity);
         }
     }
 }
