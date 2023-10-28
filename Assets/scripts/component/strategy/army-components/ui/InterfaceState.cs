@@ -12,6 +12,7 @@ namespace component.strategy.army_components.ui
     {
         ALL_CLOSED,
         TOWN_UI,
+        TOWN_BUILDINGS_UI,
         ARMY_UI,
         MINOR_UI,
         CARAVAN_UI,

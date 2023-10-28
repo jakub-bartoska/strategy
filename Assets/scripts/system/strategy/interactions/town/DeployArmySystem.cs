@@ -61,7 +61,7 @@ namespace component.strategy.interactions.town
                     companies.Add(companyIdToCompany[company]);
                 }
 
-                SpawnUtils.spawnArmy(team, position, companies, ecb, prefabHolder, idGenerator, teamColors);
+                ArmySpawner.spawnArmy(team, position, companies, ecb, prefabHolder, idGenerator, teamColors);
             }
 
             createEvents.Clear();

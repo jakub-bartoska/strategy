@@ -23,7 +23,7 @@ namespace system.strategy.ui
         public void OnUpdate(ref SystemState state)
         {
             var interfaceState = SystemAPI.GetSingleton<InterfaceState>();
-            if (interfaceState.state != UIState.TOWN_UI) return;
+            if (interfaceState.state != UIState.TOWN_UI && interfaceState.state != UIState.TOWN_BUILDINGS_UI) return;
 
             var markedTownResources = new NativeList<ResourceHolder>(10, Allocator.TempJob);
             new CollectMarkedTownResources

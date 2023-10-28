@@ -1,6 +1,7 @@
 ﻿using System;
 using _Monobehaviors.minor_ui;
 using _Monobehaviors.resource;
+using _Monobehaviors.town_buildings_ui;
 using _Monobehaviors.ui;
 using component._common.system_switchers;
 using component.strategy.army_components;
@@ -35,24 +36,52 @@ namespace system.strategy.ui
                 return;
             }
 
+            if (interfaceState.ValueRO.state == UIState.ALL_CLOSED)
+            {
+                removeOldMarks(state, interfaceState.ValueRO);
+            }
+
             switch (interfaceState.ValueRO.oldState)
             {
                 case UIState.ARMY_UI:
-                    removeOldMarks(state, interfaceState.ValueRO);
                     CompaniesPanel.instance.changeActive(false);
                     ArmyResource.instance.changeActive(false);
                     break;
                 case UIState.TOWN_UI:
-                    removeOldMarks(state, interfaceState.ValueRO);
                     TownUi.instance.changeActive(false);
                     break;
                 case UIState.MINOR_UI:
-                    removeOldMarks(state, interfaceState.ValueRO);
                     MinorUi.instance.changeActive(false);
                     break;
                 case UIState.CARAVAN_UI:
-                    removeOldMarks(state, interfaceState.ValueRO);
                     CaravanUi.instance.changeActive(false);
+                    break;
+                case UIState.TOWN_BUILDINGS_UI:
+                    TownBuildingsUi.instance.changeActive(false);
+                    break;
+                case UIState.ALL_CLOSED:
+                case UIState.GET_NEW_STATE:
+                    break;
+                default:
+                    throw new Exception("unknown state");
+            }
+
+            switch (interfaceState.ValueRO.state)
+            {
+                case UIState.ARMY_UI:
+                    CompaniesPanel.instance.changeActive(true);
+                    break;
+                case UIState.TOWN_UI:
+                    TownUi.instance.changeActive(true);
+                    break;
+                case UIState.MINOR_UI:
+                    MinorUi.instance.changeActive(true);
+                    break;
+                case UIState.CARAVAN_UI:
+                    CaravanUi.instance.changeActive(true);
+                    break;
+                case UIState.TOWN_BUILDINGS_UI:
+                    TownBuildingsUi.instance.changeActive(true);
                     break;
                 case UIState.ALL_CLOSED:
                 case UIState.GET_NEW_STATE:

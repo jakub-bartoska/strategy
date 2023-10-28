@@ -54,9 +54,8 @@ namespace system.strategy.ui.marked
                 }.Schedule(state.Dependency)
                 .Complete();
 
-            if (interfaceState.ValueRO.state != UIState.TOWN_UI)
+            if (interfaceState.ValueRO.state != UIState.TOWN_UI && interfaceState.ValueRO.state != UIState.TOWN_BUILDINGS_UI)
             {
-                TownUi.instance.changeActive(true);
                 if (interfaceState.ValueRW.state == UIState.GET_NEW_STATE)
                 {
                     interfaceState.ValueRW.state = UIState.TOWN_UI;

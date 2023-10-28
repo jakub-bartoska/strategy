@@ -91,7 +91,7 @@ namespace system.strategy.spawner
                     companies.Add(newCompany);
                 }
 
-                SpawnUtils.spawnArmy(army.team, army.position, companies, ecb, prefabHolder, idGenerator, teamColors);
+                ArmySpawner.spawnArmy(army.team, army.position, companies, ecb, prefabHolder, idGenerator, teamColors);
                 companies.Dispose();
             }
 
@@ -109,7 +109,7 @@ namespace system.strategy.spawner
                     companies.Add(newCompany);
                 }
 
-                SpawnUtils.spawnTown(town.position, town.team, prefabHolder, ecb, idGenerator, companies);
+                TownSpawner.spawnTown(town.position, town.team, prefabHolder, ecb, idGenerator, companies);
 
                 companies.Dispose();
             }

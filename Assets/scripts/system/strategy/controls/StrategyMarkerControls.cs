@@ -52,15 +52,22 @@ namespace system.strategy.controls
                 return;
             }
 
-            if (interfaceState.state == UIState.ARMY_UI && Input.mousePosition.y < 150)
+            switch (interfaceState.state)
             {
-                return;
+                case UIState.ARMY_UI:
+                    if (Input.mousePosition.y < 150)
+                    {
+                        return;
+                    }
+
+                    break;
+                case UIState.TOWN_UI:
+                case UIState.TOWN_BUILDINGS_UI:
+                    return;
+                default:
+                    break;
             }
 
-            if (interfaceState.state == UIState.TOWN_UI)
-            {
-                return;
-            }
 
             var marker = SystemAPI.GetSingletonRW<SelectionMarkerState>();
             var mousePosition = RaycastUtils.getCurrentMousePosition(SystemAPI.GetSingletonRW<PhysicsWorldSingleton>());
