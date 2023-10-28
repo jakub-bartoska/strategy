@@ -1,4 +1,5 @@
-﻿using _Monobehaviors;
+﻿using System;
+using _Monobehaviors;
 using component._common.movement_agents;
 using component._common.system_switchers;
 using component.strategy.army_components.ui;
@@ -64,10 +65,14 @@ namespace system.strategy.controls
                 case UIState.TOWN_UI:
                 case UIState.TOWN_BUILDINGS_UI:
                     return;
-                default:
+                case UIState.MINOR_UI:
+                case UIState.ALL_CLOSED:
+                case UIState.CARAVAN_UI:
+                case UIState.GET_NEW_STATE:
                     break;
+                default:
+                    throw new Exception("unknown state");
             }
-
 
             var marker = SystemAPI.GetSingletonRW<SelectionMarkerState>();
             var mousePosition = RaycastUtils.getCurrentMousePosition(SystemAPI.GetSingletonRW<PhysicsWorldSingleton>());
