@@ -26,7 +26,7 @@ namespace system.strategy._init
             var archeryEntity = ecb.CreateEntity();
             ecb.AddComponent(archeryEntity, new BuildingCostTag
             {
-                BuildingType = BuildingType.ARCHERY
+                buildingType = BuildingType.ARCHERY
             });
             var archeryCosts = ecb.AddBuffer<ResourceHolder>(archeryEntity);
             archeryCosts.Add(new ResourceHolder
@@ -44,7 +44,7 @@ namespace system.strategy._init
             var stablesEntity = ecb.CreateEntity();
             ecb.AddComponent(stablesEntity, new BuildingCostTag
             {
-                BuildingType = BuildingType.STABLES
+                buildingType = BuildingType.STABLES
             });
             var stablesCosts = ecb.AddBuffer<ResourceHolder>(stablesEntity);
             stablesCosts.Add(new ResourceHolder
@@ -61,7 +61,7 @@ namespace system.strategy._init
             var barracksEntity = ecb.CreateEntity();
             ecb.AddComponent(barracksEntity, new BuildingCostTag
             {
-                BuildingType = BuildingType.BARRACKS
+                buildingType = BuildingType.BARRACKS
             });
             var barracksCosts = ecb.AddBuffer<ResourceHolder>(barracksEntity);
             barracksCosts.Add(new ResourceHolder
@@ -78,7 +78,7 @@ namespace system.strategy._init
             var townHallEntity = ecb.CreateEntity();
             ecb.AddComponent(townHallEntity, new BuildingCostTag
             {
-                BuildingType = BuildingType.TOWN_HALL
+                buildingType = BuildingType.TOWN_HALL
             });
             var townHallCosts = ecb.AddBuffer<ResourceHolder>(townHallEntity);
             townHallCosts.Add(new ResourceHolder
