@@ -44,6 +44,7 @@ namespace system._common
             ecb.AddComponent(singletonEntity, new AgentMovementAllowedForBattleTag());
             ecb.AddBuffer<SystemSwitchBlocker>(singletonEntity);
             ecb.AddBuffer<ArmyPurchase>(singletonEntity);
+            ecb.AddBuffer<BuildingPurchase>(singletonEntity);
         }
     }
 }

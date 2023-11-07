@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace _Monobehaviors.ui.soldier_buy
 {
-    public class BuyButton : MonoBehaviour
+    public class ArmyBuyer : MonoBehaviour
     {
         private EntityManager entityManager;
         private EntityQuery townDeployQuery;

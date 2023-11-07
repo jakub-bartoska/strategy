@@ -13,7 +13,6 @@ using component.soldier;
 using component.soldier.behavior.behaviors;
 using component.soldier.behavior.behaviors.shoot_arrow;
 using component.soldier.behavior.fight;
-using component.strategy.buy_army;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
@@ -124,8 +123,6 @@ namespace system
             ecb.AddComponent(singletonEntity, formationManager);
             ecb.AddComponent(singletonEntity, new BattleSingletonEntityTag());
             ecb.AddComponent(singletonEntity, new BattleCleanupTag());
-
-            ecb.AddBuffer<ArmyPurchase>(singletonEntity);
 
             var battleSoldierCounts = new BattleSoldierCounts
             {

@@ -58,6 +58,11 @@ namespace system.strategy.utils
             ecb.SetComponent(newEntity, transform);
 
             ecb.AddBuffer<Building>(newEntity);
+            var existingBuildings = ecb.AddBuffer<ExistingBuildingBuffer>(newEntity);
+            existingBuildings.Add(new ExistingBuildingBuffer
+            {
+                type = BuildingType.BARRACKS
+            });
 
             //add buffer
             var resourceHolders = ecb.AddBuffer<ResourceHolder>(newEntity);

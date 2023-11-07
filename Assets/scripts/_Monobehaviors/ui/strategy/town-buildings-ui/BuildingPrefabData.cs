@@ -1,4 +1,6 @@
-﻿using TMPro;
+﻿using _Monobehaviors.town_buildings_ui.town_buy;
+using component.strategy.buildings;
+using TMPro;
 using UnityEngine;
 
 namespace _Monobehaviors.town_buildings_ui
@@ -6,10 +8,22 @@ namespace _Monobehaviors.town_buildings_ui
     public class BuildingPrefabData : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI buildingName;
+        private bool bought;
+        private BuildingType buildingType;
 
-        public void setBuildingName(string name)
+        public void setBuildingType(BuildingType type, bool bought)
         {
-            buildingName.text = name;
+            this.bought = bought;
+            buildingType = type;
+            buildingName.text = type.ToString();
+        }
+
+        public void clicked()
+        {
+            if (!bought)
+            {
+                BuildingBuyer.instance.buyBuilding(buildingType);
+            }
         }
     }
 }

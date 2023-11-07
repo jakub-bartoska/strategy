@@ -89,12 +89,17 @@ namespace system.strategy._init
             townHallCosts.Add(new ResourceHolder
             {
                 type = ResourceType.WOOD,
-                value = 1000
+                value = 1100
             });
             townHallCosts.Add(new ResourceHolder
             {
                 type = ResourceType.GOLD,
-                value = 1000
+                value = 1200
+            });
+            townHallCosts.Add(new ResourceHolder
+            {
+                type = ResourceType.FOOD,
+                value = 1300
             });
         }
     }
