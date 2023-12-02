@@ -274,6 +274,7 @@ namespace _Monobehaviors.ui
                 var position = getPositionFromSlot(index, CompanyCardState.NORMAL);
                 newPanel.transform.position = position;
                 newPanel.GetComponentInChildren<TextMeshProUGUI>().text = company.soldierCount.ToString();
+                newPanel.GetComponentInChildren<CompanyIconPicker>().setIcon(company.type);
                 companyTabs.Add((company, company.soldierCount, newPanel));
                 newPanel.GetComponent<CompaniesDragging>().setCompanyId(company.id);
                 newPanel.GetComponent<CompaniesDragging>().setUi(instance);
@@ -287,6 +288,7 @@ namespace _Monobehaviors.ui
                 var position = getPositionFromSlot(indexToDeploy, CompanyCardState.DEPLOY);
                 newPanel.transform.position = position;
                 newPanel.GetComponentInChildren<TextMeshProUGUI>().text = company.soldierCount.ToString();
+                newPanel.GetComponentInChildren<CompanyIconPicker>().setIcon(company.type);
                 companyTabsToDeploy.Add((company, company.soldierCount, newPanel));
                 newPanel.GetComponent<CompaniesDragging>().setCompanyId(company.id);
                 newPanel.GetComponent<CompaniesDragging>().setUi(instance);

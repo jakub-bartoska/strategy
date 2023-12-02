@@ -180,6 +180,7 @@ namespace _Monobehaviors.ui
                 var position = getPositionFromSlot(index);
                 newPanel.transform.position = position;
                 newPanel.GetComponentInChildren<TextMeshProUGUI>().text = company.soldierCount.ToString();
+                newPanel.GetComponentInChildren<CompanyIconPicker>().setIcon(company.type);
                 companyTabs.Add((company, company.soldierCount, newPanel));
                 newPanel.GetComponent<CompaniesDragging>().setCompanyId(company.id);
                 newPanel.GetComponent<CompaniesDragging>().setUi(instance);
