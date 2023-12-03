@@ -104,6 +104,7 @@ namespace _Monobehaviors.ui
                 destroyAll();
             }
 
+
             panel.SetActive(targetState);
         }
 
