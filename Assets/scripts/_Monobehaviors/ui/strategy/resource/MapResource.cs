@@ -1,8 +1,8 @@
 ﻿namespace _Monobehaviors.resource
 {
-    public class ArmyResource : CommonResourceTab
+    public class MapResource : CommonResourceTab
     {
-        public static ArmyResource instance;
+        public static MapResource instance;
         private bool active = false;
 
         private void Awake()

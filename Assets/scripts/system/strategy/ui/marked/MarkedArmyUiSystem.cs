@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using _Monobehaviors.resource;
 using _Monobehaviors.ui;
 using component._common.system_switchers;
 using component.strategy.army_components;
@@ -68,17 +67,6 @@ namespace system.strategy.ui.marked
                 markedCompanies.Sort(new ArmyCompanySorter());
 
                 CompaniesPanel.instance.displayCompanies(markedCompanies.AsArray());
-
-                //display resource tab only if 1 army is marked
-                if (armyIds.Length == 1)
-                {
-                    ArmyResource.instance.changeActive(true);
-                    ArmyResource.instance.updateResources(resources);
-                }
-                else
-                {
-                    ArmyResource.instance.changeActive(false);
-                }
             }
         }
     }

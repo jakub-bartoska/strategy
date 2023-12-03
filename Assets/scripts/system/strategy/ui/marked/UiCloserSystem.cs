@@ -1,5 +1,4 @@
 ﻿using System;
-using _Monobehaviors.minor_ui;
 using _Monobehaviors.resource;
 using _Monobehaviors.town_buildings_ui;
 using _Monobehaviors.ui;
@@ -45,16 +44,10 @@ namespace system.strategy.ui
             {
                 case UIState.ARMY_UI:
                     CompaniesPanel.instance.changeActive(false);
-                    ArmyResource.instance.changeActive(false);
+                    MapResource.instance.changeActive(false);
                     break;
                 case UIState.TOWN_UI:
                     TownUi.instance.changeActive(false);
-                    break;
-                case UIState.MINOR_UI:
-                    MinorUi.instance.changeActive(false);
-                    break;
-                case UIState.CARAVAN_UI:
-                    CaravanUi.instance.changeActive(false);
                     break;
                 case UIState.TOWN_BUILDINGS_UI:
                     TownBuildingsUi.instance.changeActive(false);
@@ -73,12 +66,6 @@ namespace system.strategy.ui
                     break;
                 case UIState.TOWN_UI:
                     TownUi.instance.changeActive(true);
-                    break;
-                case UIState.MINOR_UI:
-                    MinorUi.instance.changeActive(true);
-                    break;
-                case UIState.CARAVAN_UI:
-                    CaravanUi.instance.changeActive(true);
                     break;
                 case UIState.TOWN_BUILDINGS_UI:
                     TownBuildingsUi.instance.changeActive(true);

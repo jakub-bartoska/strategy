@@ -65,9 +65,7 @@ namespace system.strategy.controls
                 case UIState.TOWN_UI:
                 case UIState.TOWN_BUILDINGS_UI:
                     return;
-                case UIState.MINOR_UI:
                 case UIState.ALL_CLOSED:
-                case UIState.CARAVAN_UI:
                 case UIState.GET_NEW_STATE:
                     break;
                 default:

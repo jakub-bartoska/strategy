@@ -40,7 +40,6 @@ namespace system.strategy._init
                 value = 200
             });
 
-
             var stablesEntity = ecb.CreateEntity();
             ecb.AddComponent(stablesEntity, new BuildingCostTag
             {
