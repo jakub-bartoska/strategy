@@ -1,4 +1,5 @@
-﻿using component;
+﻿using System;
+using component;
 using component.authoring_pairs.PrefabHolder;
 using component.strategy.general;
 using component.strategy.minor_objects;
@@ -17,7 +18,7 @@ namespace system.strategy.utils
             NativeList<SpawnResourceGenerator> resourceGenerators,
             EntityCommandBuffer ecb, PrefabHolder prefabHolder, RefRW<IdGenerator> idGenerator)
         {
-            var prefab = prefabHolder.millPrefab;
+            var prefab = getPrefab(prefabHolder, type);
             var newEntity = ecb.Instantiate(prefab);
             var transform = LocalTransform.FromPosition(position);
 
@@ -54,6 +55,23 @@ namespace system.strategy.utils
                     timeRemaining = 5,
                     defaultTimer = 5
                 });
+            }
+        }
+
+        private static Entity getPrefab(PrefabHolder prefabHolder, HolderType type)
+        {
+            switch (type)
+            {
+                case HolderType.MILL:
+                    return prefabHolder.millPrefab;
+                case HolderType.LUMBERJACK_HUT:
+                    return prefabHolder.lumberjackHutPrefab;
+                case HolderType.STONE_MINE:
+                    return prefabHolder.stoneMinePrefab;
+                case HolderType.GOLD_MINE:
+                    return prefabHolder.goldMinePrefab;
+                default:
+                    throw new Exception("Unknown type: " + type);
             }
         }
     }

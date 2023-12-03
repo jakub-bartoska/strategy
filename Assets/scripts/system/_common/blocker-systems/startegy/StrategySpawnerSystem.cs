@@ -179,7 +179,7 @@ namespace system.strategy.spawner
             };
             var camera = new StrategyCamera
             {
-                desiredPosition = new float3(-10, 10, -5)
+                desiredPosition = new float3(-10, 10, -13)
             };
 
             ecb.AddComponent(singletonEntity, marker);

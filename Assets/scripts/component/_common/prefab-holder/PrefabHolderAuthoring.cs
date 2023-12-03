@@ -16,6 +16,9 @@ namespace component.authoring_pairs.PrefabHolder
         public GameObject townTeamMarkerTeam1Prefab;
         public GameObject townTeamMarkerTeam2Prefab;
         public GameObject millPrefab;
+        public GameObject lumberjackHutPrefab;
+        public GameObject stoneMinePrefab;
+        public GameObject goldMinePrefab;
         public GameObject caravanPrefab;
     }
 
@@ -47,6 +50,12 @@ namespace component.authoring_pairs.PrefabHolder
                 townTeamMarkerTeam2Prefab = GetEntity(authoring.townTeamMarkerTeam2Prefab,
                     TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic),
                 millPrefab = GetEntity(authoring.millPrefab,
+                    TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic),
+                lumberjackHutPrefab = GetEntity(authoring.lumberjackHutPrefab,
+                    TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic),
+                stoneMinePrefab = GetEntity(authoring.stoneMinePrefab,
+                    TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic),
+                goldMinePrefab = GetEntity(authoring.goldMinePrefab,
                     TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic),
                 caravanPrefab = GetEntity(authoring.caravanPrefab,
                     TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic)

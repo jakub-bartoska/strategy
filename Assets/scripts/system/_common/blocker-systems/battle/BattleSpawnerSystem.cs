@@ -113,7 +113,7 @@ namespace system
                 new NativeParallelMultiHashMap<int2, int>(team2SoldierSum, Allocator.Persistent);
             var camera = new BattleCamera()
             {
-                desiredPosition = new float3(10000, 100, 10000)
+                desiredPosition = new float3(10000, 100, 9950)
             };
             var formationManager = new FormationManager {maxFormationId = 0};
 
