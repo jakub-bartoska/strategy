@@ -1,7 +1,6 @@
 ﻿using component._common.general;
 using component._common.movement_agents;
 using component._common.system_switchers;
-using component.strategy.army_components;
 using component.strategy.general;
 using ProjectDawn.Navigation;
 using Unity.Burst;
@@ -66,7 +65,7 @@ namespace system._common.army_to_spawn_switcher.startegy
         {
             public EntityCommandBuffer.ParallelWriter ecb;
 
-            private void Execute(ArmyTag _, ref AgentBody agentBody, Entity entity, IdHolder idHolder,
+            private void Execute(ref AgentBody agentBody, Entity entity, IdHolder idHolder,
                 StoppedAgentTag stoppedAgent)
             {
                 ecb.RemoveComponent<StoppedAgentTag>((int) idHolder.id, entity);
