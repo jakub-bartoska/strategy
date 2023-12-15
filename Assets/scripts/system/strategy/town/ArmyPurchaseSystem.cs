@@ -28,6 +28,21 @@ namespace system.strategy.town
             var armyPurchases = SystemAPI.GetSingletonBuffer<ArmyPurchase>();
             if (armyPurchases.IsEmpty) return;
 
+            //checknout pocet existujicich armad
+            var townCompanies = new NativeList<ArmyCompany>(Allocator.TempJob);
+            new TownCompaniesCounterJob
+                {
+                    townCompanies = townCompanies
+                }.Schedule(state.Dependency)
+                .Complete();
+
+            //todo prehodit do configu
+            if (townCompanies.Length > 9)
+            {
+                armyPurchases.Clear();
+                return;
+            }
+
             var costs = new NativeList<ResourceHolder>(Allocator.TempJob);
             costs.Add(new ResourceHolder
             {
@@ -49,6 +64,19 @@ namespace system.strategy.town
                 .Complete();
 
             armyPurchases.Clear();
+        }
+    }
+
+    public partial struct TownCompaniesCounterJob : IJobEntity
+    {
+        public NativeList<ArmyCompany> townCompanies;
+
+        private void Execute(Marked marked, TownTag townTag, ref DynamicBuffer<ArmyCompany> companies)
+        {
+            foreach (var company in companies)
+            {
+                townCompanies.Add(company);
+            }
         }
     }
 

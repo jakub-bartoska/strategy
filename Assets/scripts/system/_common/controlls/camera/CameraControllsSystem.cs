@@ -17,6 +17,10 @@ namespace system.controls
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<SystemStatusHolder>();
+            state.RequireForUpdate<BattleCamera>();
+            state.RequireForUpdate<StrategyCamera>();
+            state.RequireForUpdate<PhysicsWorldSingleton>();
+            state.RequireForUpdate<CameraConfigComponentData>();
         }
 
         [BurstCompile]
