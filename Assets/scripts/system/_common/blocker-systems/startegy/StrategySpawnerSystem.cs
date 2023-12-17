@@ -4,7 +4,6 @@ using component._common.system_switchers;
 using component.authoring_pairs.PrefabHolder;
 using component.config.game_settings;
 using component.general;
-using component.helpers;
 using component.strategy._init_map;
 using component.strategy.army_components;
 using component.strategy.army_components.ui;
@@ -184,7 +183,6 @@ namespace system.strategy.spawner
             ecb.AddComponent(singletonEntity, new StrategyCleanupTag());
 
             ecb.AddBuffer<CreateNewArmyEvent>(singletonEntity);
-            ecb.AddBuffer<Damage>(singletonEntity);
             ecb.AddBuffer<CompanyMergeBuffer>(singletonEntity);
             ecb.AddBuffer<CompanyToDifferentState>(singletonEntity);
         }

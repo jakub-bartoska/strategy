@@ -5,7 +5,6 @@ using component.strategy.general;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using UnityEngine;
 
 namespace system._common.army_to_spawn_switcher
 {
@@ -22,12 +21,9 @@ namespace system._common.army_to_spawn_switcher
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            Debug.Log("ArmyToSpawnMonoToEntitySystem");
             var blockers = SystemAPI.GetSingletonBuffer<SystemSwitchBlocker>();
 
             if (!containsArmyMonoToEntity(blockers)) return;
-
-            Debug.Log("ArmyToSpawnMonoToEntitySystem2");
 
             var armiesToSpawn = SystemAPI.GetSingletonBuffer<ArmyToSpawn>();
             var armiesToSpawnMono = SystemAPI.GetSingletonBuffer<ArmyToSpawnMono>();

@@ -27,8 +27,6 @@ namespace system.controls
             var cameraMovement = InputUtils.getInputs().cameramovement;
             if (cameraMovement.enabled == false) return;
 
-            Debug.Log("enabled");
-
             var systemStatusHolder = SystemAPI.GetSingleton<SystemStatusHolder>();
             var deltaTime = SystemAPI.Time.DeltaTime;
 

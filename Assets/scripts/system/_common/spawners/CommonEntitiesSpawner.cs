@@ -4,6 +4,7 @@ using component._common.general;
 using component._common.movement_agents;
 using component._common.system_switchers;
 using component.config.game_settings;
+using component.helpers;
 using component.strategy.buy_army;
 using Unity.Burst;
 using Unity.Entities;
@@ -58,6 +59,7 @@ namespace system._common
             ecb.AddBuffer<ArmyPurchase>(singletonEntity);
             ecb.AddBuffer<BuildingPurchase>(singletonEntity);
             ecb.AddBuffer<ArmyToSpawn>(singletonEntity);
+            ecb.AddBuffer<Damage>(singletonEntity);
         }
     }
 }
