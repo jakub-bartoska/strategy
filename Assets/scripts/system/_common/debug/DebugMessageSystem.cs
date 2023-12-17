@@ -15,10 +15,15 @@ namespace system._common.debug
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            state.Enabled = false;
-
+            //state.Enabled = false;
+            //var blockers = SystemAPI.GetSingletonBuffer<SystemSwitchBlocker>();
+//
             //var systemStatusHolder = SystemAPI.GetSingleton<SystemStatusHolder>();
-            //Debug.Log(systemStatusHolder.currentStatus);
+            //Debug.Log(blockers.Length + "      ");
+            //if (blockers.Length > 0)
+            //{
+            //    Debug.Log(blockers[0].blocker);
+            //}
         }
 
         [BurstCompile]

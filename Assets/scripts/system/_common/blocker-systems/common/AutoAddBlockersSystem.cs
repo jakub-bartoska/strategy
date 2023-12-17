@@ -125,6 +125,14 @@ namespace system._common.army_to_spawn_switcher.common
                 });
                 systemHolder.ValueRW.desiredStatus = SystemStatus.MENU;
             }
+
+            if (systemHolder.ValueRO.currentStatus == SystemStatus.NO_STATUS && systemHolder.ValueRO.desiredStatus == SystemStatus.BATTLE)
+            {
+                blockers.Add(new SystemSwitchBlocker
+                {
+                    blocker = Blocker.ARMIES_MONO_TO_ENTITY
+                });
+            }
         }
 
         private bool containsAutoAddBlockers(DynamicBuffer<SystemSwitchBlocker> blockers)

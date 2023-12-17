@@ -176,7 +176,6 @@ namespace system.strategy.spawner
                 state = UIState.ALL_CLOSED
             };
 
-
             ecb.AddComponent(singletonEntity, marker);
             ecb.AddComponent(singletonEntity, playerSettings);
             ecb.AddComponent(singletonEntity, interfaceState);
@@ -184,7 +183,6 @@ namespace system.strategy.spawner
             ecb.AddComponent(singletonEntity, new StrategySingletonEntityTag());
             ecb.AddComponent(singletonEntity, new StrategyCleanupTag());
 
-            ecb.AddBuffer<ArmyToSpawn>(singletonEntity);
             ecb.AddBuffer<CreateNewArmyEvent>(singletonEntity);
             ecb.AddBuffer<Damage>(singletonEntity);
             ecb.AddBuffer<CompanyMergeBuffer>(singletonEntity);

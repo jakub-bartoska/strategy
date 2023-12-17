@@ -5,6 +5,7 @@ using component.strategy.general;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using UnityEngine;
 
 namespace system._common.army_to_spawn_switcher
 {
@@ -15,16 +16,18 @@ namespace system._common.army_to_spawn_switcher
         {
             state.RequireForUpdate<ArmyToSpawn>();
             state.RequireForUpdate<ArmyToSpawnMono>();
-            state.RequireForUpdate<GameRandom>();
             state.RequireForUpdate<SystemSwitchBlocker>();
         }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            Debug.Log("ArmyToSpawnMonoToEntitySystem");
             var blockers = SystemAPI.GetSingletonBuffer<SystemSwitchBlocker>();
 
-            if (!containsArmySpawn(blockers)) return;
+            if (!containsArmyMonoToEntity(blockers)) return;
+
+            Debug.Log("ArmyToSpawnMonoToEntitySystem2");
 
             var armiesToSpawn = SystemAPI.GetSingletonBuffer<ArmyToSpawn>();
             var armiesToSpawnMono = SystemAPI.GetSingletonBuffer<ArmyToSpawnMono>();
@@ -55,7 +58,7 @@ namespace system._common.army_to_spawn_switcher
             ecb.DestroyEntity(bufferEntity);
         }
 
-        private bool containsArmySpawn(DynamicBuffer<SystemSwitchBlocker> blockers)
+        private bool containsArmyMonoToEntity(DynamicBuffer<SystemSwitchBlocker> blockers)
         {
             if (blockers.Length == 0) return false;
 
