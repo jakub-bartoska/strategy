@@ -1,5 +1,4 @@
 ﻿using component;
-using component._common.camera;
 using component._common.general;
 using component._common.system_switchers;
 using component.authoring_pairs.PrefabHolder;
@@ -17,7 +16,6 @@ using system.strategy.utils;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Mathematics;
 
 namespace system.strategy.spawner
 {
@@ -177,16 +175,12 @@ namespace system.strategy.spawner
             {
                 state = UIState.ALL_CLOSED
             };
-            var camera = new StrategyCamera
-            {
-                desiredPosition = new float3(-10, 10, -13)
-            };
+
 
             ecb.AddComponent(singletonEntity, marker);
             ecb.AddComponent(singletonEntity, playerSettings);
             ecb.AddComponent(singletonEntity, interfaceState);
             ecb.AddComponent(singletonEntity, idGenerator);
-            ecb.AddComponent(singletonEntity, camera);
             ecb.AddComponent(singletonEntity, new StrategySingletonEntityTag());
             ecb.AddComponent(singletonEntity, new StrategyCleanupTag());
 
@@ -233,7 +227,7 @@ namespace system.strategy.spawner
                 armiesToSpawn.Add(armyToSpawn, company);
             }
 
-            //during first spawn I have to remove mesh from map + add component again for restart
+            //during first spawn I have to remove mesh from map + add component again, so it will be possible to spawn armies again
             var newEntity = ecb.CreateEntity();
             ecb.AddComponent(newEntity, armyToSpawn);
             var buffer = ecb.AddBuffer<SpawnArmyCompanyBuffer>(newEntity);

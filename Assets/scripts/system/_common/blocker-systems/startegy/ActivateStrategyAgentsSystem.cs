@@ -24,7 +24,7 @@ namespace system._common.army_to_spawn_switcher.startegy
         {
             var blockers = SystemAPI.GetSingletonBuffer<SystemSwitchBlocker>();
 
-            if (!containsArmySpawn(blockers)) return;
+            if (!containsActivateStrategyMovement(blockers)) return;
 
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
                 .CreateCommandBuffer(state.WorldUnmanaged);
@@ -38,7 +38,7 @@ namespace system._common.army_to_spawn_switcher.startegy
             ecb.AddComponent<AgentMovementAllowedTag>(singletonEntity);
         }
 
-        private bool containsArmySpawn(DynamicBuffer<SystemSwitchBlocker> blockers)
+        private bool containsActivateStrategyMovement(DynamicBuffer<SystemSwitchBlocker> blockers)
         {
             if (blockers.Length == 0) return false;
 
@@ -65,8 +65,7 @@ namespace system._common.army_to_spawn_switcher.startegy
         {
             public EntityCommandBuffer.ParallelWriter ecb;
 
-            private void Execute(ref AgentBody agentBody, Entity entity, IdHolder idHolder,
-                StoppedAgentTag stoppedAgent)
+            private void Execute(ref AgentBody agentBody, Entity entity, IdHolder idHolder, StoppedAgentTag stoppedAgent)
             {
                 ecb.RemoveComponent<StoppedAgentTag>((int) idHolder.id, entity);
                 agentBody.IsStopped = false;

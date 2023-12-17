@@ -19,7 +19,7 @@ namespace system._common.army_to_spawn_switcher.common
         {
             var blockers = SystemAPI.GetSingletonBuffer<SystemSwitchBlocker>();
 
-            if (!containsArmySpawn(blockers)) return;
+            if (!containsAutoAddBlockers(blockers)) return;
 
             var systemHolder = SystemAPI.GetSingletonRW<SystemStatusHolder>();
             if (systemHolder.ValueRO.desiredStatus == SystemStatus.INGAME_MENU)
@@ -56,6 +56,16 @@ namespace system._common.army_to_spawn_switcher.common
                     blockers.Add(new SystemSwitchBlocker
                     {
                         blocker = Blocker.ACTIVATE_BATTLE_MOVEMENT
+                    });
+                }
+            }
+            else
+            {
+                if (systemHolder.ValueRO.desiredStatus == SystemStatus.BATTLE)
+                {
+                    blockers.Add(new SystemSwitchBlocker
+                    {
+                        blocker = Blocker.SPAWN_ARMY
                     });
                 }
             }
@@ -117,7 +127,7 @@ namespace system._common.army_to_spawn_switcher.common
             }
         }
 
-        private bool containsArmySpawn(DynamicBuffer<SystemSwitchBlocker> blockers)
+        private bool containsAutoAddBlockers(DynamicBuffer<SystemSwitchBlocker> blockers)
         {
             if (blockers.Length == 0) return false;
 

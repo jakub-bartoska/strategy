@@ -30,6 +30,11 @@ namespace system._common
             var initState = SystemAPI.GetSingleton<InitState>();
 
             systemStatusHolder.ValueRW.desiredStatus = initState.desiredStatus;
+            var blockers = SystemAPI.GetSingletonBuffer<SystemSwitchBlocker>();
+            blockers.Add(new SystemSwitchBlocker
+            {
+                blocker = Blocker.AUTO_ADD_BLOCKERS
+            });
 
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
                 .CreateCommandBuffer(state.WorldUnmanaged);

@@ -1,6 +1,5 @@
 ﻿using System;
 using component;
-using component._common.camera;
 using component._common.system_switchers;
 using component.authoring_pairs.PrefabHolder;
 using component.config.authoring_pairs;
@@ -111,13 +110,9 @@ namespace system
                 new NativeParallelMultiHashMap<int2, int>(team1SoldierSum, Allocator.Persistent);
             positionHolder.team2PositionCells =
                 new NativeParallelMultiHashMap<int2, int>(team2SoldierSum, Allocator.Persistent);
-            var camera = new BattleCamera()
-            {
-                desiredPosition = new float3(10000, 100, 9950)
-            };
+
             var formationManager = new FormationManager {maxFormationId = 0};
 
-            ecb.AddComponent(singletonEntity, camera);
             ecb.AddComponent(singletonEntity, squarePositions);
             ecb.AddComponent(singletonEntity, positionHolder);
             ecb.AddComponent(singletonEntity, formationManager);
@@ -208,7 +203,6 @@ namespace system
     [BurstCompile]
     public struct SpawnerJob : IJobParallelFor
     {
-        [NativeSetThreadIndex] private int threadIndex;
         public EntityCommandBuffer.ParallelWriter ecb;
         [NativeDisableParallelForRestriction] public NativeArray<Unity.Mathematics.Random> randoms;
         public PrefabHolder prefabHolder;
@@ -220,6 +214,7 @@ namespace system
         public ArrowConfig arrowConfig;
         public ArmyToSpawn armyToSpawn;
         public long companyId;
+        [NativeSetThreadIndex] private int threadIndex;
 
         [BurstCompile]
         public void Execute(int index)

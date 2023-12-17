@@ -27,7 +27,7 @@ namespace system._common.army_to_spawn_switcher.common
         {
             var blockers = SystemAPI.GetSingletonBuffer<SystemSwitchBlocker>();
 
-            if (!containsArmySpawn(blockers)) return;
+            if (!containsCameraSwitch(blockers)) return;
 
             var systemStatusHolder = SystemAPI.GetSingleton<SystemStatusHolder>();
             switch (systemStatusHolder.desiredStatus)
@@ -45,7 +45,7 @@ namespace system._common.army_to_spawn_switcher.common
             }
         }
 
-        private bool containsArmySpawn(DynamicBuffer<SystemSwitchBlocker> blockers)
+        private bool containsCameraSwitch(DynamicBuffer<SystemSwitchBlocker> blockers)
         {
             if (blockers.Length == 0) return false;
 

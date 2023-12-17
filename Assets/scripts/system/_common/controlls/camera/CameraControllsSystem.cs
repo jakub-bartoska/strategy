@@ -17,8 +17,6 @@ namespace system.controls
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<SystemStatusHolder>();
-            state.RequireForUpdate<BattleCamera>();
-            state.RequireForUpdate<StrategyCamera>();
             state.RequireForUpdate<PhysicsWorldSingleton>();
             state.RequireForUpdate<CameraConfigComponentData>();
         }
@@ -28,6 +26,8 @@ namespace system.controls
         {
             var cameraMovement = InputUtils.getInputs().cameramovement;
             if (cameraMovement.enabled == false) return;
+
+            Debug.Log("enabled");
 
             var systemStatusHolder = SystemAPI.GetSingleton<SystemStatusHolder>();
             var deltaTime = SystemAPI.Time.DeltaTime;

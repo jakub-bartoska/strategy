@@ -1,7 +1,6 @@
 ﻿using component._common.system_switchers;
 using Unity.Burst;
 using Unity.Entities;
-using UnityEngine;
 
 namespace system._common.debug
 {
@@ -16,8 +15,10 @@ namespace system._common.debug
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var systemStatusHolder = SystemAPI.GetSingleton<SystemStatusHolder>();
-            Debug.Log(systemStatusHolder.currentStatus);
+            state.Enabled = false;
+
+            //var systemStatusHolder = SystemAPI.GetSingleton<SystemStatusHolder>();
+            //Debug.Log(systemStatusHolder.currentStatus);
         }
 
         [BurstCompile]

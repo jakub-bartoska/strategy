@@ -24,7 +24,7 @@ namespace system.battle.battle_finish
             state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
             state.RequireForUpdate<BattleMapStateMarker>();
             state.RequireForUpdate<SystemSwitchBlocker>();
-            state.RequireForUpdate<ArmyToSpawn>();
+            //state.RequireForUpdate<ArmyToSpawn>();
         }
 
         //[BurstCompile]

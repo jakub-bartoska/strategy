@@ -1,4 +1,5 @@
 ﻿using component;
+using component._common.camera;
 using component._common.general;
 using component._common.movement_agents;
 using component._common.system_switchers;
@@ -36,7 +37,17 @@ namespace system._common
                 desiredStatus = SystemStatus.NO_STATUS,
                 previousStatus = SystemStatus.NO_STATUS
             };
+            var strategyCamera = new StrategyCamera
+            {
+                desiredPosition = new float3(-10, 10, -13)
+            };
+            var battleCamera = new BattleCamera()
+            {
+                desiredPosition = new float3(10000, 100, 9950)
+            };
 
+            ecb.AddComponent(singletonEntity, battleCamera);
+            ecb.AddComponent(singletonEntity, strategyCamera);
             ecb.AddComponent(singletonEntity, random);
             ecb.AddComponent(singletonEntity, systemSwitcherMarker);
             ecb.AddComponent(singletonEntity, new SingletonEntityTag());

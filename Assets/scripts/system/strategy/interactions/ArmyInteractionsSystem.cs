@@ -95,10 +95,6 @@ namespace component.strategy.interactions
                             .Complete();
                         blockers.Add(new SystemSwitchBlocker
                         {
-                            blocker = Blocker.SPAWN_ARMY
-                        });
-                        blockers.Add(new SystemSwitchBlocker
-                        {
                             blocker = Blocker.AUTO_ADD_BLOCKERS
                         });
                         systemSwitch.ValueRW.desiredStatus = SystemStatus.BATTLE;
@@ -113,10 +109,6 @@ namespace component.strategy.interactions
                                 buffer = SystemAPI.GetSingletonBuffer<ArmyToSpawn>()
                             }.Schedule(state.Dependency)
                             .Complete();
-                        blockers.Add(new SystemSwitchBlocker
-                        {
-                            blocker = Blocker.SPAWN_ARMY
-                        });
                         blockers.Add(new SystemSwitchBlocker
                         {
                             blocker = Blocker.AUTO_ADD_BLOCKERS
