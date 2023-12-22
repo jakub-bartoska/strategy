@@ -56,6 +56,7 @@ namespace system
             var ecb = new EntityCommandBuffer(Allocator.TempJob);
 
             var mapTransform = LocalTransform.FromPosition(new float3(10000, 0, 10000));
+            mapTransform.Rotation = quaternion.RotateY(math.PI / 2);
             var map = ecb.Instantiate(prefabHolder.battleMapPrefab);
             ecb.SetName(map, "Map");
             ecb.AddComponent(map, new BattleCleanupTag());
@@ -300,7 +301,7 @@ namespace system
             behaviorContext.behaviorToBeFinished = BehaviorType.NONE;
             behaviorContext.currentBehavior = BehaviorType.IDLE;
             behaviorContext.possibleBehaviors = new UnsafeList<BehaviorType>(5, Allocator.Persistent);
-            behaviorContext.possibleBehaviors.Add(BehaviorType.FOLLOW_CLOSEST_ENEMY);
+            //behaviorContext.possibleBehaviors.Add(BehaviorType.FOLLOW_CLOSEST_ENEMY);
             behaviorContext.possibleBehaviors.Add(BehaviorType.IDLE);
 
             switch (soldierType)
@@ -312,9 +313,8 @@ namespace system
                 case SoldierType.SWORDSMAN:
                     ecb.AddComponent(index, newEntity, fightContext);
                     behaviorContext.possibleBehaviors.Add(BehaviorType.FIGHT);
-                    behaviorContext.possibleBehaviors.Add(BehaviorType.FOLLOW_CLOSEST_ENEMY);
-                    behaviorContext.possibleBehaviors.Add(BehaviorType.MAKE_LINE_FORMATION);
-                    behaviorContext.possibleBehaviors.Add(BehaviorType.PROCESS_FORMATION_COMMAND);
+                    //behaviorContext.possibleBehaviors.Add(BehaviorType.MAKE_LINE_FORMATION);
+                    //behaviorContext.possibleBehaviors.Add(BehaviorType.PROCESS_FORMATION_COMMAND);
                     break;
                 case SoldierType.HORSEMAN:
                     throw new NotImplementedException("implement me");
@@ -343,7 +343,7 @@ namespace system
             {
                 var xPosition = (teamPosition.min.x + teamPosition.max.x) / 2;
                 var zMiddle = (teamPosition.min.y + teamPosition.max.y) / 2;
-                var zStart = zMiddle - (armyToSpawn.count / 2f * armyToSpawn.distanceBetweenSoldiers);
+                var zStart = zMiddle - (armyToSpawn.count / 2f * armyToSpawn.distanceBetweenSoldiers) + 5;
                 var zPosition = zStart + index * armyToSpawn.distanceBetweenSoldiers;
                 return new float3(
                     xPosition,

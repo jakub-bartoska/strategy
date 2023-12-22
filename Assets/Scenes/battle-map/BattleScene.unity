@@ -184,6 +184,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2631627447965055314, guid: a95ab48849cc0e941aae66b5428824e3,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2936139659666029013, guid: a95ab48849cc0e941aae66b5428824e3,
         type: 3}
       propertyPath: m_IsActive
@@ -239,10 +244,35 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3957108392327916575, guid: a95ab48849cc0e941aae66b5428824e3,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4005902584655090745, guid: a95ab48849cc0e941aae66b5428824e3,
+        type: 3}
+      propertyPath: m_FOVAxisMode
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4720131236198993554, guid: a95ab48849cc0e941aae66b5428824e3,
         type: 3}
       propertyPath: m_Name
       value: mono-scene-objects
+      objectReference: {fileID: 0}
+    - target: {fileID: 8913371160087688112, guid: a95ab48849cc0e941aae66b5428824e3,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8913371160087688112, guid: a95ab48849cc0e941aae66b5428824e3,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8913371160087688112, guid: a95ab48849cc0e941aae66b5428824e3,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

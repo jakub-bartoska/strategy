@@ -228,14 +228,14 @@ MonoBehaviour:
   armies:
   - team: 1
     armyType: 1
-    count: 500
+    count: 10
     formation: 0
     distanceBetweenSoldiers: 1.5
   - team: 0
     armyType: 1
-    count: 500
-    formation: 0
-    distanceBetweenSoldiers: 1.5
+    count: 10
+    formation: 2
+    distanceBetweenSoldiers: 10
 --- !u!4 &1898180281
 Transform:
   m_ObjectHideFlags: 0
