@@ -19,10 +19,10 @@ namespace _Monobehaviors.ui.battle_plan.battle_grid
             switch (eventData.button)
             {
                 case PointerEventData.InputButton.Left:
-                    buttonDropTarget.a
+                    buttonDropTarget.add();
                     break;
                 case PointerEventData.InputButton.Right:
-                    Debug.Log("right click");
+                    buttonDropTarget.remove();
                     break;
                 case PointerEventData.InputButton.Middle:
                     Debug.Log("middle click");
