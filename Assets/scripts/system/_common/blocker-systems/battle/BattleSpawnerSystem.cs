@@ -31,7 +31,7 @@ namespace system
         {
             state.RequireForUpdate<ArrowConfig>();
             state.RequireForUpdate<GameRandom>();
-            state.RequireForUpdate<ArmyToSpawn>();
+            state.RequireForUpdate<CompanyToSpawn>();
             state.RequireForUpdate<SystemSwitchBlocker>();
         }
 
@@ -43,19 +43,20 @@ namespace system
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            var defaultPositionOffset = new float3(10000, 0, 10000);
             var blockers = SystemAPI.GetSingletonBuffer<SystemSwitchBlocker>();
 
             if (!containsArmySpawn(blockers)) return;
 
             var teamPositions = SystemAPI.GetSingletonBuffer<TeamPositions>();
-            var armiesToSpawn = SystemAPI.GetSingletonBuffer<ArmyToSpawn>();
+            var batalionsToSpawn = SystemAPI.GetSingletonBuffer<BattalionToSpawn>();
             var teamColors = SystemAPI.GetSingletonBuffer<TeamColor>();
             var prefabHolder = SystemAPI.GetSingleton<PrefabHolder>();
             var random = SystemAPI.GetSingletonRW<GameRandom>();
             var arrowConfig = SystemAPI.GetSingleton<ArrowConfig>();
             var ecb = new EntityCommandBuffer(Allocator.TempJob);
 
-            var mapTransform = LocalTransform.FromPosition(new float3(10000, 0, 10000));
+            var mapTransform = LocalTransform.FromPosition(defaultPositionOffset);
             mapTransform.Rotation = quaternion.RotateY(math.PI / 2);
             var map = ecb.Instantiate(prefabHolder.battleMapPrefab);
             ecb.SetName(map, "Map");
@@ -66,14 +67,14 @@ namespace system
 
             var team1SoldierSum = 0;
             var team2SoldierSum = 0;
-            foreach (var armyToSpawn in armiesToSpawn)
+            foreach (var batalionToSpawn in batalionsToSpawn)
             {
-                if (armyToSpawn.count == 0)
+                if (batalionToSpawn.count == 0)
                 {
                     continue;
                 }
 
-                var teamPosition = getTeamPositions(armyToSpawn.team, teamPositions);
+                var teamPosition = getTeamPositions(batalionToSpawn.team, teamPositions);
 
                 new SpawnerJob
                     {
@@ -81,23 +82,24 @@ namespace system
                         arrowConfig = arrowConfig,
                         randoms = randomPerThread,
                         prefabHolder = prefabHolder,
-                        team = armyToSpawn.team,
-                        soldierType = armyToSpawn.armyType,
+                        team = batalionToSpawn.team,
+                        soldierType = batalionToSpawn.armyType,
                         entityIndexAdd = (team1SoldierSum + team2SoldierSum),
                         teamPosition = teamPosition,
-                        teamColor = getColor(armyToSpawn.team, teamColors),
-                        armyToSpawn = armyToSpawn,
-                        companyId = armyToSpawn.armyCompanyId
-                    }.Schedule(armyToSpawn.count, 128)
+                        teamColor = getColor(batalionToSpawn.team, teamColors),
+                        battalionToSpawn = batalionToSpawn,
+                        companyId = batalionToSpawn.armyCompanyId,
+                        defaultPositionOffset = defaultPositionOffset
+                    }.Schedule(batalionToSpawn.count, 128)
                     .Complete();
 
-                if (armyToSpawn.team == Team.TEAM1)
+                if (batalionToSpawn.team == Team.TEAM1)
                 {
-                    team1SoldierSum += armyToSpawn.count;
+                    team1SoldierSum += batalionToSpawn.count;
                 }
                 else
                 {
-                    team2SoldierSum += armyToSpawn.count;
+                    team2SoldierSum += batalionToSpawn.count;
                 }
             }
 
@@ -112,7 +114,7 @@ namespace system
             positionHolder.team2PositionCells =
                 new NativeParallelMultiHashMap<int2, int>(team2SoldierSum, Allocator.Persistent);
 
-            var formationManager = new FormationManager {maxFormationId = 0};
+            var formationManager = new FormationManager { maxFormationId = 0 };
 
             ecb.AddComponent(singletonEntity, squarePositions);
             ecb.AddComponent(singletonEntity, positionHolder);
@@ -158,8 +160,8 @@ namespace system
             return new PositionHolderConfig
             {
                 oneSquareSize = 5,
-                minSquarePosition = new int2((int) minPosition.x, (int) minPosition.z),
-                maxSquarePosition = new int2((int) (maxPosition.x + 0.9f), (int) (maxPosition.z + 0.9f)),
+                minSquarePosition = new int2((int)minPosition.x, (int)minPosition.z),
+                maxSquarePosition = new int2((int)(maxPosition.x + 0.9f), (int)(maxPosition.z + 0.9f)),
             };
         }
 
@@ -170,7 +172,7 @@ namespace system
 
             for (var i = 0; i < randomPerThread.Length; i++)
             {
-                randomPerThread[i] = new Unity.Mathematics.Random((uint) random.ValueRW.random.NextInt());
+                randomPerThread[i] = new Unity.Mathematics.Random((uint)random.ValueRW.random.NextInt());
             }
 
             return randomPerThread;
@@ -213,8 +215,9 @@ namespace system
         public TeamPositions teamPosition;
         public float4 teamColor;
         public ArrowConfig arrowConfig;
-        public ArmyToSpawn armyToSpawn;
+        public BattalionToSpawn battalionToSpawn;
         public long companyId;
+        public float3 defaultPositionOffset;
         [NativeSetThreadIndex] private int threadIndex;
 
         [BurstCompile]
@@ -327,32 +330,24 @@ namespace system
 
         private float3 getPosition(int index)
         {
-            if (armyToSpawn.formation == Formation.NO_FORMATION)
+            var distanceFromMiddle = battalionToSpawn.team switch
             {
-                var random = randoms[threadIndex];
-                var position = new float3(
-                    random.NextFloat(teamPosition.min.x, teamPosition.max.x),
-                    0,
-                    random.NextFloat(teamPosition.min.y, teamPosition.max.y)
-                );
-                randoms[threadIndex] = random;
-                return position;
-            }
-
-            if (armyToSpawn.formation == Formation.LINE)
+                Team.TEAM1 => 50,
+                Team.TEAM2 => -50,
+            };
+            var batalionPosition = new float3
             {
-                var xPosition = (teamPosition.min.x + teamPosition.max.x) / 2;
-                var zMiddle = (teamPosition.min.y + teamPosition.max.y) / 2;
-                var zStart = zMiddle - (armyToSpawn.count / 2f * armyToSpawn.distanceBetweenSoldiers) + 5;
-                var zPosition = zStart + index * armyToSpawn.distanceBetweenSoldiers;
-                return new float3(
-                    xPosition,
-                    0,
-                    zPosition
-                );
-            }
-
-            throw new Exception();
+                x = battalionToSpawn.position.x * 5 + distanceFromMiddle + defaultPositionOffset.x,
+                y = 0 + defaultPositionOffset.y,
+                z = defaultPositionOffset.z + 40 - (battalionToSpawn.position.y * 10)
+            };
+            var soldierWithinBatalionPosition = new float3
+            {
+                x = 0,
+                y = 0,
+                z = index + 1
+            };
+            return batalionPosition + soldierWithinBatalionPosition;
         }
     }
 }

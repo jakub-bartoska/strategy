@@ -13,6 +13,7 @@ namespace component._common.system_switchers
     {
         NO_STATUS,
         STRATEGY,
+        BATTLE_PLAN,
         BATTLE,
         MENU,
         INGAME_MENU,

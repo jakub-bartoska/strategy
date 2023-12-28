@@ -157,7 +157,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CameraSettings:
-  - gameCameraType: 2
+  - gameCameraType: 3
     minValues:
       x: 9900
       y: 30
@@ -262,7 +262,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5166575903142637548}
   m_Layer: 0
-  m_Name: config
+  m_Name: Config
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

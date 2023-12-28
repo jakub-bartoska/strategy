@@ -58,7 +58,8 @@ namespace system._common
             ecb.AddBuffer<SystemSwitchBlocker>(singletonEntity);
             ecb.AddBuffer<ArmyPurchase>(singletonEntity);
             ecb.AddBuffer<BuildingPurchase>(singletonEntity);
-            ecb.AddBuffer<ArmyToSpawn>(singletonEntity);
+            ecb.AddBuffer<CompanyToSpawn>(singletonEntity);
+            ecb.AddBuffer<BattalionToSpawn>(singletonEntity);
             ecb.AddBuffer<Damage>(singletonEntity);
         }
     }

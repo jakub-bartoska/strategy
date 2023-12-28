@@ -19,6 +19,7 @@ namespace component._common.system_switchers
         CLEAN_STRATEGY,
         CLEAN_BATTLE,
         SPAWN_STRATEGY,
-        CAMERA_SWITCH
+        CAMERA_SWITCH,
+        COMPANY_TO_BATTALION,
     }
 }

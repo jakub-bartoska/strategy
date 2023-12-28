@@ -13,8 +13,8 @@ namespace system._common.army_to_spawn_switcher
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
-            state.RequireForUpdate<ArmyToSpawn>();
-            state.RequireForUpdate<ArmyToSpawnMono>();
+            state.RequireForUpdate<CompanyToSpawn>();
+            state.RequireForUpdate<CompanyToSpawnMono>();
             state.RequireForUpdate<SystemSwitchBlocker>();
         }
 
@@ -25,8 +25,8 @@ namespace system._common.army_to_spawn_switcher
 
             if (!containsArmyMonoToEntity(blockers)) return;
 
-            var armiesToSpawn = SystemAPI.GetSingletonBuffer<ArmyToSpawn>();
-            var armiesToSpawnMono = SystemAPI.GetSingletonBuffer<ArmyToSpawnMono>();
+            var armiesToSpawn = SystemAPI.GetSingletonBuffer<CompanyToSpawn>();
+            var armiesToSpawnMono = SystemAPI.GetSingletonBuffer<CompanyToSpawnMono>();
             var random = SystemAPI.GetSingletonRW<GameRandom>();
 
             if (armiesToSpawnMono.Length != 0)
@@ -34,7 +34,7 @@ namespace system._common.army_to_spawn_switcher
                 var armyId = -1;
                 foreach (var armyToSpawnManual in armiesToSpawnMono)
                 {
-                    armiesToSpawn.Add(new ArmyToSpawn
+                    armiesToSpawn.Add(new CompanyToSpawn
                     {
                         team = armyToSpawnManual.team,
                         originalArmyType = HolderType.ARMY,
@@ -50,7 +50,7 @@ namespace system._common.army_to_spawn_switcher
 
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
                 .CreateCommandBuffer(state.WorldUnmanaged);
-            var bufferEntity = SystemAPI.GetSingletonEntity<ArmyToSpawnMono>();
+            var bufferEntity = SystemAPI.GetSingletonEntity<CompanyToSpawnMono>();
             ecb.DestroyEntity(bufferEntity);
         }
 

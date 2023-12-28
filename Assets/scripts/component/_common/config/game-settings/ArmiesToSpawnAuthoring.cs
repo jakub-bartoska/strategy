@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using component.strategy.general;
 using Unity.Entities;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace component.config.game_settings
 {
     public class ArmiesToSpawnAuthoring : MonoBehaviour
     {
-        public List<ArmyToSpawnAuthoring> armies = new();
+        public List<CompanyToSpawnAuthoring> armies = new();
     }
 
     [Serializable]
-    public class ArmyToSpawnAuthoring
+    public class CompanyToSpawnAuthoring
     {
         public Team team;
         public SoldierType armyType;
@@ -21,7 +22,7 @@ namespace component.config.game_settings
         public float distanceBetweenSoldiers;
     }
 
-    public struct ArmyToSpawn : IBufferElementData
+    public struct CompanyToSpawn : IBufferElementData
     {
         public long originalArmyId;
         public HolderType originalArmyType;
@@ -33,7 +34,16 @@ namespace component.config.game_settings
         public float distanceBetweenSoldiers;
     }
 
-    public struct ArmyToSpawnMono : IBufferElementData
+    public struct BattalionToSpawn : IBufferElementData
+    {
+        public long armyCompanyId;
+        public Team team;
+        public SoldierType armyType;
+        public int count;
+        public int2 position;
+    }
+
+    public struct CompanyToSpawnMono : IBufferElementData
     {
         public Team team;
         public SoldierType armyType;
@@ -61,11 +71,11 @@ namespace component.config.game_settings
         public override void Bake(ArmiesToSpawnAuthoring authoring)
         {
             var entity = GetEntity(authoring, TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic);
-            var dynamicBuffer = AddBuffer<ArmyToSpawnMono>(entity);
+            var dynamicBuffer = AddBuffer<CompanyToSpawnMono>(entity);
 
             authoring.armies.ForEach(army =>
             {
-                dynamicBuffer.Add(new ArmyToSpawnMono
+                dynamicBuffer.Add(new CompanyToSpawnMono
                 {
                     team = army.team,
                     armyType = army.armyType,

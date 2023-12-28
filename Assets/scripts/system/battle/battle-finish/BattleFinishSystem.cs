@@ -24,7 +24,7 @@ namespace system.battle.battle_finish
             state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
             state.RequireForUpdate<BattleMapStateMarker>();
             state.RequireForUpdate<SystemSwitchBlocker>();
-            state.RequireForUpdate<ArmyToSpawn>();
+            state.RequireForUpdate<CompanyToSpawn>();
         }
 
         //[BurstCompile]
@@ -63,7 +63,7 @@ namespace system.battle.battle_finish
                 companyCounts.Add(companyId, team2.CountValuesForKey(companyId));
             }
 
-            var armyToSpawnBuffer = SystemAPI.GetSingletonBuffer<ArmyToSpawn>();
+            var armyToSpawnBuffer = SystemAPI.GetSingletonBuffer<CompanyToSpawn>();
             var fightingArmies = new NativeHashSet<(long, HolderType)>(armyToSpawnBuffer.Length, Allocator.TempJob);
             foreach (var armyToSpawn in armyToSpawnBuffer)
             {

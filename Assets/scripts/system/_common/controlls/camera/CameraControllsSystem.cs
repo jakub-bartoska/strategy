@@ -79,7 +79,7 @@ namespace system.controls
                 }
             }
 
-            throw new Exception("dont have config for this game status");
+            throw new Exception("dont have config for this game status : " + currentStatus);
         }
 
         private float3 normalizeMovementVector(float3 newPositionDelta, float3 oldPosition,

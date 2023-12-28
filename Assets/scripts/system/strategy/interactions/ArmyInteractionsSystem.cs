@@ -25,7 +25,7 @@ namespace component.strategy.interactions
         {
             state.RequireForUpdate<PrefabHolder>();
             state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
-            state.RequireForUpdate<ArmyToSpawn>();
+            state.RequireForUpdate<CompanyToSpawn>();
             state.RequireForUpdate<GamePlayerSettings>();
             state.RequireForUpdate<StrategyMapStateMarker>();
             state.RequireForUpdate<SelectionMarkerState>();
@@ -90,14 +90,14 @@ namespace component.strategy.interactions
                                 team1ArmyHolderType = HolderType.ARMY,
                                 team2ArmyId = army2,
                                 team2ArmyHolderType = HolderType.ARMY,
-                                buffer = SystemAPI.GetSingletonBuffer<ArmyToSpawn>()
+                                buffer = SystemAPI.GetSingletonBuffer<CompanyToSpawn>()
                             }.Schedule(state.Dependency)
                             .Complete();
                         blockers.Add(new SystemSwitchBlocker
                         {
                             blocker = Blocker.AUTO_ADD_BLOCKERS
                         });
-                        systemSwitch.ValueRW.desiredStatus = SystemStatus.BATTLE;
+                        systemSwitch.ValueRW.desiredStatus = SystemStatus.BATTLE_PLAN;
                         return;
                     case InteractionType.FIGHT_TOWN:
                         new SpawnBattleJob
@@ -106,14 +106,14 @@ namespace component.strategy.interactions
                                 team1ArmyHolderType = HolderType.ARMY,
                                 team2ArmyId = army2,
                                 team2ArmyHolderType = HolderType.TOWN,
-                                buffer = SystemAPI.GetSingletonBuffer<ArmyToSpawn>()
+                                buffer = SystemAPI.GetSingletonBuffer<CompanyToSpawn>()
                             }.Schedule(state.Dependency)
                             .Complete();
                         blockers.Add(new SystemSwitchBlocker
                         {
                             blocker = Blocker.AUTO_ADD_BLOCKERS
                         });
-                        systemSwitch.ValueRW.desiredStatus = SystemStatus.BATTLE;
+                        systemSwitch.ValueRW.desiredStatus = SystemStatus.BATTLE_PLAN;
                         return;
                     case InteractionType.ENTER_TOWN:
                         if (armyTownPairs.TryGetFirstValue(army1, out var townId, out _) && army2 == townId)
@@ -138,7 +138,8 @@ namespace component.strategy.interactions
                 }.Schedule(state.Dependency)
                 .Complete();
 
-            var caravanResources = new NativeParallelMultiHashMap<long, ResourceHolder>(caravansToDestroy.Count * 5, Allocator.TempJob);
+            var caravanResources =
+                new NativeParallelMultiHashMap<long, ResourceHolder>(caravansToDestroy.Count * 5, Allocator.TempJob);
             new DestroyCapturedCaravansJob
                 {
                     caravansToDestroy = caravansToDestroy.GetKeyArray(Allocator.TempJob),
@@ -254,7 +255,8 @@ namespace component.strategy.interactions
             return captures.GetKeyArray(Allocator.TempJob);
         }
 
-        private NativeHashMap<long, (long, InteractionType)> selectOutCaravanCaptures(NativeList<(long, long, InteractionType)> interactions)
+        private NativeHashMap<long, (long, InteractionType)> selectOutCaravanCaptures(
+            NativeList<(long, long, InteractionType)> interactions)
         {
             var captures = new NativeHashMap<long, (long, InteractionType)>(interactions.Length, Allocator.TempJob);
             foreach (var (armyId, secondEntityId, interaction) in interactions)
@@ -273,7 +275,8 @@ namespace component.strategy.interactions
             return captures;
         }
 
-        private NativeParallelMultiHashMap<long, long> switchToArmyIdToCaravanId(NativeHashMap<long, (long, InteractionType)> caravansToDestroy)
+        private NativeParallelMultiHashMap<long, long> switchToArmyIdToCaravanId(
+            NativeHashMap<long, (long, InteractionType)> caravansToDestroy)
         {
             var result = new NativeParallelMultiHashMap<long, long>(caravansToDestroy.Count, Allocator.TempJob);
             foreach (var interaction in caravansToDestroy)
@@ -286,7 +289,7 @@ namespace component.strategy.interactions
 
         private bool isBattleRunning()
         {
-            var armyToSpawnBuffer = SystemAPI.GetSingletonBuffer<ArmyToSpawn>();
+            var armyToSpawnBuffer = SystemAPI.GetSingletonBuffer<CompanyToSpawn>();
             return armyToSpawnBuffer.Length > 0;
         }
 
@@ -362,7 +365,8 @@ namespace component.strategy.interactions
             return InteractionType.FIGHT_TOWN;
         }
 
-        private InteractionType getCaravanInteraction((float3, IdHolder, Team) entity1, (float3, IdHolder, Team) entity2)
+        private InteractionType getCaravanInteraction((float3, IdHolder, Team) entity1,
+            (float3, IdHolder, Team) entity2)
         {
             if (entity1.Item3 == entity2.Item3)
             {
@@ -460,7 +464,7 @@ namespace component.strategy.interactions
         public HolderType team1ArmyHolderType;
         public long team2ArmyId;
         public HolderType team2ArmyHolderType;
-        public DynamicBuffer<ArmyToSpawn> buffer;
+        public DynamicBuffer<CompanyToSpawn> buffer;
 
         private void Execute(DynamicBuffer<ArmyCompany> companies, TeamComponent team, IdHolder idHolder)
         {
@@ -470,7 +474,7 @@ namespace component.strategy.interactions
             {
                 foreach (var armyCompany in companies)
                 {
-                    var armyToSpawn = new ArmyToSpawn
+                    var armyToSpawn = new CompanyToSpawn
                     {
                         originalArmyId = idHolder.id,
                         originalArmyType = idHolder.type,
@@ -601,10 +605,10 @@ namespace component.strategy.interactions
                 {
                     foreach (var child in childs)
                     {
-                        ecb.DestroyEntity((int) idHolder.id + 1000 + child.Value.Index, child.Value);
+                        ecb.DestroyEntity((int)idHolder.id + 1000 + child.Value.Index, child.Value);
                     }
 
-                    ecb.DestroyEntity((int) idHolder.id, entity);
+                    ecb.DestroyEntity((int)idHolder.id, entity);
                     return;
                 }
             }
@@ -617,10 +621,10 @@ namespace component.strategy.interactions
                 {
                     foreach (var child in childs)
                     {
-                        ecb.DestroyEntity((int) idHolder.id + 1000 + child.Value.Index, child.Value);
+                        ecb.DestroyEntity((int)idHolder.id + 1000 + child.Value.Index, child.Value);
                     }
 
-                    ecb.DestroyEntity((int) idHolder.id, entity);
+                    ecb.DestroyEntity((int)idHolder.id, entity);
                     return;
                 }
 
@@ -730,7 +734,8 @@ namespace component.strategy.interactions
         public NativeParallelMultiHashMap<long, ArmyCompany> armyCompanies;
         public NativeParallelMultiHashMap<long, ResourceHolder> armyResources;
 
-        private void Execute(TownTag townTag, ref DynamicBuffer<ArmyCompany> companies, IdHolder idHolder, ref DynamicBuffer<ResourceHolder> resources)
+        private void Execute(TownTag townTag, ref DynamicBuffer<ArmyCompany> companies, IdHolder idHolder,
+            ref DynamicBuffer<ResourceHolder> resources)
         {
             var oldResources = resources.ToNativeArray(Allocator.Temp);
             resources.Clear();
@@ -816,7 +821,8 @@ namespace component.strategy.interactions
         public NativeParallelMultiHashMap<long, ResourceHolder> caravanResources;
         public EntityCommandBuffer.ParallelWriter ecb;
 
-        private void Execute(IdHolder idHolder, Entity entity, DynamicBuffer<ResourceHolder> resources, TeamComponent teamComponent)
+        private void Execute(IdHolder idHolder, Entity entity, DynamicBuffer<ResourceHolder> resources,
+            TeamComponent teamComponent)
         {
             if (!caravansToDestroy.Contains(idHolder.id)) return;
 
@@ -825,8 +831,8 @@ namespace component.strategy.interactions
                 caravanResources.Add(idHolder.id, resourceHolder);
             }
 
-            ecb.DestroyEntity((int) idHolder.id, entity);
-            ecb.DestroyEntity((int) idHolder.id + 10000, teamComponent.teamMarker);
+            ecb.DestroyEntity((int)idHolder.id, entity);
+            ecb.DestroyEntity((int)idHolder.id + 10000, teamComponent.teamMarker);
         }
     }
 

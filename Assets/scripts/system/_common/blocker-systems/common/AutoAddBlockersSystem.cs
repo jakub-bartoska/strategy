@@ -59,7 +59,20 @@ namespace system._common.army_to_spawn_switcher.common
                     });
                 }
             }
-            else
+
+            if (systemHolder.ValueRO.desiredStatus == SystemStatus.BATTLE_PLAN)
+            {
+                if (systemHolder.ValueRO.currentStatus == SystemStatus.STRATEGY)
+                {
+                    blockers.Add(new SystemSwitchBlocker
+                    {
+                        blocker = Blocker.COMPANY_TO_BATTALION
+                    });
+                }
+            }
+
+
+            if (systemHolder.ValueRO.currentStatus == SystemStatus.BATTLE_PLAN)
             {
                 if (systemHolder.ValueRO.desiredStatus == SystemStatus.BATTLE)
                 {
@@ -70,37 +83,34 @@ namespace system._common.army_to_spawn_switcher.common
                 }
             }
 
-            if (systemHolder.ValueRO.currentStatus == SystemStatus.STRATEGY &&
-                systemHolder.ValueRO.desiredStatus == SystemStatus.BATTLE)
+            if (systemHolder.ValueRO.currentStatus == SystemStatus.STRATEGY)
             {
                 blockers.Add(new SystemSwitchBlocker
                 {
                     blocker = Blocker.STOP_STRATEGY_MOVEMENT
                 });
-                //spawn armies
             }
 
-            if (systemHolder.ValueRO.currentStatus == SystemStatus.BATTLE &&
-                systemHolder.ValueRO.desiredStatus == SystemStatus.STRATEGY)
+            if (systemHolder.ValueRO.desiredStatus == SystemStatus.STRATEGY)
             {
-                blockers.Add(new SystemSwitchBlocker
+                if (systemHolder.ValueRO.currentStatus == SystemStatus.MENU)
                 {
-                    blocker = Blocker.ACTIVATE_STRATEGY_MOVEMENT
-                });
-                //remove battle entities 
-            }
-
-            if (systemHolder.ValueRO.desiredStatus == SystemStatus.STRATEGY &&
-                systemHolder.ValueRO.currentStatus == SystemStatus.MENU)
-            {
-                blockers.Add(new SystemSwitchBlocker
+                    blockers.Add(new SystemSwitchBlocker
+                    {
+                        blocker = Blocker.SPAWN_STRATEGY
+                    });
+                }
+                else
                 {
-                    blocker = Blocker.SPAWN_STRATEGY
-                });
+                    blockers.Add(new SystemSwitchBlocker
+                    {
+                        blocker = Blocker.ACTIVATE_STRATEGY_MOVEMENT
+                    });
+                }
             }
 
             //todo doresit restart
-            if ((systemHolder.ValueRO.desiredStatus == SystemStatus.BATTLE &&
+            if ((systemHolder.ValueRO.desiredStatus == SystemStatus.BATTLE_PLAN &&
                  systemHolder.ValueRO.currentStatus == SystemStatus.STRATEGY) ||
                 (systemHolder.ValueRO.desiredStatus == SystemStatus.STRATEGY &&
                  systemHolder.ValueRO.currentStatus == SystemStatus.BATTLE) ||
@@ -126,11 +136,16 @@ namespace system._common.army_to_spawn_switcher.common
                 systemHolder.ValueRW.desiredStatus = SystemStatus.MENU;
             }
 
-            if (systemHolder.ValueRO.currentStatus == SystemStatus.NO_STATUS && systemHolder.ValueRO.desiredStatus == SystemStatus.BATTLE)
+            if (systemHolder.ValueRO.currentStatus == SystemStatus.NO_STATUS &&
+                systemHolder.ValueRO.desiredStatus == SystemStatus.BATTLE_PLAN)
             {
                 blockers.Add(new SystemSwitchBlocker
                 {
                     blocker = Blocker.ARMIES_MONO_TO_ENTITY
+                });
+                blockers.Add(new SystemSwitchBlocker
+                {
+                    blocker = Blocker.COMPANY_TO_BATTALION
                 });
             }
         }
