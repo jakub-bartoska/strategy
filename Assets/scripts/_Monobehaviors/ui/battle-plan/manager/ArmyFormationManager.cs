@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using _Monobehaviors.ui.battle_plan.army_card;
 using _Monobehaviors.ui.battle_plan.battle_grid;
 using _Monobehaviors.ui.battle_plan.buttons;
 using component;
@@ -14,7 +15,8 @@ namespace _Monobehaviors.ui.battle_plan.counter
     {
         public static ArmyFormationManager instance;
         private List<ButtonDropTarget> allButtonDropTargets = new();
-        private List<BattalionToSpawn> team2Battalions = new();
+        private Dictionary<SoldierType, List<BattalionToSpawn>> team1 = new();
+        private List<BattalionToSpawn> team2 = new();
 
         private void Awake()
         {
@@ -23,17 +25,17 @@ namespace _Monobehaviors.ui.battle_plan.counter
 
         public void prepare(NativeArray<BattalionToSpawn> battalions)
         {
-            team2Battalions.Clear();
-            var team1 = new List<BattalionToSpawn>();
+            team2.Clear();
+            team1.Clear();
             foreach (var battalion in battalions)
             {
                 switch (battalion.team)
                 {
                     case Team.TEAM1:
-                        team1.Add(battalion);
+                        addTeam1Batalion(battalion);
                         break;
                     case Team.TEAM2:
-                        team2Battalions.Add(battalion);
+                        team2.Add(battalion);
                         break;
                     default:
                         throw new Exception("Unknown team " + battalion.team);
@@ -41,14 +43,27 @@ namespace _Monobehaviors.ui.battle_plan.counter
             }
 
             allButtonDropTargets.Clear();
-            GridSpawner.planInstance.spawnPlan();
-            GridSpawner.battalionInstance.spawnBattalions(team1);
+            GridSpawner.instance.spawn();
+            CardManager.instance.spawn(team1);
+        }
+
+        private void addTeam1Batalion(BattalionToSpawn battalion)
+        {
+            if (team1.TryGetValue(battalion.armyType, out var battalionList))
+            {
+                battalionList.Add(battalion);
+            }
+            else
+            {
+                team1.Add(battalion.armyType, new List<BattalionToSpawn> { battalion });
+            }
         }
 
         public void add(ButtonDropTarget buttonDropTarget)
         {
             allButtonDropTargets.Add(buttonDropTarget);
         }
+
 
         public NativeList<BattalionToSpawn> getAllBatalions()
         {
@@ -71,7 +86,7 @@ namespace _Monobehaviors.ui.battle_plan.counter
             var result = new NativeList<BattalionToSpawn>(Allocator.TempJob);
             var i = -1;
             var j = 0;
-            foreach (var battalion in team2Battalions)
+            foreach (var battalion in team2)
             {
                 var tmp = battalion;
                 tmp.position = new int2(i, j++);

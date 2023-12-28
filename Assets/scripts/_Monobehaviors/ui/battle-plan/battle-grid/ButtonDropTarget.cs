@@ -19,6 +19,20 @@ namespace _Monobehaviors.ui.battle_plan.buttons
             batalion = draggableButton.getBatalion();
         }
 
+        public void add()
+        {
+            if (batalion.HasValue) return;
+
+            //fetch batalion
+        }
+
+        public void remove()
+        {
+            if (!batalion.HasValue) return;
+
+            //return value
+        }
+
         public void emptyBatalion()
         {
             batalion = null;
