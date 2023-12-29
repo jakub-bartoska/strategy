@@ -117,6 +117,8 @@ MonoBehaviour:
   position:
     x: 0
     y: 0
+  armyPrefab: {fileID: 3843715214540330045, guid: e6c86032b8366bf469e4ccc6ffedff6c,
+    type: 3}
 --- !u!114 &181828649140198556
 MonoBehaviour:
   m_ObjectHideFlags: 0

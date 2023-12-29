@@ -1,4 +1,6 @@
-﻿using component.config.game_settings;
+﻿using _Monobehaviors.ui.battle_plan.counter;
+using component.config.game_settings;
+using JetBrains.Annotations;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -8,46 +10,59 @@ namespace _Monobehaviors.ui.battle_plan.buttons
     public class ButtonDropTarget : MonoBehaviour, IDropHandler
     {
         public int2 position;
-        private BattalionToSpawn? batalion;
+        [SerializeField] private GameObject armyPrefab;
+        private BattalionToSpawn? battalion;
+        [CanBeNull] private DraggableButton draggableButton;
 
         public void OnDrop(PointerEventData eventData)
         {
-            if (batalion.HasValue) return;
+            if (battalion.HasValue) return;
 
-            var draggableButton = eventData.pointerDrag.GetComponent<DraggableButton>();
+            draggableButton = eventData.pointerDrag.GetComponent<DraggableButton>();
             draggableButton.setNewParent(transform);
-            batalion = draggableButton.getBatalion();
+            battalion = draggableButton.getBatalion();
         }
 
         public void add()
         {
-            if (batalion.HasValue) return;
+            if (battalion.HasValue) return;
 
-            //fetch batalion
+            battalion = ArmyFormationManager.instance.tryToGetBattalion();
+
+            if (!battalion.HasValue) return;
+
+            var newInstance = Instantiate(armyPrefab, transform);
+            draggableButton = newInstance.GetComponent<DraggableButton>();
+            draggableButton.setNewParent(transform);
+            draggableButton.setBatalion(battalion.Value);
         }
 
         public void remove()
         {
-            if (!batalion.HasValue) return;
+            if (!battalion.HasValue) return;
 
-            //return value
+            ArmyFormationManager.instance.returnBatalion(battalion.Value);
+            battalion = null;
+            Destroy(draggableButton.gameObject);
+            draggableButton = null;
         }
 
         public void emptyBatalion()
         {
-            batalion = null;
+            battalion = null;
+            draggableButton = null;
         }
 
         public BattalionToSpawn? getBatalion()
         {
-            if (batalion.HasValue)
+            if (battalion.HasValue)
             {
-                var tmp = batalion.Value;
+                var tmp = battalion.Value;
                 tmp.position = position;
-                batalion = tmp;
+                battalion = tmp;
             }
 
-            return batalion;
+            return battalion;
         }
     }
 }

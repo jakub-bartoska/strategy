@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using _Monobehaviors.ui.battle_plan.army_card;
 using _Monobehaviors.ui.battle_plan.battle_grid;
 using _Monobehaviors.ui.battle_plan.buttons;
@@ -15,6 +16,7 @@ namespace _Monobehaviors.ui.battle_plan.counter
     {
         public static ArmyFormationManager instance;
         private List<ButtonDropTarget> allButtonDropTargets = new();
+        private SoldierType? selectedType;
         private Dictionary<SoldierType, List<BattalionToSpawn>> team1 = new();
         private List<BattalionToSpawn> team2 = new();
 
@@ -42,6 +44,8 @@ namespace _Monobehaviors.ui.battle_plan.counter
                 }
             }
 
+            selectedType = team1.Keys.First();
+
             allButtonDropTargets.Clear();
             GridSpawner.instance.spawn();
             CardManager.instance.spawn(team1);
@@ -63,7 +67,6 @@ namespace _Monobehaviors.ui.battle_plan.counter
         {
             allButtonDropTargets.Add(buttonDropTarget);
         }
-
 
         public NativeList<BattalionToSpawn> getAllBatalions()
         {
@@ -99,6 +102,30 @@ namespace _Monobehaviors.ui.battle_plan.counter
             }
 
             return result;
+        }
+
+        public BattalionToSpawn? tryToGetBattalion()
+        {
+            if (team1.TryGetValue(selectedType.Value, out var battalions))
+            {
+                var count = battalions.Count;
+                if (count != 0)
+                {
+                    var battalion = battalions[count - 1];
+                    battalions.RemoveAt(count - 1);
+                    CardManager.instance.updateCard(selectedType.Value, count - 1);
+                    return battalion;
+                }
+            }
+
+            return null;
+        }
+
+        public void returnBatalion(BattalionToSpawn battalion)
+        {
+            team1.TryGetValue(battalion.armyType, out var battalions);
+            battalions.Add(battalion);
+            CardManager.instance.updateCard(battalion.armyType, battalions.Count);
         }
     }
 }

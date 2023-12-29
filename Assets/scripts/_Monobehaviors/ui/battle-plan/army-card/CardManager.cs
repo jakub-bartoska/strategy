@@ -9,6 +9,7 @@ namespace _Monobehaviors.ui.battle_plan.army_card
         public static CardManager instance;
         [SerializeField] private GameObject cardPrefab;
         [SerializeField] private GameObject target;
+        private Dictionary<SoldierType, ArmyCard> cards = new();
 
         private void Awake()
         {
@@ -24,7 +25,13 @@ namespace _Monobehaviors.ui.battle_plan.army_card
                 card.setTypeText(type);
                 card.setMax(list.Count);
                 card.setCountText(list.Count);
+                cards.Add(type, card);
             }
+        }
+
+        public void updateCard(SoldierType type, int count)
+        {
+            cards[type].setCountText(count);
         }
     }
 }
