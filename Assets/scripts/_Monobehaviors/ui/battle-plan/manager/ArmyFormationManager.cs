@@ -127,5 +127,10 @@ namespace _Monobehaviors.ui.battle_plan.counter
             battalions.Add(battalion);
             CardManager.instance.updateCard(battalion.armyType, battalions.Count);
         }
+
+        public void updateSelectedType(SoldierType type)
+        {
+            selectedType = type;
+        }
     }
 }

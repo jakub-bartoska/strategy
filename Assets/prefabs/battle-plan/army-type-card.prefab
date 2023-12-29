@@ -146,6 +146,7 @@ GameObject:
   - component: {fileID: 4588087233972667276}
   - component: {fileID: 4125247814227807879}
   - component: {fileID: 643577253390498983}
+  - component: {fileID: 8168434466266019190}
   m_Layer: 0
   m_Name: army-type-card
   m_TagString: Untagged
@@ -226,6 +227,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   typeText: {fileID: 5166207873044948660}
   countText: {fileID: 7329576508720191708}
+--- !u!114 &8168434466266019190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2015395833013143537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90b4a27d923e48edade8fe15f1ac5a08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3822533321895709277
 GameObject:
   m_ObjectHideFlags: 0

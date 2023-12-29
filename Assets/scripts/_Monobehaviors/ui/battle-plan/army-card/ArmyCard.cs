@@ -9,11 +9,19 @@ namespace _Monobehaviors.ui.battle_plan.army_card
         [SerializeField] private TextMeshProUGUI typeText;
         [SerializeField] private TextMeshProUGUI countText;
         private int maxCount;
+        private SoldierType type;
 
         public void setTypeText(SoldierType type)
         {
+            this.type = type;
             typeText.text = type.ToString();
         }
+
+        public SoldierType getSoldierType()
+        {
+            return type;
+        }
+
 
         public void setMax(int max)
         {
