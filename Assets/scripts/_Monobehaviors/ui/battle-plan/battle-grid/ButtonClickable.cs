@@ -15,7 +15,6 @@ namespace _Monobehaviors.ui.battle_plan.battle_grid
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            Debug.Log("clicked by: " + eventData.button);
             switch (eventData.button)
             {
                 case PointerEventData.InputButton.Left:
@@ -25,7 +24,6 @@ namespace _Monobehaviors.ui.battle_plan.battle_grid
                     buttonDropTarget.remove();
                     break;
                 case PointerEventData.InputButton.Middle:
-                    Debug.Log("middle click");
                     break;
             }
         }

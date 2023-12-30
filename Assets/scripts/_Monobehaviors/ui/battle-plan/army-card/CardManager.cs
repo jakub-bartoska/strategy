@@ -9,7 +9,7 @@ namespace _Monobehaviors.ui.battle_plan.army_card
         public static CardManager instance;
         [SerializeField] private GameObject cardPrefab;
         [SerializeField] private GameObject target;
-        private Dictionary<SoldierType, ArmyCard> cards = new();
+        private Dictionary<SoldierType, (ArmyCard, ArmyCardClickable)> cards = new();
 
         private void Awake()
         {
@@ -25,13 +25,29 @@ namespace _Monobehaviors.ui.battle_plan.army_card
                 card.setTypeText(type);
                 card.setMax(list.Count);
                 card.setCountText(list.Count);
-                cards.Add(type, card);
+                var clickable = newInstance.GetComponent<ArmyCardClickable>();
+                cards.Add(type, (card, clickable));
             }
         }
 
         public void updateCard(SoldierType type, int count)
         {
-            cards[type].setCountText(count);
+            cards[type].Item1.setCountText(count);
+        }
+
+        public void updateCardColors(SoldierType newType)
+        {
+            foreach (var (type, (card, clickable)) in cards)
+            {
+                if (type == newType)
+                {
+                    clickable.updateActivity(CardState.ACTIVE);
+                }
+                else
+                {
+                    clickable.updateActivity(CardState.INACTIVE);
+                }
+            }
         }
     }
 }

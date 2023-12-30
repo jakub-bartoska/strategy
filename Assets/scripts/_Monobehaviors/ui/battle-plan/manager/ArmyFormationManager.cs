@@ -44,11 +44,10 @@ namespace _Monobehaviors.ui.battle_plan.counter
                 }
             }
 
-            selectedType = team1.Keys.First();
-
             allButtonDropTargets.Clear();
             GridSpawner.instance.spawn();
             CardManager.instance.spawn(team1);
+            updateSelectedType(team1.Keys.First());
         }
 
         private void addTeam1Batalion(BattalionToSpawn battalion)
@@ -114,6 +113,7 @@ namespace _Monobehaviors.ui.battle_plan.counter
                     var battalion = battalions[count - 1];
                     battalions.RemoveAt(count - 1);
                     CardManager.instance.updateCard(selectedType.Value, count - 1);
+                    redrawStartButton();
                     return battalion;
                 }
             }
@@ -121,16 +121,29 @@ namespace _Monobehaviors.ui.battle_plan.counter
             return null;
         }
 
+        private void redrawStartButton()
+        {
+            var totalCount = 0;
+            foreach (var list in team1.Values)
+            {
+                totalCount += list.Count;
+            }
+
+            StartBattleButton.instance.updateActivity(totalCount != 0 ? CardState.INACTIVE : CardState.ACTIVE);
+        }
+
         public void returnBatalion(BattalionToSpawn battalion)
         {
             team1.TryGetValue(battalion.armyType, out var battalions);
             battalions.Add(battalion);
             CardManager.instance.updateCard(battalion.armyType, battalions.Count);
+            redrawStartButton();
         }
 
         public void updateSelectedType(SoldierType type)
         {
             selectedType = type;
+            CardManager.instance.updateCardColors(type);
         }
     }
 }
