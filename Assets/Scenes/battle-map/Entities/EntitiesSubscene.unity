@@ -233,12 +233,7 @@ MonoBehaviour:
     distanceBetweenSoldiers: 1.5
   - team: 0
     armyType: 1
-    count: 20
-    formation: 2
-    distanceBetweenSoldiers: 10
-  - team: 0
-    armyType: 0
-    count: 20
+    count: 60
     formation: 2
     distanceBetweenSoldiers: 10
 --- !u!4 &1898180281

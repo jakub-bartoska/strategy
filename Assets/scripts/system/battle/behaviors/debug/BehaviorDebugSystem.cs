@@ -22,17 +22,7 @@ namespace system.behaviors.debug
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            new DrawDebugSoldiersJob().ScheduleParallel(state.Dependency).Complete();
-        }
-    }
-
-    [BurstCompile]
-    public partial struct DrawDebugSoldiersJob : IJobEntity
-    {
-        [BurstCompile]
-        private void Execute(TestAspect aspect)
-        {
-            aspect.execute();
+            state.Enabled = false;
         }
     }
 }

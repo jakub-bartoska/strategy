@@ -1,4 +1,5 @@
 ﻿using component._common.system_switchers;
+using component.config.authoring_pairs;
 using component.helpers;
 using system_groups;
 using Unity.Burst;
@@ -25,12 +26,14 @@ namespace system.behaviors.behavior_systems
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            var meeleConfig = SystemAPI.GetSingleton<MeeleConfig>();
             var damage = SystemAPI.GetSingletonBuffer<Damage>();
             var deltaTime = SystemAPI.Time.DeltaTime;
             new AttackClosestEnemyJob
                 {
                     damage = damage,
-                    deltaTime = deltaTime
+                    deltaTime = deltaTime,
+                    meeleConfig = meeleConfig
                 }.Schedule(state.Dependency)
                 .Complete();
         }
@@ -41,11 +44,12 @@ namespace system.behaviors.behavior_systems
     {
         public float deltaTime;
         public DynamicBuffer<Damage> damage;
+        public MeeleConfig meeleConfig;
 
         [BurstCompile]
         private void Execute(AttackClosestEnemyAspect attackClosestEnemyAspect)
         {
-            attackClosestEnemyAspect.attackClosestEnemy(deltaTime, damage);
+            attackClosestEnemyAspect.attackClosestEnemy(deltaTime, damage, meeleConfig);
         }
     }
 }

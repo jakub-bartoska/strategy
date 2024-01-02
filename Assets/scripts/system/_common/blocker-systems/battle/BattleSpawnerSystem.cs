@@ -114,7 +114,7 @@ namespace system
             positionHolder.team2PositionCells =
                 new NativeParallelMultiHashMap<int2, int>(team2SoldierSum, Allocator.Persistent);
 
-            var formationManager = new FormationManager { maxFormationId = 0 };
+            var formationManager = new FormationManager {maxFormationId = 0};
 
             ecb.AddComponent(singletonEntity, squarePositions);
             ecb.AddComponent(singletonEntity, positionHolder);
@@ -160,8 +160,8 @@ namespace system
             return new PositionHolderConfig
             {
                 oneSquareSize = 5,
-                minSquarePosition = new int2((int)minPosition.x, (int)minPosition.z),
-                maxSquarePosition = new int2((int)(maxPosition.x + 0.9f), (int)(maxPosition.z + 0.9f)),
+                minSquarePosition = new int2((int) minPosition.x, (int) minPosition.z),
+                maxSquarePosition = new int2((int) (maxPosition.x + 0.9f), (int) (maxPosition.z + 0.9f)),
             };
         }
 
@@ -172,7 +172,7 @@ namespace system
 
             for (var i = 0; i < randomPerThread.Length; i++)
             {
-                randomPerThread[i] = new Unity.Mathematics.Random((uint)random.ValueRW.random.NextInt());
+                randomPerThread[i] = new Unity.Mathematics.Random((uint) random.ValueRW.random.NextInt());
             }
 
             return randomPerThread;
@@ -304,7 +304,7 @@ namespace system
             behaviorContext.behaviorToBeFinished = BehaviorType.NONE;
             behaviorContext.currentBehavior = BehaviorType.IDLE;
             behaviorContext.possibleBehaviors = new UnsafeList<BehaviorType>(5, Allocator.Persistent);
-            //behaviorContext.possibleBehaviors.Add(BehaviorType.FOLLOW_CLOSEST_ENEMY);
+            behaviorContext.possibleBehaviors.Add(BehaviorType.MOVE_FORWARD);
             behaviorContext.possibleBehaviors.Add(BehaviorType.IDLE);
 
             switch (soldierType)

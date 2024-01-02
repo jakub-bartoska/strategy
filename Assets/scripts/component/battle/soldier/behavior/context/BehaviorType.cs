@@ -4,7 +4,7 @@
     {
         NONE, //not set
         IDLE, //do nothing
-        FOLLOW_CLOSEST_ENEMY,
+        MOVE_FORWARD,
         FIGHT,
         SHOOT_ARROW,
         MAKE_LINE_FORMATION,

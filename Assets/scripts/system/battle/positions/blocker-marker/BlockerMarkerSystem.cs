@@ -113,7 +113,7 @@ namespace system.positions.blocker_marker
                 case BehaviorType.SHOOT_ARROW:
                     addKey(transform.Position.xz, status.index, blockers, false);
                     break;
-                case BehaviorType.FOLLOW_CLOSEST_ENEMY:
+                case BehaviorType.MOVE_FORWARD:
                     if (!pathTracker.isMoving)
                     {
                         addKey(transform.Position.xz, status.index, blocked, true);

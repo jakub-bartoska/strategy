@@ -15,6 +15,8 @@ namespace component.config.authoring_pairs
 
         //o kolik ma preltet sip svuj cil (1 = 100%)
         public float overshootRatio = 1.3f;
+
+        public float meeleDamage = 10f;
     }
 
     public class BasicConfigBaker : Baker<BasicConfigAuthoring>
@@ -29,6 +31,10 @@ namespace component.config.authoring_pairs
                 arrowShootingDelay = authoring.arrowShootingDelay,
                 shootingDistance = authoring.shootingDistance,
                 overshootRatio = authoring.overshootRatio
+            });
+            AddComponent(entity, new MeeleConfig
+            {
+                meeleDamage = authoring.meeleDamage
             });
         }
     }

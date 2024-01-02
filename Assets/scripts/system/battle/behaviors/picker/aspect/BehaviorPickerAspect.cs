@@ -1,18 +1,10 @@
-﻿using component;
-using component.config.authoring_pairs;
+﻿using component.config.authoring_pairs;
 using component.formation;
-using component.general;
 using component.soldier;
 using component.soldier.behavior.behaviors;
-using component.soldier.behavior.behaviors.shoot_arrow;
-using component.soldier.behavior.fight;
 using Unity.Burst;
-using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
-using Unity.Mathematics;
-using Unity.Transforms;
-using UnityEngine;
 
 namespace system
 {
@@ -77,9 +69,9 @@ namespace system
                 return BehaviorType.FIGHT;
             }
 
-            if (containsBehavior(availableBehaviors, BehaviorType.FOLLOW_CLOSEST_ENEMY))
+            if (containsBehavior(availableBehaviors, BehaviorType.MOVE_FORWARD))
             {
-                return BehaviorType.FOLLOW_CLOSEST_ENEMY;
+                return BehaviorType.MOVE_FORWARD;
             }
 
             if (soldierFormationStatus.ValueRO.formationStatus == FormationStatus.NO_FORMATION

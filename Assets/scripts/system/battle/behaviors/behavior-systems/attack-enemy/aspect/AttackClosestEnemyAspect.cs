@@ -1,4 +1,5 @@
-﻿using component.helpers;
+﻿using component.config.authoring_pairs;
+using component.helpers;
 using component.soldier;
 using component.soldier.behavior.behaviors;
 using component.soldier.behavior.fight;
@@ -12,7 +13,7 @@ namespace system.behaviors.behavior_systems
         private readonly RefRW<FightContext> fightContext;
         private readonly RefRO<BehaviorContext> context;
 
-        public void attackClosestEnemy(float deltaTime, DynamicBuffer<Damage> damage)
+        public void attackClosestEnemy(float deltaTime, DynamicBuffer<Damage> damage, MeeleConfig meeleConfig)
         {
             if (context.ValueRO.currentBehavior != BehaviorType.FIGHT)
             {
@@ -28,7 +29,7 @@ namespace system.behaviors.behavior_systems
                 damage.Add(new Damage
                 {
                     dmgReceiverId = receiverId,
-                    dmgAmount = 20
+                    dmgAmount = (int) meeleConfig.meeleDamage
                 });
             }
 
