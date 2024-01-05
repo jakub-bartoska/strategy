@@ -2,6 +2,7 @@
 using component;
 using component._common.system_switchers;
 using component.authoring_pairs.PrefabHolder;
+using component.battle.battalion;
 using component.config.authoring_pairs;
 using component.config.game_settings;
 using component.formation;
@@ -48,7 +49,6 @@ namespace system
 
             if (!containsArmySpawn(blockers)) return;
 
-            var teamPositions = SystemAPI.GetSingletonBuffer<TeamPositions>();
             var batalionsToSpawn = SystemAPI.GetSingletonBuffer<BattalionToSpawn>();
             var teamColors = SystemAPI.GetSingletonBuffer<TeamColor>();
             var prefabHolder = SystemAPI.GetSingleton<PrefabHolder>();
@@ -67,14 +67,13 @@ namespace system
 
             var team1SoldierSum = 0;
             var team2SoldierSum = 0;
+            var battalionId = 0;
             foreach (var batalionToSpawn in batalionsToSpawn)
             {
                 if (batalionToSpawn.count == 0)
                 {
                     continue;
                 }
-
-                var teamPosition = getTeamPositions(batalionToSpawn.team, teamPositions);
 
                 new SpawnerJob
                     {
@@ -85,11 +84,11 @@ namespace system
                         team = batalionToSpawn.team,
                         soldierType = batalionToSpawn.armyType,
                         entityIndexAdd = (team1SoldierSum + team2SoldierSum),
-                        teamPosition = teamPosition,
                         teamColor = getColor(batalionToSpawn.team, teamColors),
                         battalionToSpawn = batalionToSpawn,
                         companyId = batalionToSpawn.armyCompanyId,
-                        defaultPositionOffset = defaultPositionOffset
+                        defaultPositionOffset = defaultPositionOffset,
+                        battalionId = battalionId++
                     }.Schedule(batalionToSpawn.count, 128)
                     .Complete();
 
@@ -178,19 +177,6 @@ namespace system
             return randomPerThread;
         }
 
-        private TeamPositions getTeamPositions(Team team, DynamicBuffer<TeamPositions> positions)
-        {
-            foreach (var position in positions)
-            {
-                if (position.team == team)
-                {
-                    return position;
-                }
-            }
-
-            throw new Exception("unknown team");
-        }
-
         private float4 getColor(Team team, DynamicBuffer<TeamColor> colors)
         {
             foreach (var color in colors)
@@ -212,17 +198,22 @@ namespace system
         public Team team;
         public SoldierType soldierType;
         public int entityIndexAdd;
-        public TeamPositions teamPosition;
         public float4 teamColor;
         public ArrowConfig arrowConfig;
         public BattalionToSpawn battalionToSpawn;
         public long companyId;
         public float3 defaultPositionOffset;
+        public int battalionId;
         [NativeSetThreadIndex] private int threadIndex;
 
         [BurstCompile]
         public void Execute(int index)
         {
+            if (index == 0)
+            {
+                spawnBattalion();
+            }
+
             Entity prefab;
             switch (soldierType)
             {
@@ -328,26 +319,53 @@ namespace system
             ecb.AddComponent(index, newEntity, behaviorContext);
         }
 
+        private void spawnBattalion()
+        {
+            var battalionPrefab = prefabHolder.battalionPrefab;
+            var newBattalion = ecb.Instantiate(100, battalionPrefab);
+
+            var battalionPosition = getBattalionPosition();
+            battalionPosition.y = 0.02f;
+            battalionPosition.z += 5f;
+            var battalionTransform = LocalTransform.FromPosition(battalionPosition);
+
+            var battalionMarker = new BattalionMarker
+            {
+                id = battalionId,
+                team = team,
+                row = battalionToSpawn.position.y
+            };
+
+            ecb.AddComponent(100000, newBattalion, battalionMarker);
+
+            ecb.SetComponent(100000, newBattalion, battalionTransform);
+        }
+
         private float3 getPosition(int index)
         {
-            var distanceFromMiddle = battalionToSpawn.team switch
-            {
-                Team.TEAM1 => 50,
-                Team.TEAM2 => -50,
-            };
-            var batalionPosition = new float3
-            {
-                x = battalionToSpawn.position.x * 5 + distanceFromMiddle + defaultPositionOffset.x,
-                y = 0 + defaultPositionOffset.y,
-                z = defaultPositionOffset.z + 40 - (battalionToSpawn.position.y * 10)
-            };
+            var battalionPosition = getBattalionPosition();
             var soldierWithinBatalionPosition = new float3
             {
                 x = 0,
                 y = 0,
                 z = index + 1
             };
-            return batalionPosition + soldierWithinBatalionPosition;
+            return battalionPosition + soldierWithinBatalionPosition;
+        }
+
+        private float3 getBattalionPosition()
+        {
+            var distanceFromMiddle = battalionToSpawn.team switch
+            {
+                Team.TEAM1 => 50,
+                Team.TEAM2 => -50,
+            };
+            return new float3
+            {
+                x = battalionToSpawn.position.x * 5 + distanceFromMiddle + defaultPositionOffset.x,
+                y = 0 + defaultPositionOffset.y,
+                z = defaultPositionOffset.z + 40 - (battalionToSpawn.position.y * 10)
+            };
         }
     }
 }

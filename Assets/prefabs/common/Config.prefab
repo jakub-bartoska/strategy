@@ -121,6 +121,8 @@ MonoBehaviour:
     type: 3}
   caravanPrefab: {fileID: 140445901179791745, guid: 845955b9bfd739c49ad278582265b759,
     type: 3}
+  battalionPrefab: {fileID: 3699474186630514537, guid: 588e36e55a5484a48a14c4dd01be1af9,
+    type: 3}
 --- !u!114 &4500119305238821017
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -225,6 +227,7 @@ MonoBehaviour:
   arrowDamage: 10
   shootingDistance: 40
   overshootRatio: 1.3
+  meeleDamage: 10
 --- !u!114 &8093479988923166075
 MonoBehaviour:
   m_ObjectHideFlags: 0

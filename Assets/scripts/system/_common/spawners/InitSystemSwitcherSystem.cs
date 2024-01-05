@@ -20,7 +20,6 @@ namespace system._common
             state.RequireForUpdate<CameraConfigComponentData>();
             state.RequireForUpdate<SystemStatusHolder>();
             state.RequireForUpdate<ArrowConfig>();
-            state.RequireForUpdate<TeamPositions>();
         }
 
         [BurstCompile]

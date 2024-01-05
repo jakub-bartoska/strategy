@@ -19,5 +19,6 @@ namespace component.authoring_pairs.PrefabHolder
         public Entity stoneMinePrefab;
         public Entity goldMinePrefab;
         public Entity caravanPrefab;
+        public Entity battalionPrefab;
     }
 }
