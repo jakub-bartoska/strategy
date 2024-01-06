@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using component;
 using component._common.system_switchers;
 using component.battle.battalion;
@@ -45,7 +44,8 @@ namespace system.battle.battalion
                 .Complete();
         }
 
-        private void testik(NativeParallelMultiHashMap<int, (long, float3, Team)> battalionPositions, NativeParallelHashMap<long, bool> willingToMove)
+        private void testik(NativeParallelMultiHashMap<int, (long, float3, Team)> battalionPositions,
+            NativeParallelHashMap<long, bool> willingToMove)
         {
             var allRows = battalionPositions.GetKeyArray(Allocator.TempJob);
             allRows.Sort();
@@ -61,50 +61,73 @@ namespace system.battle.battalion
 
                 rowBattalions.Sort(new SortByTeamAndPosition());
 
-                for (int i = 0; i <= rowBattalions.Length; i++)
+                for (int i = 0; i < rowBattalions.Length; i++)
                 {
                     var myBattalion = rowBattalions[i];
 
-                    if (i == 0)
+                    if (rowBattalions.Length == 1)
                     {
                         willingToMove.Add(myBattalion.Item1, true);
-                        goto outerLoop;
+                        continue;
                     }
 
-                    var closestEnemy = myBattalion.Item3 switch
+                    if (i == 0 && myBattalion.Item3 == Team.TEAM2)
                     {
-                        Team.TEAM1 => rowBattalions[i + 1],
-                        Team.TEAM2 => rowBattalions[i - 1],
-                        _ => throw new Exception("Unknown team")
-                    };
+                        willingToMove.Add(myBattalion.Item1, true);
+                        continue;
+                    }
+
+                    (long, float3, Team) closestEnemy;
+                    if (myBattalion.Item3 == Team.TEAM2)
+                    {
+                        if (rowBattalions.Length - 1 > i)
+                        {
+                            closestEnemy = rowBattalions[i + 1];
+                        }
+                        else
+                        {
+                            willingToMove.Add(myBattalion.Item1, true);
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        if (i != 0)
+                        {
+                            closestEnemy = rowBattalions[i - 1];
+                        }
+                        else
+                        {
+                            willingToMove.Add(myBattalion.Item1, true);
+                            continue;
+                        }
+                    }
 
                     if (closestEnemy.Item3 == myBattalion.Item3)
                     {
                         willingToMove.Add(myBattalion.Item1, true);
-                        goto outerLoop;
+                        continue;
                     }
 
-                    if (isWithinDistance(closestEnemy.Item2, myBattalion.Item2))
+                    if (isTooFar(closestEnemy.Item2, myBattalion.Item2))
                     {
                         willingToMove.Add(myBattalion.Item1, true);
-                        goto outerLoop;
+                        continue;
                     }
 
                     willingToMove.Add(myBattalion.Item1, false);
+
                     for (int j = i; j == 0; j--)
                     {
-                        if (!isWithinDistance(rowBattalions[j].Item2, rowBattalions[j - 1].Item2)) break;
+                        if (!isTooFar(rowBattalions[j].Item2, rowBattalions[j - 1].Item2)) break;
 
                         willingToMove[rowBattalions[j].Item1] = false;
                     }
                 }
-
-                outerLoop:
-                continue;
             }
         }
 
-        private bool isWithinDistance(float3 position1, float3 position2)
+        private bool isTooFar(float3 position1, float3 position2)
         {
             var distance = math.abs(position1.x - position2.x);
             // 5 = 1/2 size of battalion
@@ -123,9 +146,9 @@ namespace system.battle.battalion
                     return e1.Item2.x.CompareTo(e2.Item2.x);
                 }
 
-                if (e1.Item3 == Team.TEAM1) return -1;
+                if (e1.Item3 == Team.TEAM1) return 1;
 
-                return 1;
+                return -1;
             }
         }
 
@@ -136,7 +159,8 @@ namespace system.battle.battalion
 
             private void Execute(BattalionMarker battalionMarker, ref LocalTransform transform)
             {
-                battalionPositions.Add(battalionMarker.row, (battalionMarker.id, transform.Position, battalionMarker.team));
+                battalionPositions.Add(battalionMarker.row,
+                    (battalionMarker.id, transform.Position, battalionMarker.team));
             }
         }
 
