@@ -83,12 +83,6 @@ namespace system.battle.battalion
                         continue;
                     }
 
-                    if (i == 0 && myBattalion.Item3 == Team.TEAM2)
-                    {
-                        willingToMove.Add(myBattalion.Item1, true);
-                        continue;
-                    }
-
                     (long, float3, Team) closestEnemy;
                     if (myBattalion.Item3 == Team.TEAM2)
                     {
@@ -229,11 +223,24 @@ namespace system.battle.battalion
             {
                 if (battalionFights.TryGetValue(battalionMarker.id, out var enemyId))
                 {
-                    battalionFight.Add(new BattalionFightBuffer
+                    var exists = false;
+                    foreach (var fight in battalionFight)
                     {
-                        time = 1f,
-                        enemyBattalionId = enemyId
-                    });
+                        if (fight.enemyBattalionId == enemyId)
+                        {
+                            exists = true;
+                            break;
+                        }
+                    }
+
+                    if (!exists)
+                    {
+                        battalionFight.Add(new BattalionFightBuffer
+                        {
+                            time = 1f,
+                            enemyBattalionId = enemyId
+                        });
+                    }
                 }
             }
         }

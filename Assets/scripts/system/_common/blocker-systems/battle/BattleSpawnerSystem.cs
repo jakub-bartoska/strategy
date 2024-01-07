@@ -96,6 +96,12 @@ namespace system
                     buffer.Add(battalionSoldier);
                 }
 
+                var battalionHealth = new BattalionHealth
+                {
+                    value = battalionToSpawn.count * 10
+                };
+                ecb.AddComponent(newBattalion, battalionHealth);
+
                 if (battalionToSpawn.team == Team.TEAM1)
                 {
                     team1SoldierSum += battalionToSpawn.count;
