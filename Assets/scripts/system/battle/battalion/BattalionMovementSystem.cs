@@ -32,8 +32,10 @@ namespace system.battle.battalion
 
             //var forwardMovementBlocker = new NativeParallelHashMap<int, bool>(1000, Allocator.TempJob);
             var battalionWillingMove = new NativeParallelHashMap<long, bool>(1000, Allocator.TempJob);
+            // battalion id fights battalion with id -> contains duplicities
+            var battalionFights = new NativeHashMap<long, long>(1000, Allocator.TempJob);
 
-            testik(battalionPositions, battalionWillingMove);
+            fillBlockers(battalionPositions, battalionWillingMove, battalionFights);
 
             var deltaTime = SystemAPI.Time.DeltaTime;
             new MoveBattalionJob
@@ -42,10 +44,15 @@ namespace system.battle.battalion
                     willingToMove = battalionWillingMove
                 }.Schedule(state.Dependency)
                 .Complete();
+
+            new AddInBattleTagJob
+                {
+                    battalionFights = battalionFights
+                }.ScheduleParallel(state.Dependency)
+                .Complete();
         }
 
-        private void testik(NativeParallelMultiHashMap<int, (long, float3, Team)> battalionPositions,
-            NativeParallelHashMap<long, bool> willingToMove)
+        private void fillBlockers(NativeParallelMultiHashMap<int, (long, float3, Team)> battalionPositions, NativeParallelHashMap<long, bool> willingToMove, NativeHashMap<long, long> battalionFights)
         {
             var allRows = battalionPositions.GetKeyArray(Allocator.TempJob);
             allRows.Sort();
@@ -64,6 +71,11 @@ namespace system.battle.battalion
                 for (int i = 0; i < rowBattalions.Length; i++)
                 {
                     var myBattalion = rowBattalions[i];
+
+                    if (willingToMove.ContainsKey(myBattalion.Item1))
+                    {
+                        goto outerLoop;
+                    }
 
                     if (rowBattalions.Length == 1)
                     {
@@ -115,15 +127,41 @@ namespace system.battle.battalion
                         continue;
                     }
 
+                    battalionFights.Add(myBattalion.Item1, closestEnemy.Item1);
                     willingToMove.Add(myBattalion.Item1, false);
 
-                    for (int j = i; j == 0; j--)
+                    if (myBattalion.Item3 == Team.TEAM2)
                     {
-                        if (!isTooFar(rowBattalions[j].Item2, rowBattalions[j - 1].Item2)) break;
-
-                        willingToMove[rowBattalions[j].Item1] = false;
+                        for (int j = i - 1; j >= 0; j--)
+                        {
+                            if (!isTooFar(rowBattalions[j].Item2, rowBattalions[j + 1].Item2))
+                            {
+                                willingToMove[rowBattalions[j].Item1] = false;
+                            }
+                            else
+                            {
+                                willingToMove[rowBattalions[j].Item1] = true;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (int j = i + 1; j < rowBattalions.Length; j++)
+                        {
+                            if (!isTooFar(rowBattalions[j].Item2, rowBattalions[j - 1].Item2))
+                            {
+                                willingToMove[rowBattalions[j].Item1] = false;
+                            }
+                            else
+                            {
+                                willingToMove[rowBattalions[j].Item1] = true;
+                            }
+                        }
                     }
                 }
+
+                outerLoop:
+                continue;
             }
         }
 
@@ -179,6 +217,24 @@ namespace system.battle.battalion
 
                 var delta = new float3(direction * speed, 0, 0);
                 transform.Position += delta;
+            }
+        }
+
+        [BurstCompile]
+        public partial struct AddInBattleTagJob : IJobEntity
+        {
+            [ReadOnly] public NativeHashMap<long, long> battalionFights;
+
+            private void Execute(BattalionMarker battalionMarker, ref DynamicBuffer<BattalionFightBuffer> battalionFight)
+            {
+                if (battalionFights.TryGetValue(battalionMarker.id, out var enemyId))
+                {
+                    battalionFight.Add(new BattalionFightBuffer
+                    {
+                        time = 1f,
+                        enemyBattalionId = enemyId
+                    });
+                }
             }
         }
     }

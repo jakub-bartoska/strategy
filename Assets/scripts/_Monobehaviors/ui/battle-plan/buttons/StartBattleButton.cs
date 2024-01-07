@@ -13,7 +13,7 @@ namespace _Monobehaviors.ui.battle_plan.buttons
     {
         public static StartBattleButton instance;
         private Color active = new(0.1627803f, 0.5849056f, 0.2474526f);
-        private EntityQuery batalionToSpawn;
+        private EntityQuery battalionToSpawn;
         private EntityManager entityManager;
         private Image image;
         private Color inactive = new(0.6132076f, 0.6132076f, 0.6132076f);
@@ -29,13 +29,13 @@ namespace _Monobehaviors.ui.battle_plan.buttons
         private void Start()
         {
             entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-            batalionToSpawn = entityManager.CreateEntityQuery(typeof(BattalionToSpawn));
+            battalionToSpawn = entityManager.CreateEntityQuery(typeof(BattalionToSpawn));
         }
 
         public void onStartBattle()
         {
-            var battalions = ArmyFormationManager.instance.getAllBatalions();
-            var buffer = batalionToSpawn.GetSingletonBuffer<BattalionToSpawn>();
+            var battalions = ArmyFormationManager.instance.getAllBattalions();
+            var buffer = battalionToSpawn.GetSingletonBuffer<BattalionToSpawn>();
             buffer.Clear();
             buffer.AddRange(battalions);
 

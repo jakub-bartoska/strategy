@@ -8,7 +8,7 @@ namespace _Monobehaviors.ui.battle_plan.buttons
 {
     public class DraggableButton : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
-        private BattalionToSpawn batalion;
+        private BattalionToSpawn battalion;
         private Image image;
         private Transform parentAfterDrag;
         private Transform parentBeforeDrag;
@@ -40,7 +40,7 @@ namespace _Monobehaviors.ui.battle_plan.buttons
             if (parentAfterDrag == parentBeforeDrag) return;
 
             var buttonDropTarget = parentBeforeDrag.GetComponent<ButtonDropTarget>();
-            buttonDropTarget.emptyBatalion();
+            buttonDropTarget.emptyBattalion();
         }
 
         public void setNewParent(Transform newParent)
@@ -48,14 +48,14 @@ namespace _Monobehaviors.ui.battle_plan.buttons
             parentAfterDrag = newParent;
         }
 
-        public void setBatalion(BattalionToSpawn batalion)
+        public void setBattalion(BattalionToSpawn battalion)
         {
-            this.batalion = batalion;
+            this.battalion = battalion;
         }
 
-        public BattalionToSpawn getBatalion()
+        public BattalionToSpawn getBattalion()
         {
-            return batalion;
+            return battalion;
         }
     }
 }

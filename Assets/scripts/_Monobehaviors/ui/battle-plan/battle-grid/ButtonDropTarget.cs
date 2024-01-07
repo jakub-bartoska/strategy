@@ -20,7 +20,7 @@ namespace _Monobehaviors.ui.battle_plan.buttons
 
             draggableButton = eventData.pointerDrag.GetComponent<DraggableButton>();
             draggableButton.setNewParent(transform);
-            battalion = draggableButton.getBatalion();
+            battalion = draggableButton.getBattalion();
         }
 
         public void add()
@@ -34,26 +34,26 @@ namespace _Monobehaviors.ui.battle_plan.buttons
             var newInstance = Instantiate(armyPrefab, transform);
             draggableButton = newInstance.GetComponent<DraggableButton>();
             draggableButton.setNewParent(transform);
-            draggableButton.setBatalion(battalion.Value);
+            draggableButton.setBattalion(battalion.Value);
         }
 
         public void remove()
         {
             if (!battalion.HasValue) return;
 
-            ArmyFormationManager.instance.returnBatalion(battalion.Value);
+            ArmyFormationManager.instance.returnBattalion(battalion.Value);
             battalion = null;
             Destroy(draggableButton.gameObject);
             draggableButton = null;
         }
 
-        public void emptyBatalion()
+        public void emptyBattalion()
         {
             battalion = null;
             draggableButton = null;
         }
 
-        public BattalionToSpawn? getBatalion()
+        public BattalionToSpawn? getBattalion()
         {
             if (battalion.HasValue)
             {

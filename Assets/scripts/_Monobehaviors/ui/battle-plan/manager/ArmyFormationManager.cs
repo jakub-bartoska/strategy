@@ -34,7 +34,7 @@ namespace _Monobehaviors.ui.battle_plan.counter
                 switch (battalion.team)
                 {
                     case Team.TEAM1:
-                        addTeam1Batalion(battalion);
+                        addTeam1Battalion(battalion);
                         break;
                     case Team.TEAM2:
                         team2.Add(battalion);
@@ -50,7 +50,7 @@ namespace _Monobehaviors.ui.battle_plan.counter
             updateSelectedType(team1.Keys.First());
         }
 
-        private void addTeam1Batalion(BattalionToSpawn battalion)
+        private void addTeam1Battalion(BattalionToSpawn battalion)
         {
             if (team1.TryGetValue(battalion.armyType, out var battalionList))
             {
@@ -58,7 +58,7 @@ namespace _Monobehaviors.ui.battle_plan.counter
             }
             else
             {
-                team1.Add(battalion.armyType, new List<BattalionToSpawn> { battalion });
+                team1.Add(battalion.armyType, new List<BattalionToSpawn> {battalion});
             }
         }
 
@@ -67,16 +67,16 @@ namespace _Monobehaviors.ui.battle_plan.counter
             allButtonDropTargets.Add(buttonDropTarget);
         }
 
-        public NativeList<BattalionToSpawn> getAllBatalions()
+        public NativeList<BattalionToSpawn> getAllBattalions()
         {
             var result = new NativeList<BattalionToSpawn>(Allocator.TempJob);
             result.AddRange(prepareTeam2Positions());
             foreach (var allButtonDropTarget in allButtonDropTargets)
             {
-                var batalion = allButtonDropTarget.getBatalion();
-                if (batalion.HasValue)
+                var battalion = allButtonDropTarget.getBattalion();
+                if (battalion.HasValue)
                 {
-                    result.Add(batalion.Value);
+                    result.Add(battalion.Value);
                 }
             }
 
@@ -132,7 +132,7 @@ namespace _Monobehaviors.ui.battle_plan.counter
             StartBattleButton.instance.updateActivity(totalCount != 0 ? CardState.INACTIVE : CardState.ACTIVE);
         }
 
-        public void returnBatalion(BattalionToSpawn battalion)
+        public void returnBattalion(BattalionToSpawn battalion)
         {
             team1.TryGetValue(battalion.armyType, out var battalions);
             battalions.Add(battalion);

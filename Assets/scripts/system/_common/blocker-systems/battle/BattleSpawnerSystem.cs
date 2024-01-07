@@ -5,14 +5,9 @@ using component.authoring_pairs.PrefabHolder;
 using component.battle.battalion;
 using component.config.authoring_pairs;
 using component.config.game_settings;
-using component.formation;
 using component.general;
-using component.helpers.positioning;
-using component.pathfinding;
 using component.soldier;
-using component.soldier.behavior.behaviors;
-using component.soldier.behavior.behaviors.shoot_arrow;
-using component.soldier.behavior.fight;
+using system.battle.utils;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
@@ -49,11 +44,10 @@ namespace system
 
             if (!containsArmySpawn(blockers)) return;
 
-            var batalionsToSpawn = SystemAPI.GetSingletonBuffer<BattalionToSpawn>();
+            var battalionsToSpawn = SystemAPI.GetSingletonBuffer<BattalionToSpawn>();
             var teamColors = SystemAPI.GetSingletonBuffer<TeamColor>();
             var prefabHolder = SystemAPI.GetSingleton<PrefabHolder>();
             var random = SystemAPI.GetSingletonRW<GameRandom>();
-            var arrowConfig = SystemAPI.GetSingleton<ArrowConfig>();
             var ecb = new EntityCommandBuffer(Allocator.TempJob);
 
             var mapTransform = LocalTransform.FromPosition(defaultPositionOffset);
@@ -68,56 +62,52 @@ namespace system
             var team1SoldierSum = 0;
             var team2SoldierSum = 0;
             var battalionId = 0;
-            foreach (var batalionToSpawn in batalionsToSpawn)
+            foreach (var battalionToSpawn in battalionsToSpawn)
             {
-                if (batalionToSpawn.count == 0)
+                if (battalionToSpawn.count == 0)
                 {
                     continue;
                 }
 
+                var battalionPosition = getBattalionPosition(battalionToSpawn, defaultPositionOffset);
+
+                var newBattalion = BattalionSpawner.spawnBattalion(ecb, battalionToSpawn, prefabHolder, battalionId++, defaultPositionOffset, battalionPosition);
+
+                var battalionSoldiers = new NativeParallelHashSet<BattalionSoldiers>(battalionToSpawn.count, Allocator.TempJob);
+
                 new SpawnerJob
                     {
                         ecb = ecb.AsParallelWriter(),
-                        arrowConfig = arrowConfig,
                         randoms = randomPerThread,
                         prefabHolder = prefabHolder,
-                        team = batalionToSpawn.team,
-                        soldierType = batalionToSpawn.armyType,
+                        team = battalionToSpawn.team,
+                        soldierType = battalionToSpawn.armyType,
                         entityIndexAdd = (team1SoldierSum + team2SoldierSum),
-                        teamColor = getColor(batalionToSpawn.team, teamColors),
-                        battalionToSpawn = batalionToSpawn,
-                        companyId = batalionToSpawn.armyCompanyId,
-                        defaultPositionOffset = defaultPositionOffset,
-                        battalionId = battalionId++
-                    }.Schedule(batalionToSpawn.count, 128)
+                        teamColor = getColor(battalionToSpawn.team, teamColors),
+                        companyId = battalionToSpawn.armyCompanyId,
+                        battalionPosition = battalionPosition,
+                        battalionSoldiers = battalionSoldiers.AsParallelWriter()
+                    }.Schedule(battalionToSpawn.count, 128)
                     .Complete();
 
-                if (batalionToSpawn.team == Team.TEAM1)
+                var buffer = ecb.AddBuffer<BattalionSoldiers>(newBattalion);
+                foreach (var battalionSoldier in battalionSoldiers)
                 {
-                    team1SoldierSum += batalionToSpawn.count;
+                    buffer.Add(battalionSoldier);
+                }
+
+                if (battalionToSpawn.team == Team.TEAM1)
+                {
+                    team1SoldierSum += battalionToSpawn.count;
                 }
                 else
                 {
-                    team2SoldierSum += batalionToSpawn.count;
+                    team2SoldierSum += battalionToSpawn.count;
                 }
             }
 
             var singletonEntity = ecb.CreateEntity();
-            var squarePositions = initSquarePositions(new float3(10090, 0, 10050), new float3(-10090, 0, -10050));
-            ecb.AddComponent(singletonEntity, squarePositions);
-            var positionHolder = new PositionHolder();
-            positionHolder.soldierIdPosition =
-                new NativeParallelMultiHashMap<int, float3>(team1SoldierSum + team2SoldierSum, Allocator.Persistent);
-            positionHolder.team1PositionCells =
-                new NativeParallelMultiHashMap<int2, int>(team1SoldierSum, Allocator.Persistent);
-            positionHolder.team2PositionCells =
-                new NativeParallelMultiHashMap<int2, int>(team2SoldierSum, Allocator.Persistent);
 
-            var formationManager = new FormationManager {maxFormationId = 0};
-
-            ecb.AddComponent(singletonEntity, squarePositions);
-            ecb.AddComponent(singletonEntity, positionHolder);
-            ecb.AddComponent(singletonEntity, formationManager);
             ecb.AddComponent(singletonEntity, new BattleSingletonEntityTag());
             ecb.AddComponent(singletonEntity, new BattleCleanupTag());
 
@@ -130,6 +120,21 @@ namespace system
             randomPerThread.Dispose();
             ecb.Playback(state.EntityManager);
             ecb.Dispose();
+        }
+
+        private float3 getBattalionPosition(BattalionToSpawn battalionToSpawn, float3 defaultPositionOffset)
+        {
+            var distanceFromMiddle = battalionToSpawn.team switch
+            {
+                Team.TEAM1 => 50,
+                Team.TEAM2 => -50,
+            };
+            return new float3
+            {
+                x = battalionToSpawn.position.x * 5 + distanceFromMiddle + defaultPositionOffset.x,
+                y = 0 + defaultPositionOffset.y,
+                z = defaultPositionOffset.z + 40 - (battalionToSpawn.position.y * 10)
+            };
         }
 
         private bool containsArmySpawn(DynamicBuffer<SystemSwitchBlocker> blockers)
@@ -152,16 +157,6 @@ namespace system
             }
 
             return containsArmySpawn;
-        }
-
-        private PositionHolderConfig initSquarePositions(float3 maxPosition, float3 minPosition)
-        {
-            return new PositionHolderConfig
-            {
-                oneSquareSize = 5,
-                minSquarePosition = new int2((int) minPosition.x, (int) minPosition.z),
-                maxSquarePosition = new int2((int) (maxPosition.x + 0.9f), (int) (maxPosition.z + 0.9f)),
-            };
         }
 
         private NativeArray<Unity.Mathematics.Random> createRandomperThread(RefRW<GameRandom> random)
@@ -189,6 +184,7 @@ namespace system
         }
     }
 
+
     [BurstCompile]
     public struct SpawnerJob : IJobParallelFor
     {
@@ -199,21 +195,14 @@ namespace system
         public SoldierType soldierType;
         public int entityIndexAdd;
         public float4 teamColor;
-        public ArrowConfig arrowConfig;
-        public BattalionToSpawn battalionToSpawn;
         public long companyId;
-        public float3 defaultPositionOffset;
-        public int battalionId;
+        public float3 battalionPosition;
+        public NativeParallelHashSet<BattalionSoldiers>.ParallelWriter battalionSoldiers;
         [NativeSetThreadIndex] private int threadIndex;
 
         [BurstCompile]
         public void Execute(int index)
         {
-            if (index == 0)
-            {
-                spawnBattalion();
-            }
-
             Entity prefab;
             switch (soldierType)
             {
@@ -228,7 +217,7 @@ namespace system
             }
 
             var newEntity = ecb.Instantiate(index, prefab);
-            var calculatedPosition = getPosition(index);
+            var calculatedPosition = getPosition(index, battalionPosition);
             var transform = LocalTransform.FromPosition(calculatedPosition);
 
             var soldierStats = new SoldierStatus
@@ -241,131 +230,39 @@ namespace system
             {
                 hp = 100
             };
-            var closestEnemy = new ClosestEnemy
-            {
-                distanceFromClosestEnemy = 0f,
-                status = ClosestEnemyStatus.NO_ENEMY
-            };
 
             var color = new MaterialColorComponent
             {
                 Value = teamColor
             };
 
-            var pathTracker = new PathTracker
-            {
-                timerRemaining = 0.3f,
-                defaultTimer = 0.3f,
-                isMoving = true
-            };
-
-            var soldierFormationStatus = new SoldierFormationStatus
-            {
-                formationStatus = FormationStatus.NO_FORMATION,
-                formationId = 0
-            };
-
             ecb.SetName(index, newEntity, "Soldeir " + soldierStats.index);
 
             //add components
-            ecb.AddComponent(index, newEntity, pathTracker);
             ecb.AddComponent(index, newEntity, soldierStats);
             ecb.AddComponent(index, newEntity, soldierHp);
-            ecb.AddComponent(index, newEntity, closestEnemy);
             ecb.AddComponent(index, newEntity, color);
-            ecb.AddComponent(index, newEntity, soldierFormationStatus);
             ecb.AddComponent(index, newEntity, new BattleCleanupTag());
 
             //set component
             ecb.SetComponent(index, newEntity, transform);
 
-            var fightContext = new FightContext
+            battalionSoldiers.Add(new BattalionSoldiers
             {
-                attackDelay = 0.2f,
-                attackTimeRemaining = 0.2f
-            };
-
-            var shootArrowContext = new ShootArrowContext
-            {
-                shootTimeRemaining = arrowConfig.arrowShootingDelay,
-                shootDelay = arrowConfig.arrowShootingDelay
-            };
-
-            var behaviorContext = new BehaviorContext();
-            behaviorContext.behaviorToBeFinished = BehaviorType.NONE;
-            behaviorContext.currentBehavior = BehaviorType.IDLE;
-            behaviorContext.possibleBehaviors = new UnsafeList<BehaviorType>(5, Allocator.Persistent);
-            behaviorContext.possibleBehaviors.Add(BehaviorType.MOVE_FORWARD);
-            behaviorContext.possibleBehaviors.Add(BehaviorType.IDLE);
-
-            switch (soldierType)
-            {
-                case SoldierType.ARCHER:
-                    ecb.AddComponent(index, newEntity, shootArrowContext);
-                    behaviorContext.possibleBehaviors.Add(BehaviorType.SHOOT_ARROW);
-                    break;
-                case SoldierType.SWORDSMAN:
-                    ecb.AddComponent(index, newEntity, fightContext);
-                    behaviorContext.possibleBehaviors.Add(BehaviorType.FIGHT);
-                    //behaviorContext.possibleBehaviors.Add(BehaviorType.MAKE_LINE_FORMATION);
-                    //behaviorContext.possibleBehaviors.Add(BehaviorType.PROCESS_FORMATION_COMMAND);
-                    break;
-                case SoldierType.HORSEMAN:
-                    throw new NotImplementedException("implement me");
-                default:
-                    throw new Exception("unknown enum");
-            }
-
-            ecb.AddComponent(index, newEntity, behaviorContext);
+                soldierId = soldierStats.index,
+                entity = newEntity
+            });
         }
 
-        private void spawnBattalion()
+        private float3 getPosition(int index, float3 battalionPosition)
         {
-            var battalionPrefab = prefabHolder.battalionPrefab;
-            var newBattalion = ecb.Instantiate(100, battalionPrefab);
-
-            var battalionPosition = getBattalionPosition();
-            battalionPosition.y = 0.02f;
-            battalionPosition.z += 5f;
-            var battalionTransform = LocalTransform.FromPosition(battalionPosition);
-
-            var battalionMarker = new BattalionMarker
-            {
-                id = battalionId,
-                team = team,
-                row = battalionToSpawn.position.y
-            };
-
-            ecb.AddComponent(100000, newBattalion, battalionMarker);
-
-            ecb.SetComponent(100000, newBattalion, battalionTransform);
-        }
-
-        private float3 getPosition(int index)
-        {
-            var battalionPosition = getBattalionPosition();
-            var soldierWithinBatalionPosition = new float3
+            var soldierWithinBattalionPosition = new float3
             {
                 x = 0,
                 y = 0,
                 z = index + 1
             };
-            return battalionPosition + soldierWithinBatalionPosition;
-        }
-
-        private float3 getBattalionPosition()
-        {
-            var distanceFromMiddle = battalionToSpawn.team switch
-            {
-                Team.TEAM1 => 50,
-                Team.TEAM2 => -50,
-            };
-            return new float3
-            {
-                x = battalionToSpawn.position.x * 5 + distanceFromMiddle + defaultPositionOffset.x,
-                y = 0 + defaultPositionOffset.y,
-                z = defaultPositionOffset.z + 40 - (battalionToSpawn.position.y * 10)
-            };
+            return battalionPosition + soldierWithinBattalionPosition;
         }
     }
 }

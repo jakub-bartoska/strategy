@@ -16,9 +16,9 @@ namespace _Monobehaviors.ui.battle_plan.army_card
             instance = this;
         }
 
-        public void spawn(Dictionary<SoldierType, List<BattalionToSpawn>> batalions)
+        public void spawn(Dictionary<SoldierType, List<BattalionToSpawn>> battalions)
         {
-            foreach (var (type, list) in batalions)
+            foreach (var (type, list) in battalions)
             {
                 var newInstance = Instantiate(cardPrefab, target.transform);
                 var card = newInstance.GetComponent<ArmyCard>();
