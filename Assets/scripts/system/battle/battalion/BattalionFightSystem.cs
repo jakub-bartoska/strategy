@@ -3,7 +3,6 @@ using component.battle.battalion;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using UnityEngine;
 
 namespace system.battle.battalion
 {
@@ -85,7 +84,6 @@ namespace system.battle.battalion
                     health.value -= damage;
                     if (health.value <= 0)
                     {
-                        Debug.Log("suicide");
                         foreach (var soldier in soldiers)
                         {
                             ecb.DestroyEntity(1, soldier.entity);
@@ -95,14 +93,11 @@ namespace system.battle.battalion
                         return;
                     }
 
-                    Debug.Log("health left: " + health.value);
                     var soldiersToKill = soldiers.Length - 1 - (health.value / 10);
-                    var originalLength = soldiers.Length;
                     for (var i = 0; i < soldiersToKill; i++)
                     {
-                        var index = originalLength - 1 - i;
-                        ecb.DestroyEntity(1, soldiers[index].entity);
-                        soldiers.RemoveAt(index);
+                        ecb.DestroyEntity(1, soldiers[0].entity);
+                        soldiers.RemoveAt(0);
                     }
                 }
             }

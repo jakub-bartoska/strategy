@@ -22,7 +22,8 @@ namespace system.battle.soldiers
         public void OnUpdate(ref SystemState state)
         {
             var battalionPositions = new NativeParallelHashMap<long, float3>(1000, Allocator.TempJob);
-            var soldierToBattalionMap = new NativeParallelHashMap<long, long>(10000, Allocator.TempJob);
+            var soldierToBattalionMap = new NativeParallelHashMap<long, (long, BattalionSoldiers)>(10000, Allocator.TempJob);
+            var deltaTime = SystemAPI.Time.DeltaTime;
 
             new CollectBattalionPositionsJob
                 {
@@ -33,6 +34,7 @@ namespace system.battle.soldiers
 
             new SoldierMovementSystem
                 {
+                    deltaTime = deltaTime,
                     battalionPositions = battalionPositions,
                     soldierToBattalionMap = soldierToBattalionMap
                 }.ScheduleParallel(state.Dependency)
@@ -43,14 +45,14 @@ namespace system.battle.soldiers
         public partial struct CollectBattalionPositionsJob : IJobEntity
         {
             public NativeParallelHashMap<long, float3>.ParallelWriter battalionPositions;
-            public NativeParallelHashMap<long, long>.ParallelWriter soldierToBattalionMap;
+            public NativeParallelHashMap<long, (long, BattalionSoldiers)>.ParallelWriter soldierToBattalionMap;
 
             private void Execute(BattalionMarker battalionMarker, DynamicBuffer<BattalionSoldiers> soldiers, LocalTransform localTransform)
             {
                 battalionPositions.TryAdd(battalionMarker.id, localTransform.Position);
                 foreach (var soldier in soldiers)
                 {
-                    soldierToBattalionMap.TryAdd(soldier.soldierId, battalionMarker.id);
+                    soldierToBattalionMap.TryAdd(soldier.soldierId, (battalionMarker.id, soldier));
                 }
             }
         }
@@ -58,16 +60,29 @@ namespace system.battle.soldiers
         [BurstCompile]
         public partial struct SoldierMovementSystem : IJobEntity
         {
+            [ReadOnly] public float deltaTime;
             [ReadOnly] public NativeParallelHashMap<long, float3> battalionPositions;
-            [ReadOnly] public NativeParallelHashMap<long, long> soldierToBattalionMap;
+            [ReadOnly] public NativeParallelHashMap<long, (long, BattalionSoldiers)> soldierToBattalionMap;
 
             private void Execute(SoldierStatus soldierStatus, ref LocalTransform localTransform)
             {
-                if (soldierToBattalionMap.TryGetValue(soldierStatus.index, out var battalionId))
+                if (soldierToBattalionMap.TryGetValue(soldierStatus.index, out var value))
                 {
-                    if (battalionPositions.TryGetValue(battalionId, out var battalionPosition))
+                    if (battalionPositions.TryGetValue(value.Item1, out var battalionPosition))
                     {
-                        localTransform.Position.x = battalionPosition.x;
+                        var speed = 10f * deltaTime;
+                        var z = battalionPosition.z - 5 + value.Item2.position + 0.5f;
+                        var positionInBattalion = new float3(battalionPosition.x, battalionPosition.y, z);
+                        var direction = positionInBattalion - localTransform.Position;
+                        if (math.distancesq(direction, float3.zero) < 0.05f)
+                        {
+                            localTransform.Position = positionInBattalion;
+                        }
+                        else
+                        {
+                            var normalizedPosition = math.normalize(direction);
+                            localTransform.Position += (normalizedPosition * speed);
+                        }
                     }
                 }
             }

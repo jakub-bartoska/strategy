@@ -11,9 +11,6 @@ GameObject:
   - component: {fileID: 6204767375348508955}
   - component: {fileID: 6204767375348508948}
   - component: {fileID: 6204767375348508949}
-  - component: {fileID: 6489619176574063138}
-  - component: {fileID: 36755777010605031}
-  - component: {fileID: 7202317477995785996}
   - component: {fileID: 3757603083723858849}
   - component: {fileID: 7873068475230221518}
   m_Layer: 0
@@ -91,50 +88,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &6489619176574063138
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6204767375348508951}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 825ee44755f2e4846a6229365ed8d44c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MotionType: 2
-  Speed: 11
-  Acceleration: 100
-  AngularSpeed: 100
-  StoppingDistance: 0
-  AutoBreaking: 1
---- !u!114 &36755777010605031
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6204767375348508951}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fed5c6dd07c7d6e4f857b420fa8f559a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Radius: 0.7
-  Height: 1
---- !u!114 &7202317477995785996
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6204767375348508951}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d72058503702eb42aca97d680e69de1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &3757603083723858849
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -198,31 +151,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b275e5f92732148048d7b77e264ac30e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ShapeType: 0
+  m_ShapeType: 3
   m_PrimitiveCenter:
-    x: -0.11962783
-    y: 118.41693
-    z: -0.00000011920929
+    x: 0
+    y: 81.24568
+    z: 0
   m_PrimitiveSize:
-    x: 1.6351819
-    y: 241.54025
-    z: 1.0000002
+    x: 1.1248127
+    y: 1.1248127
+    z: 164.49136
   m_PrimitiveOrientation:
     Value:
-      x: -0
+      x: -90
       y: 0
-      z: 0
+      z: -90
     RotationOrder: 4
   m_Capsule:
-    Height: 241.54025
-    Radius: 0.81759095
-    Axis: 1
+    Height: 164.49136
+    Radius: 0.56240636
+    Axis: 2
   m_Cylinder:
-    Height: 241.54025
-    Radius: 0.81759095
-    Axis: 1
-  m_CylinderSideCount: 20
-  m_SphereRadius: 120.77013
+    Height: 164.49136
+    Radius: 0.56240636
+    Axis: 2
+  m_CylinderSideCount: 10
+  m_SphereRadius: 82.24568
   m_MinimumSkinnedVertexWeight: 0.1
   m_ConvexHullGenerationParameters:
     m_SimplificationTolerance: 3.6231036
@@ -440,17 +393,17 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: e0fcbaea85bcb834fb083d919b429360,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 30
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e0fcbaea85bcb834fb083d919b429360,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 30
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e0fcbaea85bcb834fb083d919b429360,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 3000
+      value: 2000
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e0fcbaea85bcb834fb083d919b429360,
         type: 3}
@@ -460,7 +413,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: e0fcbaea85bcb834fb083d919b429360,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 129.1
+      value: 90.1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e0fcbaea85bcb834fb083d919b429360,
         type: 3}

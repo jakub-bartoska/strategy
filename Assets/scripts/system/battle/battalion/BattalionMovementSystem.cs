@@ -34,8 +34,11 @@ namespace system.battle.battalion
             var battalionWillingMove = new NativeParallelHashMap<long, bool>(1000, Allocator.TempJob);
             // battalion id fights battalion with id -> contains duplicities
             var battalionFights = new NativeHashMap<long, long>(1000, Allocator.TempJob);
+            var possibleReinforcements = SystemAPI.GetSingletonBuffer<PossibleReinforcements>();
+            ;
+            possibleReinforcements.Clear();
 
-            fillBlockers(battalionPositions, battalionWillingMove, battalionFights);
+            fillBlockers(battalionPositions, battalionWillingMove, battalionFights, possibleReinforcements);
 
             var deltaTime = SystemAPI.Time.DeltaTime;
             new MoveBattalionJob
@@ -52,7 +55,8 @@ namespace system.battle.battalion
                 .Complete();
         }
 
-        private void fillBlockers(NativeParallelMultiHashMap<int, (long, float3, Team)> battalionPositions, NativeParallelHashMap<long, bool> willingToMove, NativeHashMap<long, long> battalionFights)
+        private void fillBlockers(NativeParallelMultiHashMap<int, (long, float3, Team)> battalionPositions, NativeParallelHashMap<long, bool> willingToMove,
+            NativeHashMap<long, long> battalionFights, DynamicBuffer<PossibleReinforcements> possibleReinforcements)
         {
             var allRows = battalionPositions.GetKeyArray(Allocator.TempJob);
             allRows.Sort();
@@ -130,6 +134,11 @@ namespace system.battle.battalion
                         {
                             if (!isTooFar(rowBattalions[j].Item2, rowBattalions[j + 1].Item2))
                             {
+                                possibleReinforcements.Add(new PossibleReinforcements
+                                {
+                                    needHelpBattalionId = rowBattalions[j + 1].Item1,
+                                    canHelpBattalionId = rowBattalions[j].Item1
+                                });
                                 willingToMove[rowBattalions[j].Item1] = false;
                             }
                             else
@@ -144,6 +153,11 @@ namespace system.battle.battalion
                         {
                             if (!isTooFar(rowBattalions[j].Item2, rowBattalions[j - 1].Item2))
                             {
+                                possibleReinforcements.Add(new PossibleReinforcements
+                                {
+                                    needHelpBattalionId = rowBattalions[j - 1].Item1,
+                                    canHelpBattalionId = rowBattalions[j].Item1
+                                });
                                 willingToMove[rowBattalions[j].Item1] = false;
                             }
                             else

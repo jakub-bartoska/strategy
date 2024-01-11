@@ -116,6 +116,7 @@ namespace system
 
             ecb.AddComponent(singletonEntity, new BattleSingletonEntityTag());
             ecb.AddComponent(singletonEntity, new BattleCleanupTag());
+            ecb.AddBuffer<PossibleReinforcements>(singletonEntity);
 
             var battleSoldierCounts = new BattleSoldierCounts
             {
@@ -256,7 +257,8 @@ namespace system
             battalionSoldiers.Add(new BattalionSoldiers
             {
                 soldierId = soldierStats.index,
-                entity = newEntity
+                entity = newEntity,
+                position = index
             });
         }
 
@@ -266,7 +268,7 @@ namespace system
             {
                 x = 0,
                 y = 0,
-                z = index + 1
+                z = index + 0.5f
             };
             return battalionPosition + soldierWithinBattalionPosition;
         }
