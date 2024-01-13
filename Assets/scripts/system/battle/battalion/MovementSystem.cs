@@ -2,6 +2,7 @@
 using component;
 using component._common.system_switchers;
 using component.battle.battalion;
+using system.battle.enums;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -10,7 +11,7 @@ using Unity.Transforms;
 
 namespace system.battle.battalion
 {
-    public partial struct BattalionMovementSystem : ISystem
+    public partial struct MovementSystem : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)
@@ -33,7 +34,7 @@ namespace system.battle.battalion
             //var forwardMovementBlocker = new NativeParallelHashMap<int, bool>(1000, Allocator.TempJob);
             var battalionWillingMove = new NativeParallelHashMap<long, bool>(1000, Allocator.TempJob);
             // battalion id fights battalion with id -> contains duplicities
-            var battalionFights = new NativeHashMap<long, long>(1000, Allocator.TempJob);
+            var battalionFights = new NativeHashMap<long, (long, BattalionFightType)>(1000, Allocator.TempJob);
             var possibleReinforcements = SystemAPI.GetSingletonBuffer<PossibleReinforcements>();
             ;
             possibleReinforcements.Clear();
@@ -55,22 +56,39 @@ namespace system.battle.battalion
                 .Complete();
         }
 
-        private void fillBlockers(NativeParallelMultiHashMap<int, (long, float3, Team)> battalionPositions, NativeParallelHashMap<long, bool> willingToMove,
-            NativeHashMap<long, long> battalionFights, DynamicBuffer<PossibleReinforcements> possibleReinforcements)
+        /**
+         * iterate over sorted rows
+         * add battalions to rows
+         */
+        private void fillBlockers(
+            NativeParallelMultiHashMap<int, (long, float3, Team)> battalionPositions,
+            NativeParallelHashMap<long, bool> willingToMove,
+            NativeHashMap<long, (long, BattalionFightType)> battalionFights,
+            DynamicBuffer<PossibleReinforcements> possibleReinforcements)
         {
             var allRows = battalionPositions.GetKeyArray(Allocator.TempJob);
             allRows.Sort();
             var uniqueCount = allRows.Unique();
             var uniqueRows = allRows.GetSubArray(0, uniqueCount);
+
+            //iterate over sorted rows
             foreach (var row in uniqueRows)
             {
+                //sort battalions in row + row above
                 var rowBattalions = new NativeList<(long, float3, Team)>(Allocator.TempJob);
+                var rowMinusOne = new NativeList<(long, float3, Team)>(Allocator.TempJob);
                 foreach (var value in battalionPositions.GetValuesForKey(row))
                 {
                     rowBattalions.Add(value);
                 }
 
-                rowBattalions.Sort(new SortByTeamAndPosition());
+                foreach (var value in battalionPositions.GetValuesForKey(row - 1))
+                {
+                    rowMinusOne.Add(value);
+                }
+
+                rowMinusOne.Sort(new SortByPosition());
+                rowBattalions.Sort(new SortByPosition());
 
                 for (int i = 0; i < rowBattalions.Length; i++)
                 {
@@ -125,7 +143,7 @@ namespace system.battle.battalion
                         continue;
                     }
 
-                    battalionFights.Add(myBattalion.Item1, closestEnemy.Item1);
+                    battalionFights.Add(myBattalion.Item1, (closestEnemy.Item1, BattalionFightType.NORMAL));
                     willingToMove.Add(myBattalion.Item1, false);
 
                     if (myBattalion.Item3 == Team.TEAM2)
@@ -183,7 +201,7 @@ namespace system.battle.battalion
             return distance > (5f * 0.3 * 2 * 1.1f);
         }
 
-        public class SortByTeamAndPosition : IComparer<(long, float3, Team)>
+        public class SortByPosition : IComparer<(long, float3, Team)>
         {
             public int Compare((long, float3, Team) e1, (long, float3, Team) e2)
             {
@@ -231,16 +249,16 @@ namespace system.battle.battalion
         [BurstCompile]
         public partial struct AddInBattleTagJob : IJobEntity
         {
-            [ReadOnly] public NativeHashMap<long, long> battalionFights;
+            [ReadOnly] public NativeHashMap<long, (long, BattalionFightType)> battalionFights;
 
             private void Execute(BattalionMarker battalionMarker, ref DynamicBuffer<BattalionFightBuffer> battalionFight)
             {
-                if (battalionFights.TryGetValue(battalionMarker.id, out var enemyId))
+                if (battalionFights.TryGetValue(battalionMarker.id, out var value))
                 {
                     var exists = false;
                     foreach (var fight in battalionFight)
                     {
-                        if (fight.enemyBattalionId == enemyId)
+                        if (fight.enemyBattalionId == value.Item1)
                         {
                             exists = true;
                             break;
@@ -252,7 +270,8 @@ namespace system.battle.battalion
                         battalionFight.Add(new BattalionFightBuffer
                         {
                             time = 1f,
-                            enemyBattalionId = enemyId
+                            enemyBattalionId = value.Item1,
+                            type = value.Item2
                         });
                     }
                 }

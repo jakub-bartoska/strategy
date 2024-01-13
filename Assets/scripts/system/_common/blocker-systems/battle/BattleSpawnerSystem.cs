@@ -6,7 +6,6 @@ using component.battle.battalion;
 using component.config.authoring_pairs;
 using component.config.game_settings;
 using component.general;
-using component.soldier;
 using system.battle.utils;
 using Unity.Burst;
 using Unity.Collections;
@@ -71,7 +70,7 @@ namespace system
 
                 var battalionPosition = getBattalionPosition(battalionToSpawn, defaultPositionOffset);
 
-                var newBattalion = BattalionSpawner.spawnBattalion(ecb, battalionToSpawn, prefabHolder, battalionId++, defaultPositionOffset, battalionPosition);
+                var newBattalion = BattalionSpawner.spawnBattalion(ecb, battalionToSpawn, prefabHolder, battalionId++, battalionPosition);
 
                 var battalionSoldiers = new NativeParallelHashSet<BattalionSoldiers>(battalionToSpawn.count, Allocator.TempJob);
 
@@ -204,73 +203,16 @@ namespace system
         public float4 teamColor;
         public long companyId;
         public float3 battalionPosition;
+
         public NativeParallelHashSet<BattalionSoldiers>.ParallelWriter battalionSoldiers;
+
+        //not used but save for later
         [NativeSetThreadIndex] private int threadIndex;
 
         [BurstCompile]
         public void Execute(int index)
         {
-            Entity prefab;
-            switch (soldierType)
-            {
-                case SoldierType.ARCHER:
-                    prefab = prefabHolder.archerPrefab;
-                    break;
-                case SoldierType.SWORDSMAN:
-                    prefab = prefabHolder.soldierPrefab;
-                    break;
-                default:
-                    throw new Exception("unknown soldier type");
-            }
-
-            var newEntity = ecb.Instantiate(index, prefab);
-            var calculatedPosition = getPosition(index, battalionPosition);
-            var transform = LocalTransform.FromPosition(calculatedPosition);
-
-            var soldierStats = new SoldierStatus
-            {
-                index = index + entityIndexAdd,
-                team = team,
-                companyId = companyId
-            };
-            var soldierHp = new SoldierHp
-            {
-                hp = 100
-            };
-
-            var color = new MaterialColorComponent
-            {
-                Value = teamColor
-            };
-
-            ecb.SetName(index, newEntity, "Soldeir " + soldierStats.index);
-
-            //add components
-            ecb.AddComponent(index, newEntity, soldierStats);
-            ecb.AddComponent(index, newEntity, soldierHp);
-            ecb.AddComponent(index, newEntity, color);
-            ecb.AddComponent(index, newEntity, new BattleCleanupTag());
-
-            //set component
-            ecb.SetComponent(index, newEntity, transform);
-
-            battalionSoldiers.Add(new BattalionSoldiers
-            {
-                soldierId = soldierStats.index,
-                entity = newEntity,
-                position = index
-            });
-        }
-
-        private float3 getPosition(int index, float3 battalionPosition)
-        {
-            var soldierWithinBattalionPosition = new float3
-            {
-                x = 0,
-                y = 0,
-                z = index + 0.5f
-            };
-            return battalionPosition + soldierWithinBattalionPosition;
+            SoldierSpawner.spawnSoldier(soldierType, prefabHolder, ecb, index, entityIndexAdd, companyId, team, battalionPosition, battalionSoldiers, teamColor);
         }
     }
 }

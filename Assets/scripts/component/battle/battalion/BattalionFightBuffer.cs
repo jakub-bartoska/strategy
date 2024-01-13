@@ -1,4 +1,5 @@
-﻿using Unity.Entities;
+﻿using system.battle.enums;
+using Unity.Entities;
 
 namespace component.battle.battalion
 {
@@ -6,5 +7,6 @@ namespace component.battle.battalion
     {
         public float time;
         public long enemyBattalionId;
+        public BattalionFightType type;
     }
 }

@@ -70,7 +70,8 @@ namespace _Monobehaviors.ui.battle_plan.counter
         public NativeList<BattalionToSpawn> getAllBattalions()
         {
             var result = new NativeList<BattalionToSpawn>(Allocator.TempJob);
-            result.AddRange(prepareTeam2Positions());
+            //result.AddRange(prepareTeam2Positions());
+            result.AddRange(spawnTeam2InMiddle());
             foreach (var allButtonDropTarget in allButtonDropTargets)
             {
                 var battalion = allButtonDropTarget.getBattalion();
@@ -82,6 +83,28 @@ namespace _Monobehaviors.ui.battle_plan.counter
 
             return result;
         }
+
+        //todo remove me
+        private NativeList<BattalionToSpawn> spawnTeam2InMiddle()
+        {
+            var result = new NativeList<BattalionToSpawn>(Allocator.TempJob);
+            var i = -1;
+            var j = 4;
+            foreach (var battalion in team2)
+            {
+                var tmp = battalion;
+                tmp.position = new int2(i, j++);
+                result.Add(tmp);
+                if (j == 10)
+                {
+                    j = 0;
+                    i--;
+                }
+            }
+
+            return result;
+        }
+
 
         private NativeList<BattalionToSpawn> prepareTeam2Positions()
         {

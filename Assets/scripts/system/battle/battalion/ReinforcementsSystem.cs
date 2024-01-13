@@ -6,8 +6,8 @@ using Unity.Entities;
 
 namespace system.battle.battalion
 {
-    [UpdateAfter(typeof(BattalionMovementSystem))]
-    [UpdateAfter(typeof(BattalionFightSystem))]
+    [UpdateAfter(typeof(MovementSystem))]
+    [UpdateAfter(typeof(FightSystem))]
     public partial struct ReinforcementsSystem : ISystem
     {
         [BurstCompile]

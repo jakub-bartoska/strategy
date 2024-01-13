@@ -9,7 +9,7 @@ namespace system.battle.utils
 {
     public class BattalionSpawner
     {
-        public static Entity spawnBattalion(EntityCommandBuffer ecb, BattalionToSpawn battalionToSpawn, PrefabHolder prefabHolder, long battalionId, float3 defaultPositionOffset,
+        public static Entity spawnBattalion(EntityCommandBuffer ecb, BattalionToSpawn battalionToSpawn, PrefabHolder prefabHolder, long battalionId,
             float3 battalionPosition)
         {
             var battalionPrefab = prefabHolder.battalionPrefab;

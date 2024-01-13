@@ -1,13 +1,15 @@
-﻿using component._common.system_switchers;
+﻿using System;
+using component._common.system_switchers;
 using component.battle.battalion;
+using system.battle.enums;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 
 namespace system.battle.battalion
 {
-    [UpdateAfter(typeof(BattalionMovementSystem))]
-    public partial struct BattalionFightSystem : ISystem
+    [UpdateAfter(typeof(MovementSystem))]
+    public partial struct FightSystem : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)
@@ -58,7 +60,18 @@ namespace system.battle.battalion
                     if (time <= 0)
                     {
                         time += 1;
-                        damageDealt.TryAdd(battalionFight[i].enemyBattalionId, soldiers.Length);
+                        switch (battalionFight[i].type)
+                        {
+                            case BattalionFightType.NORMAL:
+                                damageDealt.TryAdd(battalionFight[i].enemyBattalionId, soldiers.Length);
+                                break;
+                            case BattalionFightType.VERTICAL:
+                                //spocitat ci bocni jednotky
+                                damageDealt.TryAdd(battalionFight[i].enemyBattalionId, 1);
+                                break;
+                            default:
+                                throw new Exception("Unknown battalion fight type");
+                        }
                     }
 
                     var newFight = new BattalionFightBuffer
