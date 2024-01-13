@@ -3,6 +3,7 @@ using component;
 using component._common.system_switchers;
 using component.authoring_pairs.PrefabHolder;
 using component.battle.battalion;
+using component.battle.battalion.markers;
 using component.config.authoring_pairs;
 using component.config.game_settings;
 using component.general;
@@ -116,6 +117,8 @@ namespace system
             ecb.AddComponent(singletonEntity, new BattleSingletonEntityTag());
             ecb.AddComponent(singletonEntity, new BattleCleanupTag());
             ecb.AddBuffer<PossibleReinforcements>(singletonEntity);
+            ecb.AddBuffer<FightPair>(singletonEntity);
+            ecb.AddBuffer<MovementBlockingPair>(singletonEntity);
 
             var battleSoldierCounts = new BattleSoldierCounts
             {

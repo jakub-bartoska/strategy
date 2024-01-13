@@ -1,6 +1,7 @@
 ﻿using System;
 using component._common.system_switchers;
 using component.battle.battalion;
+using system.battle.battalion.fight;
 using system.battle.enums;
 using Unity.Burst;
 using Unity.Collections;
@@ -8,7 +9,7 @@ using Unity.Entities;
 
 namespace system.battle.battalion
 {
-    [UpdateAfter(typeof(MovementSystem))]
+    [UpdateAfter(typeof(AddInFightTagSystem))]
     public partial struct FightSystem : ISystem
     {
         [BurstCompile]

@@ -70,8 +70,8 @@ namespace _Monobehaviors.ui.battle_plan.counter
         public NativeList<BattalionToSpawn> getAllBattalions()
         {
             var result = new NativeList<BattalionToSpawn>(Allocator.TempJob);
-            //result.AddRange(prepareTeam2Positions());
-            result.AddRange(spawnTeam2InMiddle());
+            result.AddRange(prepareTeam2Positions());
+            //result.AddRange(spawnTeam2InMiddle());
             foreach (var allButtonDropTarget in allButtonDropTargets)
             {
                 var battalion = allButtonDropTarget.getBattalion();
