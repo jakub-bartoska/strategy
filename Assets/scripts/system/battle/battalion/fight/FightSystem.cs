@@ -78,7 +78,8 @@ namespace system.battle.battalion
                     var newFight = new BattalionFightBuffer
                     {
                         time = time,
-                        enemyBattalionId = battalionFight[i].enemyBattalionId
+                        enemyBattalionId = battalionFight[i].enemyBattalionId,
+                        type = battalionFight[i].type
                     };
                     battalionFight[i] = newFight;
                 }

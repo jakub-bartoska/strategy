@@ -7,7 +7,7 @@ using Unity.Entities;
 
 namespace system.battle.battalion.fight
 {
-    [UpdateAfter(typeof(FindFightAndBlockingPairsSystem))]
+    [UpdateAfter(typeof(AnalyseBattlefieldSystem))]
     public partial struct AddInFightTagSystem : ISystem
     {
         [BurstCompile]

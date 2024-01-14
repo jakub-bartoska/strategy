@@ -1,6 +1,7 @@
 ﻿using component;
 using component._common.system_switchers;
 using component.battle.battalion;
+using system.battle.battalion;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -9,6 +10,7 @@ using Unity.Transforms;
 
 namespace system.battle.soldiers
 {
+    [UpdateAfter(typeof(MovementSystem))]
     public partial struct SoldiersFollowBattalionSystem : ISystem
     {
         [BurstCompile]

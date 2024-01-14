@@ -11,7 +11,7 @@ using Unity.Transforms;
 
 namespace system.battle.battalion
 {
-    [UpdateAfter(typeof(FindFightAndBlockingPairsSystem))]
+    [UpdateAfter(typeof(AnalyseBattlefieldSystem))]
     public partial struct MovementSystem : ISystem
     {
         [BurstCompile]

@@ -11,7 +11,7 @@ using Unity.Transforms;
 
 namespace system.battle.battalion
 {
-    public partial struct FindFightAndBlockingPairsSystem : ISystem
+    public partial struct AnalyseBattlefieldSystem : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)
@@ -28,7 +28,7 @@ namespace system.battle.battalion
             new CollectBattalionPositionsJob
                 {
                     battalionPositions = battalionPositions.AsParallelWriter()
-                }.Schedule(state.Dependency)
+                }.ScheduleParallel(state.Dependency)
                 .Complete();
 
             var fightPairs = SystemAPI.GetSingletonBuffer<FightPair>();
@@ -37,13 +37,22 @@ namespace system.battle.battalion
             fightPairs.Clear();
             movementBlockingPairs.Clear();
 
-            fillBlockers(battalionPositions, fightPairs, movementBlockingPairs);
+            var possibleSplitDirections = new NativeParallelMultiHashMap<long, Direction>(4000, Allocator.TempJob);
+
+            fillBlockers(battalionPositions, fightPairs, movementBlockingPairs, possibleSplitDirections);
+
+            new FillPossibleSplits
+                {
+                    possibleSplitDirections = possibleSplitDirections
+                }.ScheduleParallel(state.Dependency)
+                .Complete();
         }
 
         private void fillBlockers(
             NativeParallelMultiHashMap<int, (long, float3, Team)> battalionPositions,
             DynamicBuffer<FightPair> fightPairs,
-            DynamicBuffer<MovementBlockingPair> movementBlockingPairs)
+            DynamicBuffer<MovementBlockingPair> movementBlockingPairs,
+            NativeParallelMultiHashMap<long, Direction> possibleSplitDirections)
         {
             var allRows = battalionPositions.GetKeyArray(Allocator.TempJob);
             allRows.Sort();
@@ -52,6 +61,7 @@ namespace system.battle.battalion
 
             var sorter = new MovementSystem.SortByPosition();
             //iterate over sorted rows
+            var firstRow = true;
             foreach (var row in uniqueRows)
             {
                 //sort battalions in row + row above
@@ -74,9 +84,15 @@ namespace system.battle.battalion
                 {
                     var (myId, myPosition, myTeam) = rowBattalions[i];
 
+                    if (i == 0)
+                    {
+                        possibleSplitDirections.Add(myId, Direction.LEFT);
+                    }
+
                     //last battalion has no interaction
                     if (i == rowBattalions.Length - 1)
                     {
+                        possibleSplitDirections.Add(myId, Direction.RIGHT);
                         continue;
                     }
 
@@ -84,6 +100,8 @@ namespace system.battle.battalion
 
                     if (isTooFar(closestPosition, myPosition, 5f))
                     {
+                        possibleSplitDirections.Add(myId, Direction.RIGHT);
+                        possibleSplitDirections.Add(closestId, Direction.LEFT);
                         continue;
                     }
 
@@ -111,9 +129,24 @@ namespace system.battle.battalion
                 {
                     var (myId, myPosition, myTeam) = rowBattalions[i];
 
+                    if (firstRow)
+                    {
+                        possibleSplitDirections.Add(myId, Direction.UP);
+                    }
+                    else if (row == uniqueRows[^1])
+                    {
+                        possibleSplitDirections.Add(myId, Direction.DOWN);
+                    }
+
                     foreach (var (enemyId, enemyPosition, enemyTeam) in rowMinusOne)
                     {
                         if (myTeam == enemyTeam) continue;
+
+                        if (isTooFar(myPosition, enemyPosition, 5f))
+                        {
+                            possibleSplitDirections.Add(myId, Direction.UP);
+                            possibleSplitDirections.Add(enemyId, Direction.DOWN);
+                        }
 
                         //1.4f -> start fight little bit later than 2.5f
                         if (isTooFar(myPosition, enemyPosition, 0.1f)) continue;
@@ -126,6 +159,8 @@ namespace system.battle.battalion
                         });
                     }
                 }
+
+                firstRow = false;
             }
         }
 
@@ -148,6 +183,38 @@ namespace system.battle.battalion
             {
                 battalionPositions.Add(battalionMarker.row,
                     (battalionMarker.id, transform.Position, battalionMarker.team));
+            }
+        }
+
+        [BurstCompile]
+        public partial struct FillPossibleSplits : IJobEntity
+        {
+            [ReadOnly] public NativeParallelMultiHashMap<long, Direction> possibleSplitDirections;
+
+            private void Execute(BattalionMarker battalionMarker, ref PossibleSplit split)
+            {
+                split.up = false;
+                split.down = false;
+                split.left = false;
+                split.right = false;
+                foreach (var direction in possibleSplitDirections.GetValuesForKey(battalionMarker.id))
+                {
+                    switch (direction)
+                    {
+                        case Direction.UP:
+                            split.up = true;
+                            break;
+                        case Direction.DOWN:
+                            split.down = true;
+                            break;
+                        case Direction.LEFT:
+                            split.left = true;
+                            break;
+                        case Direction.RIGHT:
+                            split.right = true;
+                            break;
+                    }
+                }
             }
         }
     }

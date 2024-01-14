@@ -1,5 +1,6 @@
 ﻿using component.authoring_pairs.PrefabHolder;
 using component.battle.battalion;
+using component.battle.battalion.markers;
 using component.config.game_settings;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -26,7 +27,16 @@ namespace system.battle.utils
                 row = battalionToSpawn.position.y
             };
 
+            var possibleSplits = new PossibleSplit
+            {
+                up = false,
+                down = false,
+                left = false,
+                right = false
+            };
+
             ecb.AddComponent(newBattalion, battalionMarker);
+            ecb.AddComponent(newBattalion, possibleSplits);
 
             ecb.AddBuffer<BattalionFightBuffer>(newBattalion);
 
