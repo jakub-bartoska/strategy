@@ -46,7 +46,6 @@ namespace system.battle.battalion
                     reinforcements = reinforcements
                 }.ScheduleParallel(state.Dependency)
                 .Complete();
-            possibleReinforcements.Clear();
         }
     }
 
@@ -85,7 +84,7 @@ namespace system.battle.battalion
         public NativeParallelMultiHashMap<long, BattalionSoldiers>.ParallelWriter reinforcements;
         [ReadOnly] public DynamicBuffer<PossibleReinforcements> possibleReinforcements;
 
-        private void Execute(BattalionMarker battalionMarker, ref DynamicBuffer<BattalionSoldiers> soldiers)
+        private void Execute(BattalionMarker battalionMarker, ref DynamicBuffer<BattalionSoldiers> soldiers, ref BattalionHealth health)
         {
             foreach (var possibleReinforcement in possibleReinforcements)
             {
@@ -107,57 +106,35 @@ namespace system.battle.battalion
                     soldiersMap.Clear();
                     for (var i = 0; i < soldiers.Length; i++)
                     {
-                        if (soldiers[i].position == index)
-                        {
-                            var newSoldier = new BattalionSoldiers
-                            {
-                                soldierId = soldiers[i].soldierId,
-                                position = index,
-                                entity = soldiers[i].entity
-                            };
-                            soldiers.RemoveAt(i);
-                            reinforcements.Add(possibleReinforcement.needHelpBattalionId, newSoldier);
-                            goto outerLoop;
-                        }
-
                         soldiersMap.Add(soldiers[i].position, (soldiers[i], i));
                     }
 
                     for (var i = 0; i < 10; i++)
                     {
-                        if (soldiersMap.ContainsKey(index + i))
-                        {
-                            var hm = soldiersMap[index + i];
-                            var newSoldier = new BattalionSoldiers
-                            {
-                                soldierId = hm.Item1.soldierId,
-                                position = index,
-                                entity = hm.Item1.entity
-                            };
-                            soldiers.RemoveAt(hm.Item2);
-                            reinforcements.Add(possibleReinforcement.needHelpBattalionId, newSoldier);
-                            break;
-                        }
-
-                        if (soldiersMap.ContainsKey(index - i))
-                        {
-                            var hm = soldiersMap[index - i];
-                            var newSoldier = new BattalionSoldiers
-                            {
-                                soldierId = hm.Item1.soldierId,
-                                position = index,
-                                entity = hm.Item1.entity
-                            };
-                            soldiers.RemoveAt(hm.Item2);
-                            reinforcements.Add(possibleReinforcement.needHelpBattalionId, newSoldier);
-                            break;
-                        }
+                        if (reinforcementsUpdated(soldiersMap, index + i, soldiers, possibleReinforcement)) break;
+                        if (reinforcementsUpdated(soldiersMap, index - i, soldiers, possibleReinforcement)) break;
                     }
-
-                    outerLoop:
-                    continue;
                 }
             }
+        }
+
+        private bool reinforcementsUpdated(NativeHashMap<int, (BattalionSoldiers, int)> soldiersMap, int index, DynamicBuffer<BattalionSoldiers> soldiers, PossibleReinforcements possibleReinforcement)
+        {
+            if (soldiersMap.ContainsKey(index))
+            {
+                var soldier = soldiersMap[index];
+                var newSoldier = new BattalionSoldiers
+                {
+                    soldierId = soldier.Item1.soldierId,
+                    position = index,
+                    entity = soldier.Item1.entity
+                };
+                soldiers.RemoveAt(soldier.Item2);
+                reinforcements.Add(possibleReinforcement.needHelpBattalionId, newSoldier);
+                return true;
+            }
+
+            return false;
         }
     }
 

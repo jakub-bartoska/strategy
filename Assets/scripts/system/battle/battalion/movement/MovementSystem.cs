@@ -38,12 +38,23 @@ namespace system.battle.battalion
             var possibleReinforcements = SystemAPI.GetSingletonBuffer<PossibleReinforcements>();
             possibleReinforcements.Clear();
 
+            var waitingBattalions = new NativeParallelHashSet<long>(500, Allocator.TempJob);
+            new CollectBattalionWaitingPositionsJob
+                {
+                    waitingBattalions = waitingBattalions.AsParallelWriter()
+                }.ScheduleParallel(state.Dependency)
+                .Complete();
+
+            foreach (var waitingBattalion in waitingBattalions)
+            {
+                fillBlockedMovement(waitingBattalion, movementBlockersMap, unableToMoveBattalions, possibleReinforcements);
+            }
+
             foreach (var fightPair in fightPairs)
             {
                 fillBlockedMovement(fightPair.battalionId1, movementBlockersMap, unableToMoveBattalions, possibleReinforcements);
                 fillBlockedMovement(fightPair.battalionId2, movementBlockersMap, unableToMoveBattalions, possibleReinforcements);
             }
-
 
             var deltaTime = SystemAPI.Time.DeltaTime;
             new MoveBattalionJob
@@ -60,6 +71,7 @@ namespace system.battle.battalion
             NativeHashSet<long> unableToMoveBattalions,
             DynamicBuffer<PossibleReinforcements> possibleReinforcements)
         {
+            if (unableToMoveBattalions.Contains(blockedBattalionId)) return;
             unableToMoveBattalions.Add(blockedBattalionId);
             foreach (var blockedBattalion in movementBlockersMap.GetValuesForKey(blockedBattalionId))
             {
@@ -88,18 +100,18 @@ namespace system.battle.battalion
         }
 
         [BurstCompile]
-        public partial struct CollectBattalionPositionsJob : IJobEntity
+        public partial struct CollectBattalionWaitingPositionsJob : IJobEntity
         {
-            public NativeParallelMultiHashMap<int, (long, float3, Team)>.ParallelWriter battalionPositions;
+            public NativeParallelHashSet<long>.ParallelWriter waitingBattalions;
 
-            private void Execute(BattalionMarker battalionMarker, ref LocalTransform transform)
+            private void Execute(BattalionMarker battalionMarker, WaitForSoldiers wait)
             {
-                battalionPositions.Add(battalionMarker.row,
-                    (battalionMarker.id, transform.Position, battalionMarker.team));
+                waitingBattalions.Add(battalionMarker.id);
             }
         }
 
         [BurstCompile]
+        [WithNone(typeof(WaitForSoldiers))]
         public partial struct MoveBattalionJob : IJobEntity
         {
             public float deltaTime;

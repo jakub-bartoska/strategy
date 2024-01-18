@@ -1,6 +1,8 @@
-﻿using component._common.system_switchers;
+﻿using component;
+using component._common.system_switchers;
 using component.battle.battalion;
 using component.battle.battalion.markers;
+using system.battle.enums;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -21,17 +23,26 @@ namespace system.battle.battalion.fight
         public void OnUpdate(ref SystemState state)
         {
             var fightPairs = SystemAPI.GetSingletonBuffer<FightPair>();
+
+            var splitCandidateList = new NativeList<SplitCandidate>(1000, Allocator.TempJob);
+
             new AddInBattleTagJob
                 {
-                    fightPairs = fightPairs
+                    fightPairs = fightPairs,
+                    splitCandidateList = splitCandidateList.AsParallelWriter()
                 }.ScheduleParallel(state.Dependency)
                 .Complete();
+
+            var splitCandidates = SystemAPI.GetSingletonBuffer<SplitCandidate>();
+            splitCandidates.Clear();
+            splitCandidates.AddRange(splitCandidateList);
         }
 
         [BurstCompile]
         public partial struct AddInBattleTagJob : IJobEntity
         {
             [ReadOnly] public DynamicBuffer<FightPair> fightPairs;
+            public NativeList<SplitCandidate>.ParallelWriter splitCandidateList;
 
             private void Execute(BattalionMarker battalionMarker, ref DynamicBuffer<BattalionFightBuffer> battalionFight)
             {
@@ -52,6 +63,18 @@ namespace system.battle.battalion.fight
 
                     if (!exists)
                     {
+                        var direction = battalionMarker.team switch
+                        {
+                            Team.TEAM1 => Direction.LEFT,
+                            Team.TEAM2 => Direction.RIGHT,
+                            _ => throw new System.NotImplementedException()
+                        };
+                        splitCandidateList.AddNoResize(new SplitCandidate
+                        {
+                            battalionId = battalionMarker.id,
+                            direction = direction,
+                            type = SplitType.MINUS_TWO
+                        });
                         battalionFight.Add(new BattalionFightBuffer
                         {
                             time = 1f,

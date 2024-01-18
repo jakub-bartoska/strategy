@@ -119,6 +119,7 @@ namespace system
             ecb.AddBuffer<PossibleReinforcements>(singletonEntity);
             ecb.AddBuffer<FightPair>(singletonEntity);
             ecb.AddBuffer<MovementBlockingPair>(singletonEntity);
+            ecb.AddBuffer<SplitCandidate>(singletonEntity);
 
             var battleSoldierCounts = new BattleSoldierCounts
             {
