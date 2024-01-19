@@ -122,6 +122,7 @@ namespace system.battle.battalion
                 if (unableToMoveBattalions.Contains(battalionMarker.id)) return;
 
                 var speed = 10f * deltaTime;
+                //var speed = 1f * deltaTime;
                 var direction = battalionMarker.team == Team.TEAM1 ? -1 : 1;
 
                 var delta = new float3(direction * speed, 0, 0);

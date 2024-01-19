@@ -100,7 +100,7 @@ namespace system.battle.battalion
 
                     if (isTooFar(closestPosition, myPosition, 5f))
                     {
-                        if (isTooFar(closestPosition, myPosition, 8f))
+                        if (isTooFar(closestPosition, myPosition, 11f))
                         {
                             possibleSplitDirections.Add(myId, Direction.RIGHT);
                             possibleSplitDirections.Add(closestId, Direction.LEFT);
@@ -146,7 +146,7 @@ namespace system.battle.battalion
                     {
                         if (myTeam == enemyTeam) continue;
 
-                        if (isTooFar(myPosition, enemyPosition, 5f))
+                        if (isTooFar(myPosition, enemyPosition, 11f))
                         {
                             possibleSplitDirections.Add(myId, Direction.UP);
                             possibleSplitDirections.Add(enemyId, Direction.DOWN);

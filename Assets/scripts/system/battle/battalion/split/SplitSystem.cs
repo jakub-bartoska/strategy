@@ -12,7 +12,6 @@ using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
 
 namespace system.battle.battalion.split
 {
@@ -121,9 +120,6 @@ namespace system.battle.battalion.split
                         soldiers.RemoveAt(i);
                     }
 
-                    Debug.Log("battalion created " + battalionIdHolder.ValueRO.nextBattalionId);
-
-                    //todo fix batttalionId
                     BattalionSpawner.spawnBattalionParallel(ecb, prefabHolder, battalionIdHolder.ValueRW.nextBattalionId++, newPosition, battalionMarker.team, battalionMarker.row, soldiersToMove);
                 }
             }
