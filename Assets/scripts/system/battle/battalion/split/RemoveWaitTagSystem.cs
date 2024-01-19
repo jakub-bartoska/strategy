@@ -28,6 +28,8 @@ namespace system.battle.battalion.split
                 }.ScheduleParallel(state.Dependency)
                 .Complete();
 
+            if (waitingBattalionSoldiers.IsEmpty) return;
+
             var battalionsReadyForTagRemoval = new NativeParallelHashSet<long>(500, Allocator.TempJob);
 
             new CollectBattalionsReadyForTagRemovalJob
@@ -36,6 +38,8 @@ namespace system.battle.battalion.split
                     battalionsReadyForTagRemoval = battalionsReadyForTagRemoval.AsParallelWriter()
                 }.ScheduleParallel(state.Dependency)
                 .Complete();
+
+            if (battalionsReadyForTagRemoval.IsEmpty) return;
 
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
                 .CreateCommandBuffer(state.WorldUnmanaged);
@@ -53,11 +57,11 @@ namespace system.battle.battalion.split
         {
             public NativeParallelMultiHashMap<long, (long, float3)>.ParallelWriter waitingBattalionSoldiers;
 
-            private void Execute(BattalionMarker battalionMarker, WaitForSoldiers wait, DynamicBuffer<BattalionSoldiers> soldiers)
+            private void Execute(BattalionMarker battalionMarker, WaitForSoldiers wait, DynamicBuffer<BattalionSoldiers> soldiers, LocalTransform transform)
             {
                 foreach (var soldier in soldiers)
                 {
-                    waitingBattalionSoldiers.Add(soldier.soldierId, (battalionMarker.id, soldier.position));
+                    waitingBattalionSoldiers.Add(soldier.soldierId, (battalionMarker.id, transform.Position));
                 }
             }
         }

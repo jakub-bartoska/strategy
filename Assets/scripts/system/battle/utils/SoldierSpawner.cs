@@ -60,7 +60,7 @@ namespace system.battle.utils
             {
                 soldierId = soldierStats.index,
                 entity = newEntity,
-                position = index
+                positionWithinBattalion = index
             });
 
             return newEntity;

@@ -114,6 +114,12 @@ namespace system
 
             var singletonEntity = ecb.CreateEntity();
 
+            var battalionIdHolder = new BattalionIdHolder
+            {
+                nextBattalionId = battalionId
+            };
+
+            ecb.AddComponent(singletonEntity, battalionIdHolder);
             ecb.AddComponent(singletonEntity, new BattleSingletonEntityTag());
             ecb.AddComponent(singletonEntity, new BattleCleanupTag());
             ecb.AddBuffer<PossibleReinforcements>(singletonEntity);

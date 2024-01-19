@@ -73,7 +73,7 @@ namespace system.battle.soldiers
                     if (battalionPositions.TryGetValue(value.Item1, out var battalionPosition))
                     {
                         var speed = 10f * deltaTime;
-                        var z = battalionPosition.z - 5 + value.Item2.position + 0.5f;
+                        var z = battalionPosition.z - 5 + value.Item2.positionWithinBattalion + 0.5f;
                         var positionInBattalion = new float3(battalionPosition.x, battalionPosition.y, z);
                         var direction = positionInBattalion - localTransform.Position;
                         if (math.distancesq(direction, float3.zero) < 0.05f)

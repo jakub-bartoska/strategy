@@ -7,7 +7,7 @@ namespace component.battle.battalion
     {
         public long soldierId;
         public Entity entity;
-        public int position;
+        public int positionWithinBattalion;
 
         public bool Equals(BattalionSoldiers other)
         {

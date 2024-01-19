@@ -63,18 +63,6 @@ namespace system.battle.battalion.fight
 
                     if (!exists)
                     {
-                        var direction = battalionMarker.team switch
-                        {
-                            Team.TEAM1 => Direction.LEFT,
-                            Team.TEAM2 => Direction.RIGHT,
-                            _ => throw new System.NotImplementedException()
-                        };
-                        splitCandidateList.AddNoResize(new SplitCandidate
-                        {
-                            battalionId = battalionMarker.id,
-                            direction = direction,
-                            type = SplitType.MINUS_TWO
-                        });
                         battalionFight.Add(new BattalionFightBuffer
                         {
                             time = 1f,
@@ -82,6 +70,21 @@ namespace system.battle.battalion.fight
                             type = fightPair.fightType
                         });
                     }
+
+                    if (fightPair.fightType != BattalionFightType.VERTICAL) continue;
+
+                    var direction = battalionMarker.team switch
+                    {
+                        Team.TEAM1 => Direction.LEFT,
+                        Team.TEAM2 => Direction.RIGHT,
+                        _ => throw new System.NotImplementedException()
+                    };
+                    splitCandidateList.AddNoResize(new SplitCandidate
+                    {
+                        battalionId = battalionMarker.id,
+                        direction = direction,
+                        type = SplitType.MINUS_TWO
+                    });
                 }
             }
         }

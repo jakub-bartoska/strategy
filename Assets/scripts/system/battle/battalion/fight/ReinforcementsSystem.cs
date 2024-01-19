@@ -63,7 +63,7 @@ namespace system.battle.battalion
                 var exists = false;
                 foreach (var soldier in soldiers)
                 {
-                    if (soldier.position == i)
+                    if (soldier.positionWithinBattalion == i)
                     {
                         exists = true;
                     }
@@ -106,7 +106,7 @@ namespace system.battle.battalion
                     soldiersMap.Clear();
                     for (var i = 0; i < soldiers.Length; i++)
                     {
-                        soldiersMap.Add(soldiers[i].position, (soldiers[i], i));
+                        soldiersMap.Add(soldiers[i].positionWithinBattalion, (soldiers[i], i));
                     }
 
                     for (var i = 0; i < 10; i++)
@@ -126,7 +126,7 @@ namespace system.battle.battalion
                 var newSoldier = new BattalionSoldiers
                 {
                     soldierId = soldier.Item1.soldierId,
-                    position = index,
+                    positionWithinBattalion = index,
                     entity = soldier.Item1.entity
                 };
                 soldiers.RemoveAt(soldier.Item2);

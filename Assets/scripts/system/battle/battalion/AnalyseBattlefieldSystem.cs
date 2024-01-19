@@ -100,8 +100,12 @@ namespace system.battle.battalion
 
                     if (isTooFar(closestPosition, myPosition, 5f))
                     {
-                        possibleSplitDirections.Add(myId, Direction.RIGHT);
-                        possibleSplitDirections.Add(closestId, Direction.LEFT);
+                        if (isTooFar(closestPosition, myPosition, 8f))
+                        {
+                            possibleSplitDirections.Add(myId, Direction.RIGHT);
+                            possibleSplitDirections.Add(closestId, Direction.LEFT);
+                        }
+
                         continue;
                     }
 

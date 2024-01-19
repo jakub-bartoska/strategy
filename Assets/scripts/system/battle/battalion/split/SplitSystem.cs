@@ -8,9 +8,11 @@ using system.battle.enums;
 using system.battle.utils;
 using Unity.Burst;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 
 namespace system.battle.battalion.split
 {
@@ -28,22 +30,28 @@ namespace system.battle.battalion.split
         public void OnUpdate(ref SystemState state)
         {
             var splitCandidates = SystemAPI.GetSingletonBuffer<SplitCandidate>();
+
             var splitCandidatesMap = new NativeHashMap<long, SplitCandidate>(splitCandidates.Length, Allocator.TempJob);
             foreach (var splitCandidate in splitCandidates)
             {
-                splitCandidatesMap.Add(splitCandidate.battalionId, splitCandidate);
+                if (!splitCandidatesMap.ContainsKey(splitCandidate.battalionId))
+                {
+                    splitCandidatesMap.Add(splitCandidate.battalionId, splitCandidate);
+                }
             }
 
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
                 .CreateCommandBuffer(state.WorldUnmanaged);
             var prefabHolder = SystemAPI.GetSingleton<PrefabHolder>();
+            var battalionIdHolder = SystemAPI.GetSingletonRW<BattalionIdHolder>();
 
             new PerformSplitJob
                 {
                     splitCandidates = splitCandidatesMap,
                     ecb = ecb.AsParallelWriter(),
-                    prefabHolder = prefabHolder
-                }.ScheduleParallel(state.Dependency)
+                    prefabHolder = prefabHolder,
+                    battalionIdHolder = battalionIdHolder
+                }.Schedule(state.Dependency)
                 .Complete();
         }
 
@@ -53,6 +61,7 @@ namespace system.battle.battalion.split
             [ReadOnly] public NativeHashMap<long, SplitCandidate> splitCandidates;
             [ReadOnly] public PrefabHolder prefabHolder;
             public EntityCommandBuffer.ParallelWriter ecb;
+            [NativeDisableUnsafePtrRestriction] public RefRW<BattalionIdHolder> battalionIdHolder;
 
             private void Execute(BattalionMarker battalionMarker,
                 ref BattalionHealth health,
@@ -112,8 +121,10 @@ namespace system.battle.battalion.split
                         soldiers.RemoveAt(i);
                     }
 
+                    Debug.Log("battalion created " + battalionIdHolder.ValueRO.nextBattalionId);
+
                     //todo fix batttalionId
-                    BattalionSpawner.spawnBattalionParallel(ecb, prefabHolder, 999, newPosition, battalionMarker.team, battalionMarker.row, soldiersToMove);
+                    BattalionSpawner.spawnBattalionParallel(ecb, prefabHolder, battalionIdHolder.ValueRW.nextBattalionId++, newPosition, battalionMarker.team, battalionMarker.row, soldiersToMove);
                 }
             }
         }

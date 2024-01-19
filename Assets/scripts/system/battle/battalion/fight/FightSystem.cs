@@ -64,11 +64,11 @@ namespace system.battle.battalion
                         switch (battalionFight[i].type)
                         {
                             case BattalionFightType.NORMAL:
-                                damageDealt.TryAdd(battalionFight[i].enemyBattalionId, soldiers.Length);
+                                //damageDealt.TryAdd(battalionFight[i].enemyBattalionId, soldiers.Length);
                                 break;
                             case BattalionFightType.VERTICAL:
                                 //spocitat ci bocni jednotky
-                                damageDealt.TryAdd(battalionFight[i].enemyBattalionId, 1);
+                                //damageDealt.TryAdd(battalionFight[i].enemyBattalionId, 1);
                                 break;
                             default:
                                 throw new Exception("Unknown battalion fight type");
