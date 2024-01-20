@@ -18,9 +18,7 @@ namespace system.battle.utils
             var battalionPrefab = prefabHolder.battalionPrefab;
             var newBattalion = ecb.Instantiate(battalionPrefab);
 
-            battalionPosition.y = 0.02f;
-            battalionPosition.z += 5f;
-            var battalionTransform = LocalTransform.FromPosition(battalionPosition);
+            var battalionTransform = CustomTransformUtils.getBattalionPosition(battalionToSpawn.team, battalionToSpawn.position.x, battalionToSpawn.position.y);
 
             var battalionMarker = new BattalionMarker
             {

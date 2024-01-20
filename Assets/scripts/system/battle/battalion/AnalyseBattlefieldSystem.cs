@@ -1,4 +1,5 @@
-﻿using component;
+﻿using System;
+using component;
 using component._common.system_switchers;
 using component.battle.battalion;
 using component.battle.battalion.markers;
@@ -38,12 +39,24 @@ namespace system.battle.battalion
             movementBlockingPairs.Clear();
 
             var possibleSplitDirections = new NativeParallelMultiHashMap<long, Direction>(4000, Allocator.TempJob);
+            //row -> (team1, team2)
+            var rowToTeamCount = new NativeHashMap<int, (int, int)>(10, Allocator.TempJob);
 
-            fillBlockers(battalionPositions, fightPairs, movementBlockingPairs, possibleSplitDirections);
+            fillBlockers(battalionPositions, fightPairs, movementBlockingPairs, possibleSplitDirections, rowToTeamCount);
 
             new FillPossibleSplits
                 {
                     possibleSplitDirections = possibleSplitDirections
+                }.ScheduleParallel(state.Dependency)
+                .Complete();
+
+            var rowChanges = prepareRowSwitchTags(rowToTeamCount);
+            var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
+                .CreateCommandBuffer(state.WorldUnmanaged);
+            new AddRowChangeTags
+                {
+                    rowChanges = rowChanges,
+                    ecb = ecb.AsParallelWriter()
                 }.ScheduleParallel(state.Dependency)
                 .Complete();
         }
@@ -52,7 +65,8 @@ namespace system.battle.battalion
             NativeParallelMultiHashMap<int, (long, float3, Team)> battalionPositions,
             DynamicBuffer<FightPair> fightPairs,
             DynamicBuffer<MovementBlockingPair> movementBlockingPairs,
-            NativeParallelMultiHashMap<long, Direction> possibleSplitDirections)
+            NativeParallelMultiHashMap<long, Direction> possibleSplitDirections,
+            NativeHashMap<int, (int, int)> rowToTeamCount)
         {
             var allRows = battalionPositions.GetKeyArray(Allocator.TempJob);
             allRows.Sort();
@@ -82,6 +96,8 @@ namespace system.battle.battalion
 
                 for (int i = 0; i < rowBattalions.Length; i++)
                 {
+                    addRowCounter(rowToTeamCount, row, rowBattalions[i].Item3);
+
                     var (myId, myPosition, myTeam) = rowBattalions[i];
 
                     if (i == 0)
@@ -168,6 +184,104 @@ namespace system.battle.battalion
             }
         }
 
+        private NativeHashMap<int, (Team, Direction)> prepareRowSwitchTags(NativeHashMap<int, (int, int)> rowToTeamCount)
+        {
+            //row -> team, direction
+            var result = new NativeHashMap<int, (Team, Direction)>(10, Allocator.TempJob);
+
+            foreach (var row in rowToTeamCount)
+            {
+                if (row.Value is {Item1: 0, Item2: 0}) continue;
+                if (row.Value.Item1 == 0)
+                {
+                    var upDirection = enemyBattalionsInDirection(rowToTeamCount, Team.TEAM2, Direction.UP, row.Key);
+                    var downDirection = enemyBattalionsInDirection(rowToTeamCount, Team.TEAM2, Direction.DOWN, row.Key);
+                    var resultDirection = upDirection > downDirection ? Direction.UP : Direction.DOWN;
+                    result.Add(row.Key, (Team.TEAM2, resultDirection));
+                }
+
+                if (row.Value.Item2 == 0)
+                {
+                    var upDirection = enemyBattalionsInDirection(rowToTeamCount, Team.TEAM1, Direction.UP, row.Key);
+                    var downDirection = enemyBattalionsInDirection(rowToTeamCount, Team.TEAM1, Direction.DOWN, row.Key);
+                    var resultDirection = upDirection > downDirection ? Direction.UP : Direction.DOWN;
+                    result.Add(row.Key, (Team.TEAM2, resultDirection));
+                }
+            }
+
+            return result;
+        }
+
+        private int enemyBattalionsInDirection(NativeHashMap<int, (int, int)> rowToTeamCount, Team myTeam, Direction direction, int myRow)
+        {
+            var result = 0;
+
+            var start = direction switch
+            {
+                Direction.UP => 0,
+                Direction.DOWN => myRow + 1,
+                _ => throw new Exception("Unknown direction")
+            };
+
+            var max = direction switch
+            {
+                Direction.UP => myRow,
+                Direction.DOWN => 11,
+                _ => throw new Exception("Unknown direction")
+            };
+
+            for (var i = start; i < max; i++)
+            {
+                if (rowToTeamCount.TryGetValue(i, out var teamCounts))
+                {
+                    switch (myTeam)
+                    {
+                        case Team.TEAM1:
+                            result += teamCounts.Item2;
+                            break;
+                        case Team.TEAM2:
+                            result += teamCounts.Item1;
+                            break;
+                        default:
+                            throw new Exception("Unknown team");
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private void addRowCounter(NativeHashMap<int, (int, int)> rowToTeamCount, int row, Team team)
+        {
+            switch (team)
+            {
+                case Team.TEAM1:
+                    if (rowToTeamCount.TryGetValue(row, out var team1Count))
+                    {
+                        rowToTeamCount[row] = (team1Count.Item1 + 1, team1Count.Item2);
+                    }
+                    else
+                    {
+                        rowToTeamCount.Add(row, (1, 0));
+                    }
+
+                    break;
+                case Team.TEAM2:
+                    if (rowToTeamCount.TryGetValue(row, out var team2Count))
+                    {
+                        rowToTeamCount[row] = (team2Count.Item1, team2Count.Item2 + 1);
+                    }
+                    else
+                    {
+                        rowToTeamCount.Add(row, (0, 1));
+                    }
+
+                    break;
+                default:
+                    throw new Exception("Unknown team");
+            }
+        }
+
         private bool isTooFar(float3 position1, float3 position2, float targetDistance)
         {
             var distance = math.abs(position1.x - position2.x);
@@ -218,6 +332,25 @@ namespace system.battle.battalion
                             split.right = true;
                             break;
                     }
+                }
+            }
+        }
+
+        [BurstCompile]
+        [WithNone(typeof(ChangeRow))]
+        public partial struct AddRowChangeTags : IJobEntity
+        {
+            [ReadOnly] public NativeHashMap<int, (Team, Direction)> rowChanges;
+            public EntityCommandBuffer.ParallelWriter ecb;
+
+            private void Execute(BattalionMarker battalionMarker, Entity entity)
+            {
+                if (rowChanges.TryGetValue(battalionMarker.row, out var teamDirection))
+                {
+                    ecb.AddComponent(0, entity, new ChangeRow
+                    {
+                        direction = teamDirection.Item2
+                    });
                 }
             }
         }

@@ -15,7 +15,6 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Jobs.LowLevel.Unsafe;
 using Unity.Mathematics;
-using Unity.Transforms;
 
 namespace system
 {
@@ -39,7 +38,6 @@ namespace system
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var defaultPositionOffset = new float3(10000, 0, 10000);
             var blockers = SystemAPI.GetSingletonBuffer<SystemSwitchBlocker>();
 
             if (!containsArmySpawn(blockers)) return;
@@ -50,7 +48,7 @@ namespace system
             var random = SystemAPI.GetSingletonRW<GameRandom>();
             var ecb = new EntityCommandBuffer(Allocator.TempJob);
 
-            var mapTransform = LocalTransform.FromPosition(defaultPositionOffset);
+            var mapTransform = CustomTransformUtils.getMapTransform();
             mapTransform.Rotation = quaternion.RotateY(math.PI / 2);
             var map = ecb.Instantiate(prefabHolder.battleMapPrefab);
             ecb.SetName(map, "Map");
@@ -69,7 +67,7 @@ namespace system
                     continue;
                 }
 
-                var battalionPosition = getBattalionPosition(battalionToSpawn, defaultPositionOffset);
+                var battalionPosition = CustomTransformUtils.getBattalionPositionForSoldiers(battalionToSpawn.team, battalionToSpawn.position.x, battalionToSpawn.position.y);
 
                 var newBattalion = BattalionSpawner.spawnBattalion(ecb, battalionToSpawn, prefabHolder, battalionId++, battalionPosition);
 
