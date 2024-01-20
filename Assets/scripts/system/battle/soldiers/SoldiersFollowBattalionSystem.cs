@@ -72,7 +72,8 @@ namespace system.battle.soldiers
                 {
                     if (battalionPositions.TryGetValue(value.Item1, out var battalionPosition))
                     {
-                        var speed = 10f * deltaTime;
+                        var speed = getSpeed(battalionPosition, localTransform.Position);
+
                         var z = battalionPosition.z - 5 + value.Item2.positionWithinBattalion + 0.5f;
                         var positionInBattalion = new float3(battalionPosition.x, battalionPosition.y, z);
                         var direction = positionInBattalion - localTransform.Position;
@@ -87,6 +88,18 @@ namespace system.battle.soldiers
                         }
                     }
                 }
+            }
+
+            private float getSpeed(float3 battalionPosition, float3 soldierPosition)
+            {
+                var speed = 10f * deltaTime;
+                var diagonalSpeed = 14.14f * deltaTime;
+
+                var zDelta = math.abs(battalionPosition.z - soldierPosition.z);
+                var xDelta = math.abs(battalionPosition.x - soldierPosition.x);
+                if (zDelta > 0.1f && xDelta > 0.1f) return diagonalSpeed;
+
+                return speed;
             }
         }
     }
