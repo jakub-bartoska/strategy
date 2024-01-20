@@ -88,14 +88,7 @@ namespace system.battle.battalion
         {
             public int Compare((long, float3, Team) e1, (long, float3, Team) e2)
             {
-                if (e1.Item3 == e2.Item3)
-                {
-                    return e1.Item2.x.CompareTo(e2.Item2.x);
-                }
-
-                if (e1.Item3 == Team.TEAM1) return 1;
-
-                return -1;
+                return e1.Item2.x.CompareTo(e2.Item2.x);
             }
         }
 

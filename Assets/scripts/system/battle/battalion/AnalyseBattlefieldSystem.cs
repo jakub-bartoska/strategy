@@ -74,13 +74,16 @@ namespace system.battle.battalion
             var uniqueRows = allRows.GetSubArray(0, uniqueCount);
 
             var sorter = new MovementSystem.SortByPosition();
+            var rowBattalions = new NativeList<(long, float3, Team)>(Allocator.TempJob);
+            var rowMinusOneUnsorted = new NativeList<(long, float3, Team)>(Allocator.TempJob);
+            var rowPlusOneUnsorted = new NativeList<(long, float3, Team)>(Allocator.TempJob);
             //iterate over sorted rows
-            var firstRow = true;
             foreach (var row in uniqueRows)
             {
-                //sort battalions in row + row above
-                var rowBattalions = new NativeList<(long, float3, Team)>(Allocator.TempJob);
-                var rowMinusOne = new NativeList<(long, float3, Team)>(Allocator.TempJob);
+                rowBattalions.Clear();
+                rowMinusOneUnsorted.Clear();
+                rowPlusOneUnsorted.Clear();
+
                 foreach (var value in battalionPositions.GetValuesForKey(row))
                 {
                     rowBattalions.Add(value);
@@ -88,10 +91,14 @@ namespace system.battle.battalion
 
                 foreach (var value in battalionPositions.GetValuesForKey(row - 1))
                 {
-                    rowMinusOne.Add(value);
+                    rowMinusOneUnsorted.Add(value);
                 }
 
-                rowMinusOne.Sort(sorter);
+                foreach (var value in battalionPositions.GetValuesForKey(row + 1))
+                {
+                    rowPlusOneUnsorted.Add(value);
+                }
+
                 rowBattalions.Sort(sorter);
 
                 for (int i = 0; i < rowBattalions.Length; i++)
@@ -149,38 +156,48 @@ namespace system.battle.battalion
                 {
                     var (myId, myPosition, myTeam) = rowBattalions[i];
 
-                    if (firstRow)
+                    var upBlocked = false;
+                    foreach (var (enemyId, enemyPosition, enemyTeam) in rowMinusOneUnsorted)
                     {
-                        possibleSplitDirections.Add(myId, Direction.UP);
-                    }
-                    else if (row == uniqueRows[^1])
-                    {
-                        possibleSplitDirections.Add(myId, Direction.DOWN);
-                    }
-
-                    foreach (var (enemyId, enemyPosition, enemyTeam) in rowMinusOne)
-                    {
-                        if (myTeam == enemyTeam) continue;
-
-                        if (isTooFar(myPosition, enemyPosition, 11f))
+                        if (!isTooFar(myPosition, enemyPosition, 11f))
                         {
-                            possibleSplitDirections.Add(myId, Direction.UP);
-                            possibleSplitDirections.Add(enemyId, Direction.DOWN);
+                            upBlocked = true;
                         }
 
                         //1.4f -> start fight little bit later than 2.5f
                         if (isTooFar(myPosition, enemyPosition, 0.1f)) continue;
 
-                        fightPairs.Add(new FightPair
+                        if (myTeam != enemyTeam)
                         {
-                            battalionId1 = myId,
-                            battalionId2 = enemyId,
-                            fightType = BattalionFightType.VERTICAL
-                        });
+                            fightPairs.Add(new FightPair
+                            {
+                                battalionId1 = myId,
+                                battalionId2 = enemyId,
+                                fightType = BattalionFightType.VERTICAL
+                            });
+                        }
+                    }
+
+                    if (!upBlocked)
+                    {
+                        possibleSplitDirections.Add(myId, Direction.UP);
+                    }
+
+                    var downBlocked = false;
+                    foreach (var (enemyId, enemyPosition, enemyTeam) in rowPlusOneUnsorted)
+                    {
+                        if (!isTooFar(myPosition, enemyPosition, 11f))
+                        {
+                            downBlocked = true;
+                            break;
+                        }
+                    }
+
+                    if (!downBlocked)
+                    {
+                        possibleSplitDirections.Add(myId, Direction.DOWN);
                     }
                 }
-
-                firstRow = false;
             }
         }
 
@@ -343,15 +360,30 @@ namespace system.battle.battalion
             [ReadOnly] public NativeHashMap<int, (Team, Direction)> rowChanges;
             public EntityCommandBuffer.ParallelWriter ecb;
 
-            private void Execute(BattalionMarker battalionMarker, Entity entity)
+            private void Execute(BattalionMarker battalionMarker, Entity entity, PossibleSplit split)
             {
                 if (rowChanges.TryGetValue(battalionMarker.row, out var teamDirection))
                 {
+                    var canChange = isDirectionPossible(teamDirection.Item2, split);
+                    if (!canChange) return;
+
                     ecb.AddComponent(0, entity, new ChangeRow
                     {
                         direction = teamDirection.Item2
                     });
                 }
+            }
+
+            private bool isDirectionPossible(Direction changeDirection, PossibleSplit possibleSplit)
+            {
+                return changeDirection switch
+                {
+                    Direction.UP => possibleSplit.up,
+                    Direction.DOWN => possibleSplit.down,
+                    Direction.LEFT => possibleSplit.left,
+                    Direction.RIGHT => possibleSplit.right,
+                    _ => throw new Exception("Unknown direction")
+                };
             }
         }
     }
