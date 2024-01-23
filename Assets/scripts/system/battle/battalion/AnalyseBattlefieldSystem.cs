@@ -50,13 +50,20 @@ namespace system.battle.battalion
                 }.ScheduleParallel(state.Dependency)
                 .Complete();
 
+            var team1FlankPositions = new NativeHashMap<int, float3>(10, Allocator.TempJob);
+            var team2FlankPositions = new NativeHashMap<int, float3>(10, Allocator.TempJob);
+
+            fillFlankPositions(team1FlankPositions, team2FlankPositions, battalionPositions);
+
             var rowChanges = prepareRowSwitchTags(rowToTeamCount);
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
                 .CreateCommandBuffer(state.WorldUnmanaged);
             new AddRowChangeTags
                 {
                     rowChanges = rowChanges,
-                    ecb = ecb.AsParallelWriter()
+                    ecb = ecb.AsParallelWriter(),
+                    team1FlankPositions = team1FlankPositions,
+                    team2FlankPositions = team2FlankPositions
                 }.ScheduleParallel(state.Dependency)
                 .Complete();
         }
@@ -309,6 +316,36 @@ namespace system.battle.battalion
             return distance > (targetDistance * 0.3 * 2 * 1.1f);
         }
 
+        private void fillFlankPositions(NativeHashMap<int, float3> team1FlankPositions, NativeHashMap<int, float3> team2FlankPositions,
+            NativeParallelMultiHashMap<int, (long, float3, Team)> battalionPositions)
+        {
+            for (var i = 0; i < 10; i++)
+            {
+                float3? team1Max = null;
+                float3? team2Max = null;
+                foreach (var valueTuple in battalionPositions.GetValuesForKey(i))
+                {
+                    if (valueTuple.Item3 == Team.TEAM1)
+                    {
+                        if (!team1Max.HasValue || team1Max.Value.x < valueTuple.Item2.x)
+                        {
+                            team1Max = valueTuple.Item2;
+                        }
+                    }
+                    else if (valueTuple.Item3 == Team.TEAM2)
+                    {
+                        if (!team2Max.HasValue || team2Max.Value.x > valueTuple.Item2.x)
+                        {
+                            team2Max = valueTuple.Item2;
+                        }
+                    }
+                }
+
+                if (team1Max.HasValue) team2FlankPositions.Add(i, team1Max.Value);
+                if (team2Max.HasValue) team1FlankPositions.Add(i, team2Max.Value);
+            }
+        }
+
         [BurstCompile]
         public partial struct CollectBattalionPositionsJob : IJobEntity
         {
@@ -358,12 +395,23 @@ namespace system.battle.battalion
         public partial struct AddRowChangeTags : IJobEntity
         {
             [ReadOnly] public NativeHashMap<int, (Team, Direction)> rowChanges;
+            [ReadOnly] public NativeHashMap<int, float3> team1FlankPositions;
+            [ReadOnly] public NativeHashMap<int, float3> team2FlankPositions;
             public EntityCommandBuffer.ParallelWriter ecb;
 
-            private void Execute(BattalionMarker battalionMarker, Entity entity, PossibleSplit split)
+            private void Execute(BattalionMarker battalionMarker, Entity entity, PossibleSplit split, LocalTransform transform)
             {
                 if (rowChanges.TryGetValue(battalionMarker.row, out var teamDirection))
                 {
+                    var flankPosition = getFlankPosition(battalionMarker.row, teamDirection.Item2, battalionMarker.team);
+                    var flankPossible = battalionMarker.team switch
+                    {
+                        Team.TEAM1 => flankPosition.x > transform.Position.x,
+                        Team.TEAM2 => flankPosition.x < transform.Position.x,
+                        _ => throw new Exception("Unknown team")
+                    };
+                    if (!flankPossible) return;
+
                     var canChange = isDirectionPossible(teamDirection.Item2, split);
                     if (!canChange) return;
 
@@ -372,6 +420,28 @@ namespace system.battle.battalion
                         direction = teamDirection.Item2
                     });
                 }
+            }
+
+            private float3 getFlankPosition(int myRow, Direction direction, Team team)
+            {
+                var rowDelta = direction switch
+                {
+                    Direction.UP => -1,
+                    Direction.DOWN => 1,
+                    _ => throw new Exception("Unknown direction")
+                };
+                var flankPositions = team switch
+                {
+                    Team.TEAM1 => team1FlankPositions,
+                    Team.TEAM2 => team2FlankPositions,
+                    _ => throw new Exception("Unknown team")
+                };
+                if (flankPositions.TryGetValue(myRow + rowDelta, out var flankPosition))
+                {
+                    return flankPosition;
+                }
+
+                return getFlankPosition(myRow + rowDelta, direction, team);
             }
 
             private bool isDirectionPossible(Direction changeDirection, PossibleSplit possibleSplit)
