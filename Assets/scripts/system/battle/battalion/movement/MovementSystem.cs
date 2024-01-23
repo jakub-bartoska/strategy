@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using component;
 using component._common.system_switchers;
 using component.battle.battalion;
 using component.battle.battalion.markers;
+using system.battle.enums;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -110,15 +112,20 @@ namespace system.battle.battalion
             public float deltaTime;
             public NativeHashSet<long> unableToMoveBattalions;
 
-            private void Execute(BattalionMarker battalionMarker, ref LocalTransform transform)
+            private void Execute(BattalionMarker battalionMarker, ref LocalTransform transform, MovementDirection movementDirection)
             {
                 if (unableToMoveBattalions.Contains(battalionMarker.id)) return;
 
                 var speed = 10f * deltaTime;
                 //var speed = 1f * deltaTime;
-                var direction = battalionMarker.team == Team.TEAM1 ? -1 : 1;
+                var directionCoefficient = movementDirection.direction switch
+                {
+                    Direction.LEFT => -1,
+                    Direction.RIGHT => 1,
+                    _ => throw new Exception("Unknown direction")
+                };
 
-                var delta = new float3(direction * speed, 0, 0);
+                var delta = new float3(directionCoefficient * speed, 0, 0);
                 transform.Position += delta;
             }
         }

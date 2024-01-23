@@ -1,8 +1,10 @@
-﻿using component;
+﻿using System;
+using component;
 using component.authoring_pairs.PrefabHolder;
 using component.battle.battalion;
 using component.battle.battalion.markers;
 using component.config.game_settings;
+using system.battle.enums;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -27,6 +29,18 @@ namespace system.battle.utils
                 row = battalionToSpawn.position.y
             };
 
+            var direction = battalionToSpawn.team switch
+            {
+                Team.TEAM1 => Direction.LEFT,
+                Team.TEAM2 => Direction.RIGHT,
+                _ => throw new Exception("Unknown team")
+            };
+
+            var movementDirection = new MovementDirection
+            {
+                direction = direction
+            };
+
             var possibleSplits = new PossibleSplit
             {
                 up = false,
@@ -37,6 +51,7 @@ namespace system.battle.utils
 
             ecb.AddComponent(newBattalion, battalionMarker);
             ecb.AddComponent(newBattalion, possibleSplits);
+            ecb.AddComponent(newBattalion, movementDirection);
 
             ecb.AddBuffer<BattalionFightBuffer>(newBattalion);
 
@@ -76,9 +91,22 @@ namespace system.battle.utils
                 right = false
             };
 
+            var direction = team switch
+            {
+                Team.TEAM1 => Direction.LEFT,
+                Team.TEAM2 => Direction.RIGHT,
+                _ => throw new Exception("Unknown team")
+            };
+
+            var movementDirection = new MovementDirection
+            {
+                direction = direction
+            };
+
             ecb.AddComponent(0, newBattalion, battalionMarker);
             ecb.AddComponent(0, newBattalion, possibleSplits);
             ecb.AddComponent(0, newBattalion, new WaitForSoldiers());
+            ecb.AddComponent(0, newBattalion, movementDirection);
 
             ecb.AddBuffer<BattalionFightBuffer>(0, newBattalion);
             var soldierBuffer = ecb.AddBuffer<BattalionSoldiers>(0, newBattalion);
