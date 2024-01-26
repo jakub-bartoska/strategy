@@ -122,6 +122,7 @@ namespace system.battle.battalion
                 {
                     Direction.LEFT => -1,
                     Direction.RIGHT => 1,
+                    Direction.NONE => 0,
                     _ => throw new Exception("Unknown direction")
                 };
 
