@@ -489,6 +489,35 @@ namespace system.battle.battalion
 
             private void Execute(BattalionMarker battalionMarker, LocalTransform transform, ref MovementDirection movementDirection)
             {
+                var flank2 = getFlankPosition2(battalionMarker.row, battalionMarker.team);
+                if (flank2.HasValue)
+                {
+                    var flankPossible = battalionMarker.team switch
+                    {
+                        Team.TEAM1 => flank2.Value.x > transform.Position.x,
+                        Team.TEAM2 => flank2.Value.x < transform.Position.x,
+                        _ => throw new Exception("Unknown team")
+                    };
+                    var resultDirection = battalionMarker.team switch
+                    {
+                        Team.TEAM1 => Direction.LEFT,
+                        Team.TEAM2 => Direction.RIGHT,
+                        _ => throw new Exception("Unknown team")
+                    };
+                    if (flankPossible)
+                    {
+                        resultDirection = battalionMarker.team switch
+                        {
+                            Team.TEAM1 => Direction.RIGHT,
+                            Team.TEAM2 => Direction.LEFT,
+                            _ => throw new Exception("Unknown team")
+                        };
+                    }
+
+                    movementDirection.direction = resultDirection;
+                    return;
+                }
+
                 if (rowChanges.TryGetValue(battalionMarker.row, out var teamDirection))
                 {
                     var flankPosition = getFlankPosition(battalionMarker.row, teamDirection.Item2, battalionMarker.team);
@@ -504,11 +533,11 @@ namespace system.battle.battalion
                         return;
                     }
 
-                    updateMovementDirection(ref movementDirection, battalionMarker.team, transform.Position, flankPosition, battalionMarker.id);
+                    updateMovementDirection(ref movementDirection, battalionMarker.team, transform.Position, flankPosition);
                 }
             }
 
-            private void updateMovementDirection(ref MovementDirection movementDirection, Team team, float3 myPosition, float3 flankPosition, long myId)
+            private void updateMovementDirection(ref MovementDirection movementDirection, Team team, float3 myPosition, float3 flankPosition)
             {
                 var direction = Direction.NONE;
                 if (math.abs(myPosition.x - flankPosition.x) > 0.1f)
@@ -544,6 +573,22 @@ namespace system.battle.battalion
                 }
 
                 return getFlankPosition(myRow + rowDelta, direction, team);
+            }
+
+            private float3? getFlankPosition2(int myRow, Team team)
+            {
+                var flankPositions = team switch
+                {
+                    Team.TEAM1 => team1FlankPositions,
+                    Team.TEAM2 => team2FlankPositions,
+                    _ => throw new Exception("Unknown team")
+                };
+                if (flankPositions.TryGetValue(myRow, out var flankPosition))
+                {
+                    return flankPosition;
+                }
+
+                return null;
             }
         }
     }
