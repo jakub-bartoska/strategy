@@ -33,7 +33,7 @@ namespace system.controls
             var cameraPosition = Camera.main.transform.position;
             var cameraSpeed = cameraPosition.y * deltaTime;
 
-            var cameraYDelta = cameraMovement.mouseScroll.ReadValue<float>() * cameraSpeed * 0.2f;
+            var cameraYDelta = cameraMovement.mouseScroll.ReadValue<float>() * cameraSpeed * 10f;
             var cameraXZDelta = new float2(cameraMovement.WASD.ReadValue<Vector2>() * cameraSpeed);
 
             var config = getCorrectConfig(systemStatusHolder.currentStatus);
