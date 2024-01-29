@@ -26,7 +26,7 @@ namespace Unity.Physics.Authoring
                     Min = 0,
                     Max = 0,
                     SpringFrequency = Constraint.DefaultSpringFrequency,
-                    SpringDamping = Constraint.DefaultSpringDamping,
+                    DampingRatio = Constraint.DefaultDampingRatio,
                     MaxImpulse = MaxImpulse,
                 });
             }
@@ -40,7 +40,7 @@ namespace Unity.Physics.Authoring
                     Min = 0,
                     Max = 0,
                     SpringFrequency = Constraint.DefaultSpringFrequency,
-                    SpringDamping = Constraint.DefaultSpringDamping,
+                    DampingRatio = Constraint.DefaultDampingRatio,
                     MaxImpulse = MaxImpulse,
                 });
             }
