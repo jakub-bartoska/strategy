@@ -1,4 +1,5 @@
 ﻿using _Monobehaviors.ui.battle_plan.counter;
+using component;
 using component.config.game_settings;
 using JetBrains.Annotations;
 using Unity.Mathematics;
@@ -23,11 +24,11 @@ namespace _Monobehaviors.ui.battle_plan.buttons
             battalion = draggableButton.getBattalion();
         }
 
-        public void add()
+        public void add(Team team)
         {
             if (battalion.HasValue) return;
 
-            battalion = ArmyFormationManager.instance.tryToGetBattalion();
+            battalion = ArmyFormationManager.instance.tryToGetBattalion(team);
 
             if (!battalion.HasValue) return;
 

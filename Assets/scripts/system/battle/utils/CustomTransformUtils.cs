@@ -1,5 +1,4 @@
-﻿using component;
-using Unity.Mathematics;
+﻿using Unity.Mathematics;
 using Unity.Transforms;
 
 namespace system.battle.utils
@@ -13,13 +12,9 @@ namespace system.battle.utils
             return LocalTransform.FromPosition(defaulBattleMapOffset);
         }
 
-        public static float3 getBattalionPositionForSoldiers(Team team, int x, int y)
+        public static float3 getBattalionPositionForSoldiers(int x, int y)
         {
-            var distanceFromMiddle = team switch
-            {
-                Team.TEAM1 => 50,
-                Team.TEAM2 => -50,
-            };
+            var distanceFromMiddle = -90;
             return new float3
             {
                 x = x * 5 + distanceFromMiddle + defaulBattleMapOffset.x,
@@ -28,9 +23,9 @@ namespace system.battle.utils
             };
         }
 
-        public static LocalTransform getBattalionPosition(Team team, int x, int y)
+        public static LocalTransform getBattalionPosition(int x, int y)
         {
-            var position = getBattalionPositionForSoldiers(team, x, y);
+            var position = getBattalionPositionForSoldiers(x, y);
             position.y = 0.02f;
             position.z += 5f;
             return LocalTransform.FromPosition(position);
@@ -38,7 +33,7 @@ namespace system.battle.utils
 
         public static float getBattalionZPosition(int z)
         {
-            return getBattalionPositionForSoldiers(Team.TEAM1, 0, z).z + 5f;
+            return getBattalionPositionForSoldiers(0, z).z + 5f;
         }
     }
 }

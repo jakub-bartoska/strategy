@@ -248,6 +248,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2350297307800453224, guid: a95ab48849cc0e941aae66b5428824e3,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2350297307800453224, guid: a95ab48849cc0e941aae66b5428824e3,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2350297307800453224, guid: a95ab48849cc0e941aae66b5428824e3,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2612244697386284268, guid: a95ab48849cc0e941aae66b5428824e3,
         type: 3}
       propertyPath: m_Type
@@ -272,6 +287,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2664077085305387122, guid: a95ab48849cc0e941aae66b5428824e3,
+        type: 3}
+      propertyPath: gridCount
+      value: 400
       objectReference: {fileID: 0}
     - target: {fileID: 2873554914882174049, guid: a95ab48849cc0e941aae66b5428824e3,
         type: 3}
@@ -328,6 +348,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3671473191861141388, guid: a95ab48849cc0e941aae66b5428824e3,
+        type: 3}
+      propertyPath: m_Spacing.x
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 3671473191861141388, guid: a95ab48849cc0e941aae66b5428824e3,
+        type: 3}
+      propertyPath: m_CellSize.x
+      value: 30
+      objectReference: {fileID: 0}
     - target: {fileID: 4005902584655090745, guid: a95ab48849cc0e941aae66b5428824e3,
         type: 3}
       propertyPath: m_ClearFlags
@@ -353,10 +383,20 @@ PrefabInstance:
       propertyPath: m_BackGroundColor.r
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4642670246783120136, guid: a95ab48849cc0e941aae66b5428824e3,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4720131236198993554, guid: a95ab48849cc0e941aae66b5428824e3,
         type: 3}
       propertyPath: m_Name
       value: mono-scene-objects
+      objectReference: {fileID: 0}
+    - target: {fileID: 5705221936433174874, guid: a95ab48849cc0e941aae66b5428824e3,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6424045513742742981, guid: a95ab48849cc0e941aae66b5428824e3,
         type: 3}

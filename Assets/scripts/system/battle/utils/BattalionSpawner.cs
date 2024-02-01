@@ -14,13 +14,12 @@ namespace system.battle.utils
 {
     public class BattalionSpawner
     {
-        public static Entity spawnBattalion(EntityCommandBuffer ecb, BattalionToSpawn battalionToSpawn, PrefabHolder prefabHolder, long battalionId,
-            float3 battalionPosition)
+        public static Entity spawnBattalion(EntityCommandBuffer ecb, BattalionToSpawn battalionToSpawn, PrefabHolder prefabHolder, long battalionId, float3 battalionPosition)
         {
             var battalionPrefab = prefabHolder.battalionPrefab;
             var newBattalion = ecb.Instantiate(battalionPrefab);
 
-            var battalionTransform = CustomTransformUtils.getBattalionPosition(battalionToSpawn.team, battalionToSpawn.position.x, battalionToSpawn.position.y);
+            var battalionTransform = CustomTransformUtils.getBattalionPosition(battalionToSpawn.position.x, battalionToSpawn.position.y);
 
             var battalionMarker = new BattalionMarker
             {

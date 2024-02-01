@@ -67,7 +67,7 @@ namespace system
                     continue;
                 }
 
-                var battalionPosition = CustomTransformUtils.getBattalionPositionForSoldiers(battalionToSpawn.team, battalionToSpawn.position.x, battalionToSpawn.position.y);
+                var battalionPosition = CustomTransformUtils.getBattalionPositionForSoldiers(battalionToSpawn.position.x, battalionToSpawn.position.y);
 
                 var newBattalion = BattalionSpawner.spawnBattalion(ecb, battalionToSpawn, prefabHolder, battalionId++, battalionPosition);
 

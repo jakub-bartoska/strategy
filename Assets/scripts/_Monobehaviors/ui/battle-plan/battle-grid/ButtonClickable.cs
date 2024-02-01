@@ -1,4 +1,5 @@
 ﻿using _Monobehaviors.ui.battle_plan.buttons;
+using component;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -18,10 +19,11 @@ namespace _Monobehaviors.ui.battle_plan.battle_grid
             switch (eventData.button)
             {
                 case PointerEventData.InputButton.Left:
-                    buttonDropTarget.add();
+                    buttonDropTarget.add(Team.TEAM1);
                     break;
                 case PointerEventData.InputButton.Right:
-                    buttonDropTarget.remove();
+                    buttonDropTarget.add(Team.TEAM2);
+                    //buttonDropTarget.remove();
                     break;
                 case PointerEventData.InputButton.Middle:
                     break;
