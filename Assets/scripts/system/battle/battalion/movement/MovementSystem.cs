@@ -123,6 +123,8 @@ namespace system.battle.battalion
                     Direction.LEFT => -1,
                     Direction.RIGHT => 1,
                     Direction.NONE => 0,
+                    Direction.UP => 0,
+                    Direction.DOWN => 0,
                     _ => throw new Exception("Unknown direction")
                 };
 

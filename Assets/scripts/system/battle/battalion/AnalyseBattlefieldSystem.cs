@@ -533,24 +533,8 @@ namespace system.battle.battalion
                         return;
                     }
 
-                    updateMovementDirection(ref movementDirection, battalionMarker.team, transform.Position, flankPosition);
+                    movementDirection.direction = teamDirection.Item2;
                 }
-            }
-
-            private void updateMovementDirection(ref MovementDirection movementDirection, Team team, float3 myPosition, float3 flankPosition)
-            {
-                var direction = Direction.NONE;
-                if (math.abs(myPosition.x - flankPosition.x) > 0.1f)
-                {
-                    direction = team switch
-                    {
-                        Team.TEAM1 => Direction.RIGHT,
-                        Team.TEAM2 => Direction.LEFT,
-                        _ => throw new Exception("Unknown team")
-                    };
-                }
-
-                movementDirection.direction = direction;
             }
 
             private float3 getFlankPosition(int myRow, Direction direction, Team team)
