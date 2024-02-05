@@ -1,4 +1,5 @@
-﻿using Unity.Entities;
+﻿using system.battle.enums;
+using Unity.Entities;
 
 namespace component.battle.battalion.markers
 {
@@ -6,5 +7,6 @@ namespace component.battle.battalion.markers
     {
         public long blocker;
         public long victim;
+        public Direction direction;
     }
 }

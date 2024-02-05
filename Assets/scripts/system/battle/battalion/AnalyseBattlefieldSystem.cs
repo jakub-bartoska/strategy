@@ -163,12 +163,17 @@ namespace system.battle.battalion
 
                     if (myTeam == closestTeam)
                     {
-                        var blocker = myTeam == Team.TEAM2 ? closestId : myId;
-                        var victim = myTeam == Team.TEAM2 ? myId : closestId;
                         movementBlockingPairs.Add(new MovementBlockingPair
                         {
-                            blocker = blocker,
-                            victim = victim
+                            blocker = myId,
+                            victim = closestId,
+                            direction = Direction.LEFT
+                        });
+                        movementBlockingPairs.Add(new MovementBlockingPair
+                        {
+                            blocker = closestId,
+                            victim = myId,
+                            direction = Direction.RIGHT
                         });
                         continue;
                     }

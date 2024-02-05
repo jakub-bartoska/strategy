@@ -29,12 +29,12 @@ namespace system.battle.battalion
         {
             var fightPairs = SystemAPI.GetSingletonBuffer<FightPair>();
             var movementBlockingPairs = SystemAPI.GetSingletonBuffer<MovementBlockingPair>();
-            var unableToMoveBattalions = new NativeHashSet<long>(300, Allocator.TempJob);
+            var unableToMoveBattalions = new NativeParallelMultiHashMap<long, Direction>(300, Allocator.TempJob);
 
-            var movementBlockersMap = new NativeParallelMultiHashMap<long, long>(1000, Allocator.TempJob);
+            var movementBlockersMap = new NativeParallelMultiHashMap<long, (long, Direction)>(1000, Allocator.TempJob);
             foreach (var movementBlockingPair in movementBlockingPairs)
             {
-                movementBlockersMap.Add(movementBlockingPair.blocker, movementBlockingPair.victim);
+                movementBlockersMap.Add(movementBlockingPair.blocker, (movementBlockingPair.victim, movementBlockingPair.direction));
             }
 
             var possibleReinforcements = SystemAPI.GetSingletonBuffer<PossibleReinforcements>();
@@ -49,13 +49,16 @@ namespace system.battle.battalion
 
             foreach (var waitingBattalion in waitingBattalions)
             {
-                fillBlockedMovement(waitingBattalion, movementBlockersMap, unableToMoveBattalions, possibleReinforcements);
+                fillBlockedMovement(waitingBattalion, Direction.LEFT, movementBlockersMap, unableToMoveBattalions, possibleReinforcements);
+                fillBlockedMovement(waitingBattalion, Direction.RIGHT, movementBlockersMap, unableToMoveBattalions, possibleReinforcements);
             }
 
             foreach (var fightPair in fightPairs)
             {
-                fillBlockedMovement(fightPair.battalionId1, movementBlockersMap, unableToMoveBattalions, possibleReinforcements);
-                fillBlockedMovement(fightPair.battalionId2, movementBlockersMap, unableToMoveBattalions, possibleReinforcements);
+                fillBlockedMovement(fightPair.battalionId1, Direction.LEFT, movementBlockersMap, unableToMoveBattalions, possibleReinforcements);
+                fillBlockedMovement(fightPair.battalionId1, Direction.RIGHT, movementBlockersMap, unableToMoveBattalions, possibleReinforcements);
+                fillBlockedMovement(fightPair.battalionId2, Direction.LEFT, movementBlockersMap, unableToMoveBattalions, possibleReinforcements);
+                fillBlockedMovement(fightPair.battalionId2, Direction.RIGHT, movementBlockersMap, unableToMoveBattalions, possibleReinforcements);
             }
 
             var deltaTime = SystemAPI.Time.DeltaTime;
@@ -69,20 +72,21 @@ namespace system.battle.battalion
 
         private void fillBlockedMovement(
             long blockedBattalionId,
-            NativeParallelMultiHashMap<long, long> movementBlockersMap,
-            NativeHashSet<long> unableToMoveBattalions,
+            Direction direction,
+            NativeParallelMultiHashMap<long, (long, Direction)> movementBlockersMap,
+            NativeParallelMultiHashMap<long, Direction> unableToMoveBattalions,
             DynamicBuffer<PossibleReinforcements> possibleReinforcements)
         {
-            if (unableToMoveBattalions.Contains(blockedBattalionId)) return;
-            unableToMoveBattalions.Add(blockedBattalionId);
+            unableToMoveBattalions.Add(blockedBattalionId, direction);
             foreach (var blockedBattalion in movementBlockersMap.GetValuesForKey(blockedBattalionId))
             {
+                if (blockedBattalion.Item2 != direction) continue;
                 possibleReinforcements.Add(new PossibleReinforcements
                 {
                     needHelpBattalionId = blockedBattalionId,
-                    canHelpBattalionId = blockedBattalion
+                    canHelpBattalionId = blockedBattalion.Item1
                 });
-                fillBlockedMovement(blockedBattalion, movementBlockersMap, unableToMoveBattalions, possibleReinforcements);
+                fillBlockedMovement(blockedBattalion.Item1, blockedBattalion.Item2, movementBlockersMap, unableToMoveBattalions, possibleReinforcements);
             }
         }
 
@@ -110,11 +114,14 @@ namespace system.battle.battalion
         public partial struct MoveBattalionJob : IJobEntity
         {
             public float deltaTime;
-            public NativeHashSet<long> unableToMoveBattalions;
+            public NativeParallelMultiHashMap<long, Direction> unableToMoveBattalions;
 
             private void Execute(BattalionMarker battalionMarker, ref LocalTransform transform, MovementDirection movementDirection)
             {
-                if (unableToMoveBattalions.Contains(battalionMarker.id)) return;
+                foreach (var direction in unableToMoveBattalions.GetValuesForKey(battalionMarker.id))
+                {
+                    if (direction == movementDirection.direction) return;
+                }
 
                 var speed = 10f * deltaTime;
                 //var speed = 1f * deltaTime;
