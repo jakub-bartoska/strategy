@@ -7,6 +7,7 @@ namespace component.battle.battalion.markers
     {
         public Direction direction;
         public ChangeState state;
+        public Entity shadowEntity;
     }
 
     public enum ChangeState

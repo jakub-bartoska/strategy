@@ -1,9 +1,11 @@
 ﻿using System;
 using component;
 using component._common.system_switchers;
+using component.authoring_pairs.PrefabHolder;
 using component.battle.battalion;
 using component.battle.battalion.markers;
 using system.battle.enums;
+using system.battle.utils;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -70,12 +72,14 @@ namespace system.battle.battalion
             var rowChanges = prepareRowSwitchTags(rowToTeamCount);
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
                 .CreateCommandBuffer(state.WorldUnmanaged);
+            var prefabHolder = SystemAPI.GetSingleton<PrefabHolder>();
             new AddRowChangeTags
                 {
                     rowChanges = rowChanges,
                     ecb = ecb.AsParallelWriter(),
                     team1FlankPositions = team1FlankPositions,
-                    team2FlankPositions = team2FlankPositions
+                    team2FlankPositions = team2FlankPositions,
+                    prefabHolder = prefabHolder
                 }.ScheduleParallel(state.Dependency)
                 .Complete();
 
@@ -424,6 +428,7 @@ namespace system.battle.battalion
             [ReadOnly] public NativeHashMap<int, (Team, Direction)> rowChanges;
             [ReadOnly] public NativeHashMap<int, float3> team1FlankPositions;
             [ReadOnly] public NativeHashMap<int, float3> team2FlankPositions;
+            [ReadOnly] public PrefabHolder prefabHolder;
             public EntityCommandBuffer.ParallelWriter ecb;
 
             private void Execute(BattalionMarker battalionMarker, Entity entity, PossibleSplit split, LocalTransform transform)
@@ -442,9 +447,11 @@ namespace system.battle.battalion
                     var canChange = isDirectionPossible(teamDirection.Item2, split);
                     if (!canChange) return;
 
+                    var shadowEntity = BattalionShadowSpawner.spawnBattalionShadow(ecb, prefabHolder, transform.Position, battalionMarker.id);
                     ecb.AddComponent(0, entity, new ChangeRow
                     {
-                        direction = teamDirection.Item2
+                        direction = teamDirection.Item2,
+                        shadowEntity = shadowEntity
                     });
                 }
             }

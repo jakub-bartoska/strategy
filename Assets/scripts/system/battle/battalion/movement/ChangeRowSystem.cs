@@ -56,7 +56,7 @@ namespace system.battle.battalion
                         initRowChange(ref battalionMarker, ref changeRow);
                         break;
                     case ChangeState.RUNNING:
-                        isFinished(battalionMarker, localTransform, entity);
+                        isFinished(battalionMarker, localTransform, entity, changeRow);
                         break;
                     default:
                         throw new NotImplementedException();
@@ -69,20 +69,21 @@ namespace system.battle.battalion
                 {
                     Direction.UP => battalionMarker.row - 1,
                     Direction.DOWN => battalionMarker.row + 1,
-                    _ => throw new System.NotImplementedException()
+                    _ => throw new NotImplementedException()
                 };
                 battalionMarker.row = newRow;
                 changeRow.state = ChangeState.RUNNING;
             }
 
-            private void isFinished(BattalionMarker battalionMarker, LocalTransform localTransform, Entity entity)
+            private void isFinished(BattalionMarker battalionMarker, LocalTransform localTransform, Entity entity, ChangeRow changeRow)
             {
                 var targetZ = CustomTransformUtils.getBattalionZPosition(battalionMarker.row);
                 var distanceToTarget = math.abs(localTransform.Position.z - targetZ);
                 if (distanceToTarget < 0.02f)
                 {
                     localTransform.Position.z = targetZ;
-                    ecb.RemoveComponent<ChangeRow>(0, entity);
+                    ecb.DestroyEntity(0, changeRow.shadowEntity);
+                    ecb.RemoveComponent<ChangeRow>(1, entity);
                 }
             }
         }
