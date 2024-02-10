@@ -2,8 +2,8 @@
 
 namespace component.battle.battalion
 {
-    public struct BattalionMarker : IComponentData
+    public struct Row : IComponentData
     {
-        public long id;
+        public int value;
     }
 }

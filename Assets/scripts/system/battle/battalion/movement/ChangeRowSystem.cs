@@ -44,40 +44,41 @@ namespace system.battle.battalion
         }
 
         [BurstCompile]
+        [WithAll(typeof(BattalionMarker))]
         public partial struct ManageChangeStates : IJobEntity
         {
             public EntityCommandBuffer.ParallelWriter ecb;
 
-            private void Execute(ref BattalionMarker battalionMarker, Entity entity, ref ChangeRow changeRow, ref LocalTransform localTransform)
+            private void Execute(Entity entity, ref ChangeRow changeRow, ref LocalTransform localTransform, ref Row row)
             {
                 switch (changeRow.state)
                 {
                     case ChangeState.INIT:
-                        initRowChange(ref battalionMarker, ref changeRow);
+                        initRowChange(ref row, ref changeRow);
                         break;
                     case ChangeState.RUNNING:
-                        isFinished(battalionMarker, localTransform, entity, changeRow);
+                        isFinished(row, localTransform, entity, changeRow);
                         break;
                     default:
                         throw new NotImplementedException();
                 }
             }
 
-            private void initRowChange(ref BattalionMarker battalionMarker, ref ChangeRow changeRow)
+            private void initRowChange(ref Row row, ref ChangeRow changeRow)
             {
                 var newRow = changeRow.direction switch
                 {
-                    Direction.UP => battalionMarker.row - 1,
-                    Direction.DOWN => battalionMarker.row + 1,
+                    Direction.UP => row.value - 1,
+                    Direction.DOWN => row.value + 1,
                     _ => throw new NotImplementedException()
                 };
-                battalionMarker.row = newRow;
+                row.value = newRow;
                 changeRow.state = ChangeState.RUNNING;
             }
 
-            private void isFinished(BattalionMarker battalionMarker, LocalTransform localTransform, Entity entity, ChangeRow changeRow)
+            private void isFinished(Row row, LocalTransform localTransform, Entity entity, ChangeRow changeRow)
             {
-                var targetZ = CustomTransformUtils.getBattalionZPosition(battalionMarker.row);
+                var targetZ = CustomTransformUtils.getBattalionZPosition(row.value);
                 var distanceToTarget = math.abs(localTransform.Position.z - targetZ);
                 if (distanceToTarget < 0.02f)
                 {
@@ -89,15 +90,16 @@ namespace system.battle.battalion
         }
 
         [BurstCompile]
+        [WithAll(typeof(BattalionMarker))]
         public partial struct MoveToNewLineJob : IJobEntity
         {
             [ReadOnly] public float deltaTime;
 
-            private void Execute(BattalionMarker battalionMarker, ChangeRow changeRow, ref LocalTransform localTransform)
+            private void Execute(ChangeRow changeRow, ref LocalTransform localTransform, Row row)
             {
                 if (changeRow.state != ChangeState.RUNNING) return;
 
-                var targetZ = CustomTransformUtils.getBattalionZPosition(battalionMarker.row);
+                var targetZ = CustomTransformUtils.getBattalionZPosition(row.value);
                 var travelDistance = deltaTime * 5f;
                 var distanceToTarget = math.abs(localTransform.Position.z - targetZ);
                 if (distanceToTarget <= travelDistance)

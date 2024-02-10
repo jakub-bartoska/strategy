@@ -67,7 +67,9 @@ namespace system.battle.battalion.split
                 ref DynamicBuffer<BattalionSoldiers> soldiers,
                 Entity entity,
                 PossibleSplit possibleSplit,
-                LocalTransform localTransform)
+                LocalTransform localTransform,
+                Row row,
+                BattalionTeam team)
             {
                 if (splitCandidates.TryGetValue(battalionMarker.id, out var splitCandidate))
                 {
@@ -120,7 +122,7 @@ namespace system.battle.battalion.split
                         soldiers.RemoveAt(i);
                     }
 
-                    BattalionSpawner.spawnBattalionParallel(ecb, prefabHolder, battalionIdHolder.ValueRW.nextBattalionId++, newPosition, battalionMarker.team, battalionMarker.row, soldiersToMove);
+                    BattalionSpawner.spawnBattalionParallel(ecb, prefabHolder, battalionIdHolder.ValueRW.nextBattalionId++, newPosition, team.value, row.value, soldiersToMove);
                 }
             }
         }

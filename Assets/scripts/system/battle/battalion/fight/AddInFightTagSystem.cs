@@ -44,7 +44,7 @@ namespace system.battle.battalion.fight
             [ReadOnly] public DynamicBuffer<FightPair> fightPairs;
             public NativeList<SplitCandidate>.ParallelWriter splitCandidateList;
 
-            private void Execute(BattalionMarker battalionMarker, ref DynamicBuffer<BattalionFightBuffer> battalionFight)
+            private void Execute(BattalionMarker battalionMarker, ref DynamicBuffer<BattalionFightBuffer> battalionFight, BattalionTeam team)
             {
                 foreach (var fightPair in fightPairs)
                 {
@@ -73,7 +73,7 @@ namespace system.battle.battalion.fight
 
                     if (fightPair.fightType != BattalionFightType.VERTICAL) continue;
 
-                    var direction = battalionMarker.team switch
+                    var direction = team.value switch
                     {
                         Team.TEAM1 => Direction.LEFT,
                         Team.TEAM2 => Direction.RIGHT,

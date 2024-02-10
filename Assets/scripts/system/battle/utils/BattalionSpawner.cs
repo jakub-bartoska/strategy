@@ -23,9 +23,17 @@ namespace system.battle.utils
 
             var battalionMarker = new BattalionMarker
             {
-                id = battalionId,
-                team = battalionToSpawn.team,
-                row = battalionToSpawn.position.y
+                id = battalionId
+            };
+
+            var row = new Row
+            {
+                value = battalionToSpawn.position.y
+            };
+
+            var team = new BattalionTeam
+            {
+                value = battalionToSpawn.team
             };
 
             var direction = battalionToSpawn.team switch
@@ -51,6 +59,8 @@ namespace system.battle.utils
             ecb.AddComponent(newBattalion, battalionMarker);
             ecb.AddComponent(newBattalion, possibleSplits);
             ecb.AddComponent(newBattalion, movementDirection);
+            ecb.AddComponent(newBattalion, row);
+            ecb.AddComponent(newBattalion, team);
 
             ecb.AddBuffer<BattalionFightBuffer>(newBattalion);
 
@@ -77,9 +87,17 @@ namespace system.battle.utils
 
             var battalionMarker = new BattalionMarker
             {
-                id = battalionId,
-                team = team,
-                row = row
+                id = battalionId
+            };
+
+            var rowComponent = new Row
+            {
+                value = row
+            };
+
+            var teamComponent = new BattalionTeam
+            {
+                value = team
             };
 
             var possibleSplits = new PossibleSplit
@@ -106,6 +124,8 @@ namespace system.battle.utils
             ecb.AddComponent(0, newBattalion, possibleSplits);
             ecb.AddComponent(0, newBattalion, new WaitForSoldiers());
             ecb.AddComponent(0, newBattalion, movementDirection);
+            ecb.AddComponent(0, newBattalion, rowComponent);
+            ecb.AddComponent(0, newBattalion, teamComponent);
 
             ecb.AddBuffer<BattalionFightBuffer>(0, newBattalion);
             var soldierBuffer = ecb.AddBuffer<BattalionSoldiers>(0, newBattalion);

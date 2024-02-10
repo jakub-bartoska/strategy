@@ -4,6 +4,7 @@ using component._common.system_switchers;
 using component.authoring_pairs.PrefabHolder;
 using component.battle.battalion;
 using component.battle.battalion.markers;
+using component.battle.battalion.shadow;
 using system.battle.enums;
 using system.battle.utils;
 using Unity.Burst;
@@ -28,6 +29,8 @@ namespace system.battle.battalion
         public void OnUpdate(ref SystemState state)
         {
             var battalionPositions = new NativeParallelMultiHashMap<int, (long, float3, Team)>(1000, Allocator.TempJob);
+            //todo je potreba u shadow rozpoznavat team???
+            var shadowPositions = new NativeParallelHashMap<int, (long, float3, Team)>();
             new CollectBattalionPositionsJob
                 {
                     battalionPositions = battalionPositions.AsParallelWriter()
@@ -382,10 +385,20 @@ namespace system.battle.battalion
         {
             public NativeParallelMultiHashMap<int, (long, float3, Team)>.ParallelWriter battalionPositions;
 
-            private void Execute(BattalionMarker battalionMarker, ref LocalTransform transform)
+            private void Execute(BattalionMarker battalionMarker, LocalTransform transform, Row row, BattalionTeam team)
             {
-                battalionPositions.Add(battalionMarker.row,
-                    (battalionMarker.id, transform.Position, battalionMarker.team));
+                battalionPositions.Add(row.value, (battalionMarker.id, transform.Position, team.value));
+            }
+        }
+
+        [BurstCompile]
+        public partial struct CollectShadowPositionsJob : IJobEntity
+        {
+            public NativeParallelMultiHashMap<int, (long, float3, Team)>.ParallelWriter shadowPositions;
+
+            private void Execute(BattalionShadowMarker shadowMarker, ref LocalTransform transform, Row row, BattalionTeam team)
+            {
+                shadowPositions.Add(row.value, (shadowMarker.parentBattalionId, transform.Position, team.value));
             }
         }
 
@@ -431,12 +444,12 @@ namespace system.battle.battalion
             [ReadOnly] public PrefabHolder prefabHolder;
             public EntityCommandBuffer.ParallelWriter ecb;
 
-            private void Execute(BattalionMarker battalionMarker, Entity entity, PossibleSplit split, LocalTransform transform)
+            private void Execute(BattalionMarker battalionMarker, Entity entity, PossibleSplit split, LocalTransform transform, Row row, BattalionTeam team)
             {
-                if (rowChanges.TryGetValue(battalionMarker.row, out var teamDirection))
+                if (rowChanges.TryGetValue(row.value, out var teamDirection))
                 {
-                    var flankPosition = getFlankPosition(battalionMarker.row, teamDirection.Item2, battalionMarker.team);
-                    var flankPossible = battalionMarker.team switch
+                    var flankPosition = getFlankPosition(row.value, teamDirection.Item2, team.value);
+                    var flankPossible = team.value switch
                     {
                         Team.TEAM1 => flankPosition.x - 5 * 0.3f * 2f * 1.1f > transform.Position.x,
                         Team.TEAM2 => flankPosition.x + 5 * 0.3f * 2f * 1.1f < transform.Position.x,
@@ -499,18 +512,18 @@ namespace system.battle.battalion
             [ReadOnly] public NativeHashMap<int, float3> team2FlankPositions;
             [ReadOnly] public NativeHashMap<long, Direction> battalionMovementDirections;
 
-            private void Execute(BattalionMarker battalionMarker, LocalTransform transform, ref MovementDirection movementDirection)
+            private void Execute(BattalionMarker battalionMarker, LocalTransform transform, ref MovementDirection movementDirection, Row row, BattalionTeam team)
             {
-                var flank2 = getFlankPosition2(battalionMarker.row, battalionMarker.team);
+                var flank2 = getFlankPosition2(row.value, team.value);
                 if (flank2.HasValue)
                 {
-                    var flankPossible = battalionMarker.team switch
+                    var flankPossible = team.value switch
                     {
                         Team.TEAM1 => flank2.Value.x > transform.Position.x,
                         Team.TEAM2 => flank2.Value.x < transform.Position.x,
                         _ => throw new Exception("Unknown team")
                     };
-                    var resultDirection = battalionMarker.team switch
+                    var resultDirection = team.value switch
                     {
                         Team.TEAM1 => Direction.LEFT,
                         Team.TEAM2 => Direction.RIGHT,
@@ -518,7 +531,7 @@ namespace system.battle.battalion
                     };
                     if (flankPossible)
                     {
-                        resultDirection = battalionMarker.team switch
+                        resultDirection = team.value switch
                         {
                             Team.TEAM1 => Direction.RIGHT,
                             Team.TEAM2 => Direction.LEFT,
@@ -530,10 +543,10 @@ namespace system.battle.battalion
                     return;
                 }
 
-                if (rowChanges.TryGetValue(battalionMarker.row, out var teamDirection))
+                if (rowChanges.TryGetValue(row.value, out var teamDirection))
                 {
-                    var flankPosition = getFlankPosition(battalionMarker.row, teamDirection.Item2, battalionMarker.team);
-                    var flankPossible = battalionMarker.team switch
+                    var flankPosition = getFlankPosition(row.value, teamDirection.Item2, team.value);
+                    var flankPossible = team.value switch
                     {
                         Team.TEAM1 => flankPosition.x - 5 * 0.3f * 2f * 5f > transform.Position.x,
                         Team.TEAM2 => flankPosition.x + 5 * 0.3f * 2f * 5f < transform.Position.x,
