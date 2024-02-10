@@ -238,7 +238,7 @@ namespace system.battle.battalion
                     var upBlocked = false;
                     foreach (var (enemyId, enemyPosition, enemyTeam) in rowMinusOneUnsorted)
                     {
-                        if (!isTooFar(myPosition, enemyPosition, 11f))
+                        if (!isTooFar(myPosition, enemyPosition, 5f))
                         {
                             upBlocked = true;
                         }
@@ -265,7 +265,7 @@ namespace system.battle.battalion
                     var downBlocked = false;
                     foreach (var (enemyId, enemyPosition, enemyTeam) in rowPlusOneUnsorted)
                     {
-                        if (!isTooFar(myPosition, enemyPosition, 11f))
+                        if (!isTooFar(myPosition, enemyPosition, 5f))
                         {
                             downBlocked = true;
                             break;
@@ -445,8 +445,14 @@ namespace system.battle.battalion
         {
             [ReadOnly] public NativeParallelMultiHashMap<long, Direction> possibleSplitDirections;
 
-            private void Execute(BattalionMarker battalionMarker, ref PossibleSplit split)
+            //todo oddelat row a team
+            private void Execute(BattalionMarker battalionMarker, ref PossibleSplit split, Row row)
             {
+                if (row.value != 0)
+                {
+                    var ss = "ss";
+                }
+
                 split.up = false;
                 split.down = false;
                 split.left = false;
@@ -489,8 +495,8 @@ namespace system.battle.battalion
                     var flankPosition = getFlankPosition(row.value, teamDirection.Item2, team.value);
                     var flankPossible = team.value switch
                     {
-                        Team.TEAM1 => flankPosition.x - 5 * 0.3f * 2f * 4f > transform.Position.x,
-                        Team.TEAM2 => flankPosition.x + 5 * 0.3f * 2f * 4f < transform.Position.x,
+                        Team.TEAM1 => flankPosition.x - 5 * 0.3f * 2f * 1.2f > transform.Position.x,
+                        Team.TEAM2 => flankPosition.x + 5 * 0.3f * 2f * 1.2f < transform.Position.x,
                         _ => throw new Exception("Unknown team")
                     };
                     if (!flankPossible) return;
@@ -586,8 +592,8 @@ namespace system.battle.battalion
                     var flankPosition = getFlankPosition(row.value, teamDirection.Item2, team.value);
                     var flankPossible = team.value switch
                     {
-                        Team.TEAM1 => flankPosition.x - 5 * 0.3f * 2f * 4f > transform.Position.x,
-                        Team.TEAM2 => flankPosition.x + 5 * 0.3f * 2f * 4f < transform.Position.x,
+                        Team.TEAM1 => flankPosition.x - 5 * 0.3f * 2f * 1.2f > transform.Position.x,
+                        Team.TEAM2 => flankPosition.x + 5 * 0.3f * 2f * 1.2f < transform.Position.x,
                         _ => throw new Exception("Unknown team")
                     };
                     if (!flankPossible)
