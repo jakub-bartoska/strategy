@@ -30,10 +30,16 @@ namespace system.battle.battalion
         {
             var battalionPositions = new NativeParallelMultiHashMap<int, (long, float3, Team)>(1000, Allocator.TempJob);
             //todo je potreba u shadow rozpoznavat team???
-            var shadowPositions = new NativeParallelHashMap<int, (long, float3, Team)>();
+            var shadowPositions = new NativeParallelMultiHashMap<int, (long, float3, Team)>(1000, Allocator.TempJob);
             new CollectBattalionPositionsJob
                 {
                     battalionPositions = battalionPositions.AsParallelWriter()
+                }.ScheduleParallel(state.Dependency)
+                .Complete();
+
+            new CollectShadowPositionsJob
+                {
+                    shadowPositions = shadowPositions.AsParallelWriter()
                 }.ScheduleParallel(state.Dependency)
                 .Complete();
 
@@ -47,7 +53,7 @@ namespace system.battle.battalion
             //row -> (team1, team2)
             var rowToTeamCount = new NativeHashMap<int, (int, int)>(10, Allocator.TempJob);
 
-            fillBlockers(battalionPositions, fightPairs, movementBlockingPairs, possibleSplitDirections, rowToTeamCount);
+            fillBlockers(battalionPositions, shadowPositions, fightPairs, movementBlockingPairs, possibleSplitDirections, rowToTeamCount);
 
             new FillPossibleSplits
                 {
@@ -99,6 +105,7 @@ namespace system.battle.battalion
 
         private void fillBlockers(
             NativeParallelMultiHashMap<int, (long, float3, Team)> battalionPositions,
+            NativeParallelMultiHashMap<int, (long, float3, Team)> shadowPositions,
             DynamicBuffer<FightPair> fightPairs,
             DynamicBuffer<MovementBlockingPair> movementBlockingPairs,
             NativeParallelMultiHashMap<long, Direction> possibleSplitDirections,
@@ -111,18 +118,28 @@ namespace system.battle.battalion
 
             var sorter = new MovementSystem.SortByPosition();
             var rowBattalions = new NativeList<(long, float3, Team)>(Allocator.TempJob);
+            var rowShadows = new NativeList<(long, float3, Team)>(Allocator.TempJob);
             var rowMinusOneUnsorted = new NativeList<(long, float3, Team)>(Allocator.TempJob);
             var rowPlusOneUnsorted = new NativeList<(long, float3, Team)>(Allocator.TempJob);
             //iterate over sorted rows
             foreach (var row in uniqueRows)
             {
                 rowBattalions.Clear();
+                rowShadows.Clear();
                 rowMinusOneUnsorted.Clear();
                 rowPlusOneUnsorted.Clear();
 
                 foreach (var value in battalionPositions.GetValuesForKey(row))
                 {
                     rowBattalions.Add(value);
+                }
+
+                if (shadowPositions.ContainsKey(row))
+                {
+                    foreach (var value in shadowPositions.GetValuesForKey(row))
+                    {
+                        rowShadows.Add(value);
+                    }
                 }
 
                 foreach (var value in battalionPositions.GetValuesForKey(row - 1))
@@ -142,6 +159,25 @@ namespace system.battle.battalion
                     addRowCounter(rowToTeamCount, row, rowBattalions[i].Item3);
 
                     var (myId, myPosition, myTeam) = rowBattalions[i];
+
+                    for (int j = 0; j < rowShadows.Length; j++)
+                    {
+                        var (shadowId, shadowPosition, shadowTeam) = rowShadows[j];
+                        if (isTooFar(shadowPosition, myPosition, 5f))
+                        {
+                            continue;
+                        }
+
+                        var direction = myPosition.x > shadowPosition.x ? Direction.LEFT : Direction.RIGHT;
+
+                        movementBlockingPairs.Add(new MovementBlockingPair
+                        {
+                            blocker = shadowId,
+                            victim = myId,
+                            direction = direction,
+                            blockerType = BlockerType.SHADOW
+                        });
+                    }
 
                     if (i == 0)
                     {
@@ -174,13 +210,15 @@ namespace system.battle.battalion
                         {
                             blocker = myId,
                             victim = closestId,
-                            direction = Direction.LEFT
+                            direction = Direction.LEFT,
+                            blockerType = BlockerType.BATTALION
                         });
                         movementBlockingPairs.Add(new MovementBlockingPair
                         {
                             blocker = closestId,
                             victim = myId,
-                            direction = Direction.RIGHT
+                            direction = Direction.RIGHT,
+                            blockerType = BlockerType.BATTALION
                         });
                         continue;
                     }
@@ -451,8 +489,8 @@ namespace system.battle.battalion
                     var flankPosition = getFlankPosition(row.value, teamDirection.Item2, team.value);
                     var flankPossible = team.value switch
                     {
-                        Team.TEAM1 => flankPosition.x - 5 * 0.3f * 2f * 1.1f > transform.Position.x,
-                        Team.TEAM2 => flankPosition.x + 5 * 0.3f * 2f * 1.1f < transform.Position.x,
+                        Team.TEAM1 => flankPosition.x - 5 * 0.3f * 2f * 4f > transform.Position.x,
+                        Team.TEAM2 => flankPosition.x + 5 * 0.3f * 2f * 4f < transform.Position.x,
                         _ => throw new Exception("Unknown team")
                     };
                     if (!flankPossible) return;
@@ -460,8 +498,8 @@ namespace system.battle.battalion
                     var canChange = isDirectionPossible(teamDirection.Item2, split);
                     if (!canChange) return;
 
-                    var shadowEntity = BattalionShadowSpawner.spawnBattalionShadow(ecb, prefabHolder, transform.Position, battalionMarker.id);
-                    ecb.AddComponent(0, entity, new ChangeRow
+                    var shadowEntity = BattalionShadowSpawner.spawnBattalionShadow(ecb, prefabHolder, transform.Position, battalionMarker.id, row.value, team.value);
+                    ecb.AddComponent(2, entity, new ChangeRow
                     {
                         direction = teamDirection.Item2,
                         shadowEntity = shadowEntity
@@ -514,7 +552,7 @@ namespace system.battle.battalion
 
             private void Execute(BattalionMarker battalionMarker, LocalTransform transform, ref MovementDirection movementDirection, Row row, BattalionTeam team)
             {
-                var flank2 = getFlankPosition2(row.value, team.value);
+                var flank2 = getFlankPositionForMyRow(row.value, team.value);
                 if (flank2.HasValue)
                 {
                     var flankPossible = team.value switch
@@ -548,8 +586,8 @@ namespace system.battle.battalion
                     var flankPosition = getFlankPosition(row.value, teamDirection.Item2, team.value);
                     var flankPossible = team.value switch
                     {
-                        Team.TEAM1 => flankPosition.x - 5 * 0.3f * 2f * 5f > transform.Position.x,
-                        Team.TEAM2 => flankPosition.x + 5 * 0.3f * 2f * 5f < transform.Position.x,
+                        Team.TEAM1 => flankPosition.x - 5 * 0.3f * 2f * 4f > transform.Position.x,
+                        Team.TEAM2 => flankPosition.x + 5 * 0.3f * 2f * 4f < transform.Position.x,
                         _ => throw new Exception("Unknown team")
                     };
                     if (!flankPossible)
@@ -584,7 +622,7 @@ namespace system.battle.battalion
                 return getFlankPosition(myRow + rowDelta, direction, team);
             }
 
-            private float3? getFlankPosition2(int myRow, Team team)
+            private float3? getFlankPositionForMyRow(int myRow, Team team)
             {
                 var flankPositions = team switch
                 {

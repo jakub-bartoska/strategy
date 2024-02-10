@@ -32,9 +32,18 @@ namespace system.battle.battalion
             var unableToMoveBattalions = new NativeParallelMultiHashMap<long, Direction>(300, Allocator.TempJob);
 
             var movementBlockersMap = new NativeParallelMultiHashMap<long, (long, Direction)>(1000, Allocator.TempJob);
+            var shadowBlockers = new NativeParallelMultiHashMap<long, (long, Direction)>(1000, Allocator.TempJob);
             foreach (var movementBlockingPair in movementBlockingPairs)
             {
-                movementBlockersMap.Add(movementBlockingPair.blocker, (movementBlockingPair.victim, movementBlockingPair.direction));
+                switch (movementBlockingPair.blockerType)
+                {
+                    case BlockerType.BATTALION:
+                        movementBlockersMap.Add(movementBlockingPair.blocker, (movementBlockingPair.victim, movementBlockingPair.direction));
+                        break;
+                    case BlockerType.SHADOW:
+                        shadowBlockers.Add(movementBlockingPair.blocker, (movementBlockingPair.victim, movementBlockingPair.direction));
+                        break;
+                }
             }
 
             var possibleReinforcements = SystemAPI.GetSingletonBuffer<PossibleReinforcements>();
@@ -60,6 +69,12 @@ namespace system.battle.battalion
                 fillBlockedMovement(fightPair.battalionId2, Direction.LEFT, movementBlockersMap, unableToMoveBattalions, possibleReinforcements);
                 fillBlockedMovement(fightPair.battalionId2, Direction.RIGHT, movementBlockersMap, unableToMoveBattalions, possibleReinforcements);
             }
+
+            foreach (var shadowBlocker in shadowBlockers)
+            {
+                fillBlockedMovement(shadowBlocker.Value.Item1, shadowBlocker.Value.Item2, movementBlockersMap, unableToMoveBattalions, possibleReinforcements);
+            }
+
 
             var deltaTime = SystemAPI.Time.DeltaTime;
             new MoveBattalionJob

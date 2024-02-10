@@ -8,5 +8,12 @@ namespace component.battle.battalion.markers
         public long blocker;
         public long victim;
         public Direction direction;
+        public BlockerType blockerType;
+    }
+
+    public enum BlockerType
+    {
+        BATTALION,
+        SHADOW
     }
 }
