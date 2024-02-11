@@ -10,7 +10,8 @@ namespace system.battle.utils
 {
     public class BattalionShadowSpawner
     {
-        public static Entity spawnBattalionShadow(EntityCommandBuffer.ParallelWriter ecb, PrefabHolder prefabHolder, float3 battalionPosition, long parentBattalionId, int row, Team team)
+        public static Entity spawnBattalionShadow(EntityCommandBuffer.ParallelWriter ecb, PrefabHolder prefabHolder, float3 battalionPosition, long parentBattalionId, int row, Team team,
+            float size)
         {
             var battalionShadowPrefab = prefabHolder.battalionShadowPrefab;
             var newBattalionShadow = ecb.Instantiate(0, battalionShadowPrefab);
@@ -28,6 +29,12 @@ namespace system.battle.utils
             {
                 value = team
             };
+            var battalionSize = new BattalionSize
+            {
+                value = size
+            };
+
+            var transformMatrix = BattalionSpawner.getPostTransformMatrixFromBattalionSize(size);
 
             //todo upravit pozici podle row
             var battalionTransform = LocalTransform.FromPosition(battalionPosition);
@@ -35,6 +42,8 @@ namespace system.battle.utils
             ecb.AddComponent(1, newBattalionShadow, battalionShadowMarker);
             ecb.AddComponent(1, newBattalionShadow, rowComponent);
             ecb.AddComponent(1, newBattalionShadow, teamComponent);
+            ecb.AddComponent(1, newBattalionShadow, transformMatrix);
+            ecb.AddComponent(1, newBattalionShadow, battalionSize);
 
             ecb.SetComponent(1, newBattalionShadow, battalionTransform);
 

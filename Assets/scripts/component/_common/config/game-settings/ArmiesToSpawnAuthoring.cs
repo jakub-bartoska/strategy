@@ -18,7 +18,6 @@ namespace component.config.game_settings
         public Team team;
         public SoldierType armyType;
         public int count;
-        public Formation formation;
         public float distanceBetweenSoldiers;
     }
 
@@ -30,8 +29,6 @@ namespace component.config.game_settings
         public Team team;
         public SoldierType armyType;
         public int count;
-        public Formation formation;
-        public float distanceBetweenSoldiers;
     }
 
     public struct BattalionToSpawn : IBufferElementData
@@ -48,15 +45,7 @@ namespace component.config.game_settings
         public Team team;
         public SoldierType armyType;
         public int count;
-        public Formation formation;
         public float distanceBetweenSoldiers;
-    }
-
-    public enum Formation
-    {
-        NO_FORMATION,
-        SQUERE,
-        LINE
     }
 
     public enum SoldierType
@@ -80,7 +69,6 @@ namespace component.config.game_settings
                     team = army.team,
                     armyType = army.armyType,
                     count = army.count,
-                    formation = army.formation,
                     distanceBetweenSoldiers = army.distanceBetweenSoldiers
                 });
             });

@@ -49,7 +49,7 @@ namespace system._common.blocker_systems.battle
                     team = companyToSpawn.team,
                     armyType = companyToSpawn.armyType,
                     count = lastBattalionSize,
-                    armyCompanyId = companyToSpawn.armyCompanyId,
+                    armyCompanyId = companyToSpawn.armyCompanyId
                 });
             }
 

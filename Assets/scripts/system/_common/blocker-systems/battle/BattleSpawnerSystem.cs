@@ -69,7 +69,7 @@ namespace system
 
                 var battalionPosition = CustomTransformUtils.getBattalionPositionForSoldiers(battalionToSpawn.position.x, battalionToSpawn.position.y);
 
-                var newBattalion = BattalionSpawner.spawnBattalion(ecb, battalionToSpawn, prefabHolder, battalionId++, battalionPosition);
+                var newBattalion = BattalionSpawner.spawnBattalion(ecb, battalionToSpawn, prefabHolder, battalionId++);
 
                 var battalionSoldiers = new NativeParallelHashSet<BattalionSoldiers>(battalionToSpawn.count, Allocator.TempJob);
 
@@ -134,21 +134,6 @@ namespace system
             randomPerThread.Dispose();
             ecb.Playback(state.EntityManager);
             ecb.Dispose();
-        }
-
-        private float3 getBattalionPosition(BattalionToSpawn battalionToSpawn, float3 defaultPositionOffset)
-        {
-            var distanceFromMiddle = battalionToSpawn.team switch
-            {
-                Team.TEAM1 => 50,
-                Team.TEAM2 => -50,
-            };
-            return new float3
-            {
-                x = battalionToSpawn.position.x * 5 + distanceFromMiddle + defaultPositionOffset.x,
-                y = 0 + defaultPositionOffset.y,
-                z = defaultPositionOffset.z + 40 - (battalionToSpawn.position.y * 10)
-            };
         }
 
         private bool containsArmySpawn(DynamicBuffer<SystemSwitchBlocker> blockers)

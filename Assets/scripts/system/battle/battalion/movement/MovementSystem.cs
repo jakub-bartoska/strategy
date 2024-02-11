@@ -105,20 +105,21 @@ namespace system.battle.battalion
             }
         }
 
-        public class SortByPosition : IComparer<(long, float3, Team)>
+        public class SortByPosition : IComparer<(long, float3, Team, float)>
         {
-            public int Compare((long, float3, Team) e1, (long, float3, Team) e2)
+            public int Compare((long, float3, Team, float) e1, (long, float3, Team, float) e2)
             {
                 return e1.Item2.x.CompareTo(e2.Item2.x);
             }
         }
 
         [BurstCompile]
+        [WithAll(typeof(WaitForSoldiers))]
         public partial struct CollectBattalionWaitingPositionsJob : IJobEntity
         {
             public NativeParallelHashSet<long>.ParallelWriter waitingBattalions;
 
-            private void Execute(BattalionMarker battalionMarker, WaitForSoldiers wait)
+            private void Execute(BattalionMarker battalionMarker)
             {
                 waitingBattalions.Add(battalionMarker.id);
             }

@@ -39,9 +39,7 @@ namespace system._common.army_to_spawn_switcher
                         team = armyToSpawnManual.team,
                         originalArmyType = HolderType.ARMY,
                         armyCompanyId = random.ValueRW.random.NextInt(),
-                        distanceBetweenSoldiers = armyToSpawnManual.distanceBetweenSoldiers,
                         count = armyToSpawnManual.count,
-                        formation = armyToSpawnManual.formation,
                         armyType = armyToSpawnManual.armyType,
                         originalArmyId = armyId--
                     });

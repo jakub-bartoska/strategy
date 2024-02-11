@@ -481,9 +481,7 @@ namespace component.strategy.interactions
                         armyCompanyId = armyCompany.id,
                         team = team.team,
                         armyType = armyCompany.type,
-                        count = armyCompany.soldierCount,
-                        formation = Formation.NO_FORMATION,
-                        distanceBetweenSoldiers = 1
+                        count = armyCompany.soldierCount
                     };
                     buffer.Add(armyToSpawn);
                 }
@@ -605,10 +603,10 @@ namespace component.strategy.interactions
                 {
                     foreach (var child in childs)
                     {
-                        ecb.DestroyEntity((int)idHolder.id + 1000 + child.Value.Index, child.Value);
+                        ecb.DestroyEntity((int) idHolder.id + 1000 + child.Value.Index, child.Value);
                     }
 
-                    ecb.DestroyEntity((int)idHolder.id, entity);
+                    ecb.DestroyEntity((int) idHolder.id, entity);
                     return;
                 }
             }
@@ -621,10 +619,10 @@ namespace component.strategy.interactions
                 {
                     foreach (var child in childs)
                     {
-                        ecb.DestroyEntity((int)idHolder.id + 1000 + child.Value.Index, child.Value);
+                        ecb.DestroyEntity((int) idHolder.id + 1000 + child.Value.Index, child.Value);
                     }
 
-                    ecb.DestroyEntity((int)idHolder.id, entity);
+                    ecb.DestroyEntity((int) idHolder.id, entity);
                     return;
                 }
 
@@ -831,8 +829,8 @@ namespace component.strategy.interactions
                 caravanResources.Add(idHolder.id, resourceHolder);
             }
 
-            ecb.DestroyEntity((int)idHolder.id, entity);
-            ecb.DestroyEntity((int)idHolder.id + 10000, teamComponent.teamMarker);
+            ecb.DestroyEntity((int) idHolder.id, entity);
+            ecb.DestroyEntity((int) idHolder.id + 10000, teamComponent.teamMarker);
         }
     }
 

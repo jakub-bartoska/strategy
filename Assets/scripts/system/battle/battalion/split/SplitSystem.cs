@@ -122,7 +122,8 @@ namespace system.battle.battalion.split
                         soldiers.RemoveAt(i);
                     }
 
-                    BattalionSpawner.spawnBattalionParallel(ecb, prefabHolder, battalionIdHolder.ValueRW.nextBattalionId++, newPosition, team.value, row.value, soldiersToMove);
+                    BattalionSpawner.spawnBattalionParallel(ecb, prefabHolder, battalionIdHolder.ValueRW.nextBattalionId++, newPosition, team.value, row.value, soldiersToMove,
+                        battalionMarker.soldierType);
                 }
             }
         }
