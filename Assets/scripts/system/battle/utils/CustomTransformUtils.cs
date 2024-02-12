@@ -31,9 +31,9 @@ namespace system.battle.utils
             return LocalTransform.FromPosition(position);
         }
 
-        public static float getBattalionZPosition(int z)
+        public static float getBattalionZPosition(int row)
         {
-            return getBattalionPositionForSoldiers(0, z).z + 5f;
+            return getBattalionPositionForSoldiers(0, row).z + 5f;
         }
     }
 }

@@ -36,7 +36,7 @@ namespace system.battle.utils
 
             var transformMatrix = BattalionSpawner.getPostTransformMatrixFromBattalionSize(size);
 
-            //todo upravit pozici podle row
+            battalionPosition.z = CustomTransformUtils.getBattalionZPosition(row);
             var battalionTransform = LocalTransform.FromPosition(battalionPosition);
 
             ecb.AddComponent(1, newBattalionShadow, battalionShadowMarker);
