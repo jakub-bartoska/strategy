@@ -397,7 +397,7 @@ namespace system.battle.battalion
                 {
                     if (valueTuple.Item3 == Team.TEAM1)
                     {
-                        var positionWithoutSize = valueTuple.Item2.x + valueTuple.Item4 / 2;
+                        var positionWithoutSize = valueTuple.Item2.x + valueTuple.Item4 / 2 * 1.2f;
                         if (!team1Max.HasValue || team1Max.Value.x < positionWithoutSize)
                         {
                             team1Max = positionWithoutSize;
@@ -405,7 +405,7 @@ namespace system.battle.battalion
                     }
                     else if (valueTuple.Item3 == Team.TEAM2)
                     {
-                        var positionWithoutSize = valueTuple.Item2.x - valueTuple.Item4 / 2;
+                        var positionWithoutSize = valueTuple.Item2.x - valueTuple.Item4 / 2 * 1.2f;
                         if (!team2Max.HasValue || team2Max.Value.x > positionWithoutSize)
                         {
                             team2Max = positionWithoutSize;

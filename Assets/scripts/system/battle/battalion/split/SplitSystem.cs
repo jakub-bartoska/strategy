@@ -69,7 +69,8 @@ namespace system.battle.battalion.split
                 PossibleSplit possibleSplit,
                 LocalTransform localTransform,
                 Row row,
-                BattalionTeam team)
+                BattalionTeam team,
+                BattalionSize size)
             {
                 if (splitCandidates.TryGetValue(battalionMarker.id, out var splitCandidate))
                 {
@@ -109,8 +110,8 @@ namespace system.battle.battalion.split
 
                     var x = splitCandidate.direction switch
                     {
-                        Direction.LEFT => localTransform.Position.x - 3.5f,
-                        Direction.RIGHT => localTransform.Position.x + 3.5f,
+                        Direction.LEFT => localTransform.Position.x - size.value * 1.2f,
+                        Direction.RIGHT => localTransform.Position.x + size.value * 1.2f,
                         _ => throw new NotImplementedException()
                     };
                     var newPosition = new float3(x, localTransform.Position.y, localTransform.Position.z);
