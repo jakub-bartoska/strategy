@@ -241,6 +241,20 @@ namespace system.battle.battalion
                         if (!isTooFar(myPosition, enemyPosition, mySize, enemySize))
                         {
                             upBlocked = true;
+                            movementBlockingPairs.Add(new MovementBlockingPair
+                            {
+                                blocker = enemyId,
+                                victim = myId,
+                                direction = Direction.UP,
+                                blockerType = BlockerType.BATTALION
+                            });
+                            movementBlockingPairs.Add(new MovementBlockingPair
+                            {
+                                blocker = myId,
+                                victim = enemyId,
+                                direction = Direction.DOWN,
+                                blockerType = BlockerType.BATTALION
+                            });
                         }
 
                         //todo predelat!!!! souboje mezi rows
@@ -268,6 +282,20 @@ namespace system.battle.battalion
                         if (!isTooFar(myPosition, enemyPosition, mySize, enemySize))
                         {
                             downBlocked = true;
+                            movementBlockingPairs.Add(new MovementBlockingPair
+                            {
+                                blocker = enemyId,
+                                victim = myId,
+                                direction = Direction.DOWN,
+                                blockerType = BlockerType.BATTALION
+                            });
+                            movementBlockingPairs.Add(new MovementBlockingPair
+                            {
+                                blocker = myId,
+                                victim = enemyId,
+                                direction = Direction.UP,
+                                blockerType = BlockerType.BATTALION
+                            });
                             break;
                         }
                     }

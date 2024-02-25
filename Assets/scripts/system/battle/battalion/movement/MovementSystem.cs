@@ -33,6 +33,7 @@ namespace system.battle.battalion
 
             var movementBlockersMap = new NativeParallelMultiHashMap<long, (long, Direction)>(1000, Allocator.TempJob);
             var shadowBlockers = new NativeParallelMultiHashMap<long, (long, Direction)>(1000, Allocator.TempJob);
+            var movementDirections = new NativeHashMap<long, MovementDirection>(1000, Allocator.TempJob);
             foreach (var movementBlockingPair in movementBlockingPairs)
             {
                 switch (movementBlockingPair.blockerType)
@@ -46,6 +47,12 @@ namespace system.battle.battalion
                 }
             }
 
+            new CollectMovementDirections
+                {
+                    movementDirections = movementDirections
+                }.Schedule(state.Dependency)
+                .Complete();
+
             var possibleReinforcements = SystemAPI.GetSingletonBuffer<PossibleReinforcements>();
             possibleReinforcements.Clear();
 
@@ -58,23 +65,29 @@ namespace system.battle.battalion
 
             foreach (var waitingBattalion in waitingBattalions)
             {
-                fillBlockedMovement(waitingBattalion, Direction.LEFT, movementBlockersMap, unableToMoveBattalions, possibleReinforcements);
-                fillBlockedMovement(waitingBattalion, Direction.RIGHT, movementBlockersMap, unableToMoveBattalions, possibleReinforcements);
+                fillBlockedMovement(waitingBattalion, Direction.LEFT, movementBlockersMap, unableToMoveBattalions, possibleReinforcements, movementDirections);
+                fillBlockedMovement(waitingBattalion, Direction.RIGHT, movementBlockersMap, unableToMoveBattalions, possibleReinforcements, movementDirections);
             }
+
+            var allDirections = new NativeList<Direction>(4, Allocator.Temp);
+            allDirections.Add(Direction.LEFT);
+            allDirections.Add(Direction.RIGHT);
+            allDirections.Add(Direction.UP);
+            allDirections.Add(Direction.DOWN);
 
             foreach (var fightPair in fightPairs)
             {
-                fillBlockedMovement(fightPair.battalionId1, Direction.LEFT, movementBlockersMap, unableToMoveBattalions, possibleReinforcements);
-                fillBlockedMovement(fightPair.battalionId1, Direction.RIGHT, movementBlockersMap, unableToMoveBattalions, possibleReinforcements);
-                fillBlockedMovement(fightPair.battalionId2, Direction.LEFT, movementBlockersMap, unableToMoveBattalions, possibleReinforcements);
-                fillBlockedMovement(fightPair.battalionId2, Direction.RIGHT, movementBlockersMap, unableToMoveBattalions, possibleReinforcements);
+                foreach (var direction in allDirections)
+                {
+                    fillBlockedMovement(fightPair.battalionId1, direction, movementBlockersMap, unableToMoveBattalions, possibleReinforcements, movementDirections);
+                    fillBlockedMovement(fightPair.battalionId2, direction, movementBlockersMap, unableToMoveBattalions, possibleReinforcements, movementDirections);
+                }
             }
 
             foreach (var shadowBlocker in shadowBlockers)
             {
-                fillBlockedMovement(shadowBlocker.Value.Item1, shadowBlocker.Value.Item2, movementBlockersMap, unableToMoveBattalions, possibleReinforcements);
+                fillBlockedMovement(shadowBlocker.Value.Item1, shadowBlocker.Value.Item2, movementBlockersMap, unableToMoveBattalions, possibleReinforcements, movementDirections);
             }
-
 
             var deltaTime = SystemAPI.Time.DeltaTime;
             new MoveBattalionJob
@@ -90,18 +103,29 @@ namespace system.battle.battalion
             Direction direction,
             NativeParallelMultiHashMap<long, (long, Direction)> movementBlockersMap,
             NativeParallelMultiHashMap<long, Direction> unableToMoveBattalions,
-            DynamicBuffer<PossibleReinforcements> possibleReinforcements)
+            DynamicBuffer<PossibleReinforcements> possibleReinforcements,
+            NativeHashMap<long, MovementDirection> movementDirections)
         {
             unableToMoveBattalions.Add(blockedBattalionId, direction);
             foreach (var blockedBattalion in movementBlockersMap.GetValuesForKey(blockedBattalionId))
             {
+                var blockedBattalionDirection = movementDirections[blockedBattalion.Item1].direction;
+                if (blockedBattalionDirection != direction) continue;
+
                 if (blockedBattalion.Item2 != direction) continue;
+
                 possibleReinforcements.Add(new PossibleReinforcements
                 {
                     needHelpBattalionId = blockedBattalionId,
                     canHelpBattalionId = blockedBattalion.Item1
                 });
-                fillBlockedMovement(blockedBattalion.Item1, blockedBattalion.Item2, movementBlockersMap, unableToMoveBattalions, possibleReinforcements);
+                if (direction == Direction.UP || direction == Direction.DOWN)
+                {
+                    fillBlockedMovement(blockedBattalion.Item1, Direction.LEFT, movementBlockersMap, unableToMoveBattalions, possibleReinforcements, movementDirections);
+                    fillBlockedMovement(blockedBattalion.Item1, Direction.RIGHT, movementBlockersMap, unableToMoveBattalions, possibleReinforcements, movementDirections);
+                }
+
+                fillBlockedMovement(blockedBattalion.Item1, blockedBattalion.Item2, movementBlockersMap, unableToMoveBattalions, possibleReinforcements, movementDirections);
             }
         }
 
@@ -122,6 +146,17 @@ namespace system.battle.battalion
             private void Execute(BattalionMarker battalionMarker)
             {
                 waitingBattalions.Add(battalionMarker.id);
+            }
+        }
+
+        [BurstCompile]
+        public partial struct CollectMovementDirections : IJobEntity
+        {
+            public NativeHashMap<long, MovementDirection> movementDirections;
+
+            private void Execute(BattalionMarker battalionMarker, MovementDirection movementDirection)
+            {
+                movementDirections.Add(battalionMarker.id, movementDirection);
             }
         }
 
