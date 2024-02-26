@@ -238,7 +238,7 @@ namespace system.battle.battalion
                     var upBlocked = false;
                     foreach (var (enemyId, enemyPosition, enemyTeam, enemySize) in rowMinusOneUnsorted)
                     {
-                        if (!isTooFar(myPosition, enemyPosition, mySize, enemySize))
+                        if (!isTooFar(myPosition, enemyPosition, mySize, enemySize, 1f))
                         {
                             upBlocked = true;
                             movementBlockingPairs.Add(new MovementBlockingPair
@@ -279,7 +279,7 @@ namespace system.battle.battalion
                     var downBlocked = false;
                     foreach (var (enemyId, enemyPosition, enemyTeam, enemySize) in rowPlusOneUnsorted)
                     {
-                        if (!isTooFar(myPosition, enemyPosition, mySize, enemySize))
+                        if (!isTooFar(myPosition, enemyPosition, mySize, enemySize, 1f))
                         {
                             downBlocked = true;
                             movementBlockingPairs.Add(new MovementBlockingPair
@@ -406,12 +406,12 @@ namespace system.battle.battalion
             }
         }
 
-        private bool isTooFar(float3 position1, float3 position2, float mySize, float otherSize)
+        private bool isTooFar(float3 position1, float3 position2, float mySize, float otherSize, float safetyMargin = 1.1f)
         {
             var distance = math.abs(position1.x - position2.x);
             var sizeSum = (mySize + otherSize) / 2;
             // 1.1 = safety margin
-            return distance > (sizeSum * 1.1f);
+            return distance > (sizeSum * safetyMargin);
         }
 
         private void fillFlankPositions(NativeHashMap<int, float3> team1FlankPositions, NativeHashMap<int, float3> team2FlankPositions,
