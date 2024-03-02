@@ -29,7 +29,7 @@ namespace system.battle.utils
             {
                 value = team
             };
-            var battalionSize = new BattalionSize
+            var battalionSize = new BattalionWidth
             {
                 value = size
             };

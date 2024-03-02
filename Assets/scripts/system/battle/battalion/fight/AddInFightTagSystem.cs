@@ -35,7 +35,7 @@ namespace system.battle.battalion.fight
 
             var splitCandidates = SystemAPI.GetSingletonBuffer<SplitCandidate>();
             splitCandidates.Clear();
-            splitCandidates.AddRange(splitCandidateList);
+            splitCandidates.AddRange(splitCandidateList.AsArray());
         }
 
         [BurstCompile]

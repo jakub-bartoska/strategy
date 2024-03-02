@@ -37,7 +37,7 @@ namespace system.strategy.ui
 
             if (interfaceState.ValueRO.state == UIState.ALL_CLOSED)
             {
-                removeOldMarks(state, interfaceState.ValueRO);
+                removeOldMarks(ref state, interfaceState.ValueRO);
             }
 
             switch (interfaceState.ValueRO.oldState)
@@ -80,7 +80,7 @@ namespace system.strategy.ui
             interfaceState.ValueRW.oldState = interfaceState.ValueRW.state;
         }
 
-        private void removeOldMarks(SystemState state, InterfaceState interfaceState)
+        private void removeOldMarks(ref SystemState state, InterfaceState interfaceState)
         {
             if (interfaceState.state != UIState.ALL_CLOSED)
             {

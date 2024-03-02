@@ -44,7 +44,7 @@ namespace system.battle.utils
                 direction = direction
             };
             var size = getSizeForBattalionType(battalionToSpawn.armyType);
-            var battalionSize = new BattalionSize
+            var battalionSize = new BattalionWidth
             {
                 value = size
             };
@@ -109,7 +109,7 @@ namespace system.battle.utils
                 right = false
             };
             var size = getSizeForBattalionType(soldierType);
-            var battalionSize = new BattalionSize
+            var battalionSize = new BattalionWidth
             {
                 value = size
             };
@@ -138,7 +138,7 @@ namespace system.battle.utils
 
             ecb.AddBuffer<BattalionFightBuffer>(0, newBattalion);
             var soldierBuffer = ecb.AddBuffer<BattalionSoldiers>(0, newBattalion);
-            soldierBuffer.AddRange(soldiers);
+            soldierBuffer.AddRange(soldiers.AsArray());
 
             ecb.SetComponent(0, newBattalion, battalionTransform);
 

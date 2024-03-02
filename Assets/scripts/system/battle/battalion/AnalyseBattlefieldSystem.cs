@@ -227,7 +227,8 @@ namespace system.battle.battalion
                     {
                         battalionId1 = myId,
                         battalionId2 = closestId,
-                        fightType = BattalionFightType.NORMAL
+                        fightType = BattalionFightType.NORMAL,
+                        direction = Direction.RIGHT
                     });
                 }
 
@@ -266,7 +267,8 @@ namespace system.battle.battalion
                             {
                                 battalionId1 = myId,
                                 battalionId2 = enemyId,
-                                fightType = BattalionFightType.VERTICAL
+                                fightType = BattalionFightType.VERTICAL,
+                                direction = Direction.UP
                             });
                         }
                     }
@@ -451,9 +453,9 @@ namespace system.battle.battalion
         {
             public NativeParallelMultiHashMap<int, (long, float3, Team, float)>.ParallelWriter battalionPositions;
 
-            private void Execute(BattalionMarker battalionMarker, LocalTransform transform, Row row, BattalionTeam team, BattalionSize size)
+            private void Execute(BattalionMarker battalionMarker, LocalTransform transform, Row row, BattalionTeam team, BattalionWidth width)
             {
-                battalionPositions.Add(row.value, (battalionMarker.id, transform.Position, team.value, size.value));
+                battalionPositions.Add(row.value, (battalionMarker.id, transform.Position, team.value, width.value));
             }
         }
 
@@ -462,9 +464,9 @@ namespace system.battle.battalion
         {
             public NativeParallelMultiHashMap<int, (long, float3, Team, float)>.ParallelWriter shadowPositions;
 
-            private void Execute(BattalionShadowMarker shadowMarker, ref LocalTransform transform, Row row, BattalionTeam team, BattalionSize size)
+            private void Execute(BattalionShadowMarker shadowMarker, ref LocalTransform transform, Row row, BattalionTeam team, BattalionWidth width)
             {
-                shadowPositions.Add(row.value, (shadowMarker.parentBattalionId, transform.Position, team.value, size.value));
+                shadowPositions.Add(row.value, (shadowMarker.parentBattalionId, transform.Position, team.value, width.value));
             }
         }
 
@@ -510,15 +512,15 @@ namespace system.battle.battalion
             [ReadOnly] public PrefabHolder prefabHolder;
             public EntityCommandBuffer.ParallelWriter ecb;
 
-            private void Execute(BattalionMarker battalionMarker, Entity entity, PossibleSplit split, LocalTransform transform, Row row, BattalionTeam team, BattalionSize size)
+            private void Execute(BattalionMarker battalionMarker, Entity entity, PossibleSplit split, LocalTransform transform, Row row, BattalionTeam team, BattalionWidth width)
             {
                 if (rowChanges.TryGetValue(row.value, out var teamDirection))
                 {
                     var flankPosition = getFlankPosition(row.value, teamDirection.Item2, team.value);
                     var flankPossible = team.value switch
                     {
-                        Team.TEAM1 => flankPosition.x - (size.value / 2) * 1.2f > transform.Position.x,
-                        Team.TEAM2 => flankPosition.x + (size.value / 2) * 1.2f < transform.Position.x,
+                        Team.TEAM1 => flankPosition.x - (width.value / 2) * 1.2f > transform.Position.x,
+                        Team.TEAM2 => flankPosition.x + (width.value / 2) * 1.2f < transform.Position.x,
                         _ => throw new Exception("Unknown team")
                     };
                     if (!flankPossible) return;
@@ -526,7 +528,7 @@ namespace system.battle.battalion
                     var canChange = isDirectionPossible(teamDirection.Item2, split);
                     if (!canChange) return;
 
-                    var shadowEntity = BattalionShadowSpawner.spawnBattalionShadow(ecb, prefabHolder, transform.Position, battalionMarker.id, row.value, team.value, size.value);
+                    var shadowEntity = BattalionShadowSpawner.spawnBattalionShadow(ecb, prefabHolder, transform.Position, battalionMarker.id, row.value, team.value, width.value);
                     ecb.AddComponent(2, entity, new ChangeRow
                     {
                         direction = teamDirection.Item2,
@@ -578,7 +580,7 @@ namespace system.battle.battalion
             [ReadOnly] public NativeHashMap<int, float3> team2FlankPositions;
             [ReadOnly] public NativeHashMap<long, Direction> battalionMovementDirections;
 
-            private void Execute(BattalionMarker battalionMarker, LocalTransform transform, ref MovementDirection movementDirection, Row row, BattalionTeam team, BattalionSize size)
+            private void Execute(BattalionMarker battalionMarker, LocalTransform transform, ref MovementDirection movementDirection, Row row, BattalionTeam team, BattalionWidth width)
             {
                 var flank2 = getFlankPositionForMyRow(row.value, team.value);
                 if (flank2.HasValue)
@@ -614,8 +616,8 @@ namespace system.battle.battalion
                     var flankPosition = getFlankPosition(row.value, teamDirection.Item2, team.value);
                     var flankPossible = team.value switch
                     {
-                        Team.TEAM1 => flankPosition.x - (size.value / 2) * 1.2f > transform.Position.x,
-                        Team.TEAM2 => flankPosition.x + (size.value / 2) * 1.2f < transform.Position.x,
+                        Team.TEAM1 => flankPosition.x - (width.value / 2) * 1.2f > transform.Position.x,
+                        Team.TEAM2 => flankPosition.x + (width.value / 2) * 1.2f < transform.Position.x,
                         _ => throw new Exception("Unknown team")
                     };
                     if (!flankPossible)

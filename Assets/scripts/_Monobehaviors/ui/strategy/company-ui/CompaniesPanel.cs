@@ -34,8 +34,10 @@ namespace _Monobehaviors.ui
         private bool lockUiPanel;
 
         private float minX;
+
         private float minY = 0;
-        private float panelHeight = 120;
+
+        //private float panelHeight = 120;
         private float panelWidth = 800;
 
         private void Awake()

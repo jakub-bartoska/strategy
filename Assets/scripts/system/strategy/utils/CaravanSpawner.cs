@@ -48,7 +48,7 @@ namespace system.strategy.utils
             ecb.SetComponent(newEntity, newTransform);
 
             var resourceBuffer = ecb.AddBuffer<ResourceHolder>(newEntity);
-            resourceBuffer.AddRange(resourceHolder);
+            resourceBuffer.AddRange(resourceHolder.AsArray());
         }
     }
 }

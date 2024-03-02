@@ -2,7 +2,7 @@
 
 namespace component.battle.battalion
 {
-    public struct BattalionSize : IComponentData
+    public struct BattalionWidth : IComponentData
     {
         public float value;
     }

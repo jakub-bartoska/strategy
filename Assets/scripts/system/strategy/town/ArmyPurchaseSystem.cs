@@ -90,7 +90,7 @@ namespace system.strategy.town
         {
             foreach (var armyPurchase in armyPurchases)
             {
-                if (!canPurchase(armyCost, resources, armyPurchase.count)) continue;
+                if (!canPurchase(armyCost.AsArray(), resources, armyPurchase.count)) continue;
 
                 for (int i = 0; i < resources.Length; i++)
                 {

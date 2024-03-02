@@ -37,7 +37,7 @@ namespace _Monobehaviors.ui.battle_plan.buttons
             var battalions = ArmyFormationManager.instance.getAllBattalions();
             var buffer = battalionToSpawn.GetSingletonBuffer<BattalionToSpawn>();
             buffer.Clear();
-            buffer.AddRange(battalions);
+            buffer.AddRange(battalions.AsArray());
 
             StateManagerForMonos.getInstance().updateStatusFromMonos(SystemStatus.BATTLE);
         }

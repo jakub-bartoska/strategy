@@ -49,7 +49,7 @@ namespace system.strategy.movement
                             ecb = ecb.AsParallelWriter()
                         }.ScheduleParallel(state.Dependency)
                         .Complete();
-                    markProperEntities(marker, ecb, state);
+                    markProperEntities(marker, ecb, ref state);
                     interfaceState.ValueRW.oldState = interfaceState.ValueRW.state;
                     interfaceState.ValueRW.state = UIState.GET_NEW_STATE;
                     marker.ValueRW.state = MarkerState.IDLE;
@@ -66,7 +66,7 @@ namespace system.strategy.movement
         /// If there is exactly 1 town, mark this 1 town.
         /// If there is exactly 1 minor, mark minor.
         /// </summary>
-        private void markProperEntities(RefRW<SelectionMarkerState> marker, EntityCommandBuffer ecb, SystemState state)
+        private void markProperEntities(RefRW<SelectionMarkerState> marker, EntityCommandBuffer ecb, ref SystemState state)
         {
             var markerPrefab = SystemAPI.GetSingleton<PrefabHolder>().markerPrefab;
             var playerSettings = SystemAPI.GetSingleton<GamePlayerSettings>();

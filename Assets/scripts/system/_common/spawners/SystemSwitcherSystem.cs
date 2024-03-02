@@ -33,7 +33,7 @@ namespace system._common
 
             StateManagerForMonos.getInstance()
                 .updateStatus(systemSwitch.ValueRO.desiredStatus, systemSwitch.ValueRO.currentStatus);
-            addAndRemoveMarkers(state, systemSwitch.ValueRO.desiredStatus, singletonEntity, ecb);
+            addAndRemoveMarkers(ref state, systemSwitch.ValueRO.desiredStatus, singletonEntity, ecb);
 
             if (systemSwitch.ValueRO.desiredStatus == SystemStatus.INGAME_MENU)
             {
@@ -43,7 +43,7 @@ namespace system._common
             systemSwitch.ValueRW.currentStatus = systemSwitch.ValueRO.desiredStatus;
         }
 
-        private void addAndRemoveMarkers(SystemState state, SystemStatus desiredStatus, Entity singletonEntity,
+        private void addAndRemoveMarkers(ref SystemState state, SystemStatus desiredStatus, Entity singletonEntity,
             EntityCommandBuffer ecb)
         {
             if (desiredStatus == SystemStatus.BATTLE)
