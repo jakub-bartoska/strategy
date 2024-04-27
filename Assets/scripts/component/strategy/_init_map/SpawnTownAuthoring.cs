@@ -35,6 +35,11 @@ namespace component.strategy._init_map
         {
             return team.Equals(other.team) && position.Equals(other.position);
         }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(team, position);
+        }
     }
 
     public class SpawnTownBaker : Baker<SpawnTownAuthoring>

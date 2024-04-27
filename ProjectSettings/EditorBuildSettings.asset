@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/battle-map/Entities/EntitiesSubscene.unity
     guid: fe32a9e7d66aa4e4f9fa48dc5ce295e1
-  m_configObjects: {}
+  m_configObjects:
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 8917b22f887e7c849bad85020d42582c,
+      type: 3}
+  m_UseUCBPForAssetBundles: 0

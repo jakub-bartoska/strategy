@@ -11,5 +11,10 @@ namespace component.strategy.buildings.building_costs
         {
             return buildingType == other.buildingType;
         }
+
+        public override int GetHashCode()
+        {
+            return buildingType.GetHashCode();
+        }
     }
 }

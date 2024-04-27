@@ -13,5 +13,10 @@ namespace component.battle.battalion
         {
             return soldierId == other.soldierId;
         }
+
+        public override int GetHashCode()
+        {
+            return soldierId.GetHashCode();
+        }
     }
 }

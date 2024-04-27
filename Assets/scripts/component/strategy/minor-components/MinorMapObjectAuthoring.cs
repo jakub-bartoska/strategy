@@ -25,6 +25,11 @@ namespace component.strategy.minor_objects
         {
             return team.Equals(other.team) && position.Equals(other.position) && type.Equals(other.type);
         }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(team, position, type);
+        }
     }
 
     public struct MinorMapObject : IComponentData
