@@ -192,7 +192,6 @@ namespace system.battle.battalion
                     canHelpBattalionId = blockedBattalion.Item1
                 });
 
-                Debug.Log("adding desired position");
                 var exactPosition = CustomTransformUtils.calculateDesiredPosition(
                     battalionInfo[blockedBattalionId].Item2,
                     battalionInfo[blockedBattalion.Item1].Item3,
@@ -292,13 +291,12 @@ namespace system.battle.battalion
                 {
                     if (direction == movementDirection.direction)
                     {
-                        Debug.Log("unable to move " + battalionMarker.id + " in direction " + direction);
                         return;
                     }
                 }
 
-                var speed = 10f * deltaTime;
-                //var speed = 1f * deltaTime;
+                //var speed = 10f * deltaTime;
+                var speed = 1f * deltaTime;
                 var directionCoefficient = movementDirection.direction switch
                 {
                     Direction.LEFT => -1,
@@ -308,8 +306,6 @@ namespace system.battle.battalion
                     Direction.DOWN => 0,
                     _ => throw new Exception("Unknown direction")
                 };
-
-                Debug.Log("moving");
 
                 var delta = new float3(directionCoefficient * speed, 0, 0);
                 transform.Position += delta;
@@ -324,7 +320,14 @@ namespace system.battle.battalion
 
             private void Execute(BattalionMarker battalionMarker, ref LocalTransform transform, ref MoveToExactPosition moveToExactPosition)
             {
-                var speed = 10f * deltaTime;
+                return;
+                if (battalionMarker.id == 1)
+                {
+                    Debug.Log("exact position " + battalionMarker.id);
+                }
+
+                //var speed = 10f * deltaTime;
+                var speed = 1f * deltaTime;
                 var distance = math.distance(transform.Position, moveToExactPosition.targetPosition);
                 if (distance < speed)
                 {
