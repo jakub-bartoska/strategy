@@ -4,6 +4,7 @@ using component._common.system_switchers;
 using component.authoring_pairs.PrefabHolder;
 using component.battle.battalion;
 using component.battle.battalion.markers;
+using component.battle.config;
 using component.config.authoring_pairs;
 using component.config.game_settings;
 using component.general;
@@ -117,6 +118,9 @@ namespace system
                 nextBattalionId = battalionId
             };
 
+            var config = DebugConfigAuthoring.instance.collectData();
+
+            ecb.AddComponent(singletonEntity, config);
             ecb.AddComponent(singletonEntity, battalionIdHolder);
             ecb.AddComponent(singletonEntity, new BattleSingletonEntityTag());
             ecb.AddComponent(singletonEntity, new BattleCleanupTag());

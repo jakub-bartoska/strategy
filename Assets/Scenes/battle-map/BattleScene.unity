@@ -248,6 +248,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1399079930104890748, guid: a95ab48849cc0e941aae66b5428824e3,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2019743475181549368, guid: a95ab48849cc0e941aae66b5428824e3,
+        type: 3}
+      propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
+      value: 1801810542
+      objectReference: {fileID: 0}
     - target: {fileID: 2350297307800453224, guid: a95ab48849cc0e941aae66b5428824e3,
         type: 3}
       propertyPath: m_AnchorMin.x
@@ -393,12 +403,32 @@ PrefabInstance:
       propertyPath: m_Name
       value: mono-scene-objects
       objectReference: {fileID: 0}
+    - target: {fileID: 5378261176781870814, guid: a95ab48849cc0e941aae66b5428824e3,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5454389400318486417, guid: a95ab48849cc0e941aae66b5428824e3,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5705221936433174874, guid: a95ab48849cc0e941aae66b5428824e3,
         type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6424045513742742981, guid: a95ab48849cc0e941aae66b5428824e3,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6699397534643627814, guid: a95ab48849cc0e941aae66b5428824e3,
+        type: 3}
+      propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
+      value: 1801810542
+      objectReference: {fileID: 0}
+    - target: {fileID: 8264664072463143869, guid: a95ab48849cc0e941aae66b5428824e3,
         type: 3}
       propertyPath: m_IsActive
       value: 1

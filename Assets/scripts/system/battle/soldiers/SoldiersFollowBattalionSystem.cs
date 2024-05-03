@@ -1,6 +1,7 @@
 ﻿using component;
 using component._common.system_switchers;
 using component.battle.battalion;
+using component.battle.config;
 using system.battle.battalion;
 using Unity.Burst;
 using Unity.Collections;
@@ -16,6 +17,7 @@ namespace system.battle.soldiers
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
+            state.RequireForUpdate<DebugConfig>();
             state.RequireForUpdate<BattleMapStateMarker>();
             state.RequireForUpdate<BattalionMarker>();
         }
@@ -23,6 +25,7 @@ namespace system.battle.soldiers
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            var speed = SystemAPI.GetSingleton<DebugConfig>().speed;
             var battalionPositions = new NativeParallelHashMap<long, float3>(1000, Allocator.TempJob);
             var soldierToBattalionMap = new NativeParallelHashMap<long, (long, BattalionSoldiers)>(10000, Allocator.TempJob);
             var deltaTime = SystemAPI.Time.DeltaTime;
@@ -38,7 +41,8 @@ namespace system.battle.soldiers
                 {
                     deltaTime = deltaTime,
                     battalionPositions = battalionPositions,
-                    soldierToBattalionMap = soldierToBattalionMap
+                    soldierToBattalionMap = soldierToBattalionMap,
+                    speed = speed
                 }.ScheduleParallel(state.Dependency)
                 .Complete();
         }
@@ -65,6 +69,7 @@ namespace system.battle.soldiers
             [ReadOnly] public float deltaTime;
             [ReadOnly] public NativeParallelHashMap<long, float3> battalionPositions;
             [ReadOnly] public NativeParallelHashMap<long, (long, BattalionSoldiers)> soldierToBattalionMap;
+            [ReadOnly] public float speed;
 
             private void Execute(SoldierStatus soldierStatus, ref LocalTransform localTransform)
             {
@@ -72,7 +77,7 @@ namespace system.battle.soldiers
                 {
                     if (battalionPositions.TryGetValue(value.Item1, out var battalionPosition))
                     {
-                        var speed = getSpeed(battalionPosition, localTransform.Position);
+                        var finalSpeed = getSpeed(battalionPosition, localTransform.Position);
 
                         var z = battalionPosition.z - 5 + value.Item2.positionWithinBattalion + 0.5f;
                         var positionInBattalion = new float3(battalionPosition.x, battalionPosition.y, z);
@@ -84,7 +89,7 @@ namespace system.battle.soldiers
                         else
                         {
                             var normalizedPosition = math.normalize(direction);
-                            localTransform.Position += (normalizedPosition * speed);
+                            localTransform.Position += (normalizedPosition * finalSpeed);
                         }
                     }
                 }
@@ -92,14 +97,15 @@ namespace system.battle.soldiers
 
             private float getSpeed(float3 battalionPosition, float3 soldierPosition)
             {
-                var speed = 10f * deltaTime;
-                var diagonalSpeed = 14.14f * deltaTime;
+                var normalSpeed = speed * deltaTime;
+                var diagonalCoefficient = 1.41f;
+                var diagonalSpeed = speed * diagonalCoefficient * deltaTime;
 
                 var zDelta = math.abs(battalionPosition.z - soldierPosition.z);
                 var xDelta = math.abs(battalionPosition.x - soldierPosition.x);
                 if (zDelta > 0.1f && xDelta > 0.1f) return diagonalSpeed;
 
-                return speed;
+                return normalSpeed;
             }
         }
     }

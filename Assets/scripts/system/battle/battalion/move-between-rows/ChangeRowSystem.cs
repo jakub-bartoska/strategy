@@ -94,13 +94,14 @@ namespace system.battle.battalion
         public partial struct MoveToNewLineJob : IJobEntity
         {
             [ReadOnly] public float deltaTime;
+            [ReadOnly] public float speed;
 
             private void Execute(ChangeRow changeRow, ref LocalTransform localTransform, Row row)
             {
                 if (changeRow.state != ChangeState.RUNNING) return;
 
                 var targetZ = CustomTransformUtils.getBattalionZPosition(row.value);
-                var travelDistance = deltaTime * 5f;
+                var travelDistance = deltaTime * speed * 0.5f;
                 var distanceToTarget = math.abs(localTransform.Position.z - targetZ);
                 if (distanceToTarget <= travelDistance)
                 {

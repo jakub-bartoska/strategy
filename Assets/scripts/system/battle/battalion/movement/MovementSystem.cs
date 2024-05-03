@@ -4,6 +4,7 @@ using component;
 using component._common.system_switchers;
 using component.battle.battalion;
 using component.battle.battalion.markers;
+using component.battle.config;
 using system.battle.enums;
 using system.battle.utils;
 using Unity.Burst;
@@ -21,6 +22,7 @@ namespace system.battle.battalion
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
+            state.RequireForUpdate<DebugConfig>();
             state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
             state.RequireForUpdate<BattleMapStateMarker>();
             state.RequireForUpdate<BattalionMarker>();
@@ -29,6 +31,8 @@ namespace system.battle.battalion
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            var speed = SystemAPI.GetSingleton<DebugConfig>().speed;
+
             var fightPairs = SystemAPI.GetSingletonBuffer<FightPair>();
             var movementBlockingPairs = SystemAPI.GetSingletonBuffer<MovementBlockingPair>();
             //battalion id -> movement direction
@@ -124,13 +128,15 @@ namespace system.battle.battalion
             new MoveBattalionJob
                 {
                     deltaTime = deltaTime,
-                    unableToMoveBattalions = unableToMoveBattalions
+                    unableToMoveBattalions = unableToMoveBattalions,
+                    speed = speed
                 }.Schedule(state.Dependency)
                 .Complete();
 
             new MoveBattalionJobForExactPositions
                 {
-                    deltaTime = deltaTime
+                    deltaTime = deltaTime,
+                    speed = speed
                 }.Schedule(state.Dependency)
                 .Complete();
         }
@@ -284,6 +290,7 @@ namespace system.battle.battalion
         {
             public float deltaTime;
             public NativeParallelMultiHashMap<long, Direction> unableToMoveBattalions;
+            public float speed;
 
             private void Execute(BattalionMarker battalionMarker, ref LocalTransform transform, MovementDirection movementDirection)
             {
@@ -295,8 +302,7 @@ namespace system.battle.battalion
                     }
                 }
 
-                //var speed = 10f * deltaTime;
-                var speed = 1f * deltaTime;
+                var finalSpeed = speed * deltaTime;
                 var directionCoefficient = movementDirection.direction switch
                 {
                     Direction.LEFT => -1,
@@ -307,7 +313,7 @@ namespace system.battle.battalion
                     _ => throw new Exception("Unknown direction")
                 };
 
-                var delta = new float3(directionCoefficient * speed, 0, 0);
+                var delta = new float3(directionCoefficient * finalSpeed, 0, 0);
                 transform.Position += delta;
             }
         }
@@ -317,19 +323,18 @@ namespace system.battle.battalion
         public partial struct MoveBattalionJobForExactPositions : IJobEntity
         {
             public float deltaTime;
+            public float speed;
 
             private void Execute(BattalionMarker battalionMarker, ref LocalTransform transform, ref MoveToExactPosition moveToExactPosition)
             {
-                return;
                 if (battalionMarker.id == 1)
                 {
                     Debug.Log("exact position " + battalionMarker.id);
                 }
 
-                //var speed = 10f * deltaTime;
-                var speed = 1f * deltaTime;
+                var finalSpeed = speed * deltaTime;
                 var distance = math.distance(transform.Position, moveToExactPosition.targetPosition);
-                if (distance < speed)
+                if (distance < finalSpeed)
                 {
                     transform.Position = moveToExactPosition.targetPosition;
                     return;
@@ -337,7 +342,7 @@ namespace system.battle.battalion
 
                 var directionVector = moveToExactPosition.targetPosition - transform.Position;
                 var normalizedDirectionVector = math.normalize(directionVector);
-                var delta = normalizedDirectionVector * speed;
+                var delta = normalizedDirectionVector * finalSpeed;
                 transform.Position += delta;
             }
         }

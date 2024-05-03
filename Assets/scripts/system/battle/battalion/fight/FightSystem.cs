@@ -1,6 +1,7 @@
 ﻿using System;
 using component._common.system_switchers;
 using component.battle.battalion;
+using component.battle.config;
 using system.battle.battalion.fight;
 using system.battle.enums;
 using Unity.Burst;
@@ -37,6 +38,12 @@ namespace system.battle.battalion
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
                 .CreateCommandBuffer(state.WorldUnmanaged);
 
+            var doDamage = SystemAPI.GetSingleton<DebugConfig>().doDamage;
+            if (!doDamage)
+            {
+                return;
+            }
+
             new ReceiveDamageJob
                 {
                     damageDealt = damageDealt,
@@ -46,12 +53,13 @@ namespace system.battle.battalion
         }
 
         [BurstCompile]
+        [WithAll(typeof(BattalionMarker))]
         public partial struct PerformBattalionFightJob : IJobEntity
         {
             [ReadOnly] public float deltaTime;
             public NativeParallelHashMap<long, int>.ParallelWriter damageDealt;
 
-            private void Execute(BattalionMarker battalionMarker, ref DynamicBuffer<BattalionFightBuffer> battalionFight, DynamicBuffer<BattalionSoldiers> soldiers)
+            private void Execute(ref DynamicBuffer<BattalionFightBuffer> battalionFight, DynamicBuffer<BattalionSoldiers> soldiers)
             {
                 if (battalionFight.Length == 0) return;
 
