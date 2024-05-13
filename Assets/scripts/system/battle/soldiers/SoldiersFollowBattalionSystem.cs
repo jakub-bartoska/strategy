@@ -11,7 +11,7 @@ using Unity.Transforms;
 
 namespace system.battle.soldiers
 {
-    [UpdateAfter(typeof(MovementSystem))]
+    [UpdateAfter(typeof(MovementSystemOld))]
     public partial struct SoldiersFollowBattalionSystem : ISystem
     {
         [BurstCompile]

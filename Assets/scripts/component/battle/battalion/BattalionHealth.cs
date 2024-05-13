@@ -4,6 +4,6 @@ namespace component.battle.battalion
 {
     public struct BattalionHealth : IComponentData
     {
-        public int value;
+        public float value;
     }
 }

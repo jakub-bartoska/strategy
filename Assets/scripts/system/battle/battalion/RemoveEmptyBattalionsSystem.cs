@@ -1,10 +1,13 @@
 ﻿using component._common.system_switchers;
 using component.battle.battalion;
+using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Entities;
 
 namespace system.battle.battalion
 {
+    [UpdateInGroup(typeof(BattleCleanupSystemGroup))]
+    [UpdateAfter(typeof(DestroyKilledSoldiersSystem))]
     public partial struct RemoveEmptyBattalionsSystem : ISystem
     {
         [BurstCompile]
@@ -12,7 +15,6 @@ namespace system.battle.battalion
         {
             state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
             state.RequireForUpdate<BattleMapStateMarker>();
-            state.RequireForUpdate<BattalionMarker>();
         }
 
         [BurstCompile]
@@ -22,20 +24,23 @@ namespace system.battle.battalion
                 .CreateCommandBuffer(state.WorldUnmanaged);
             new DestroyEmptyBattalionsJob
                 {
-                    ecb = ecb.AsParallelWriter()
-                }.ScheduleParallel(state.Dependency)
+                    ecb = ecb
+                }.Schedule(state.Dependency)
                 .Complete();
         }
 
         [BurstCompile]
+        [WithAll(typeof(BattalionMarker))]
         public partial struct DestroyEmptyBattalionsJob : IJobEntity
         {
-            public EntityCommandBuffer.ParallelWriter ecb;
+            public EntityCommandBuffer ecb;
 
-            private void Execute(BattalionMarker battalionMarker, DynamicBuffer<BattalionSoldiers> soldiers, BattalionHealth health, Entity entity)
+            private void Execute(DynamicBuffer<BattalionSoldiers> soldiers, Entity entity)
             {
-                if (soldiers.Length == 0 || health.value <= 0)
-                    ecb.DestroyEntity(0, entity);
+                if (soldiers.Length == 0)
+                {
+                    ecb.DestroyEntity(entity);
+                }
             }
         }
     }

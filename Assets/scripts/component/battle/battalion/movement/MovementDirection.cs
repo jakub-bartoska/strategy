@@ -5,6 +5,7 @@ namespace component.battle.battalion.markers
 {
     public struct MovementDirection : IComponentData
     {
-        public Direction direction;
+        public Direction defaultDirection;
+        public Direction currentDirection;
     }
 }

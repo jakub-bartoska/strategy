@@ -6,8 +6,7 @@ using Unity.Entities;
 
 namespace system.battle.battalion
 {
-    [UpdateAfter(typeof(MovementSystem))]
-    [UpdateAfter(typeof(FightSystem))]
+    [UpdateAfter(typeof(MovementSystemOld))]
     public partial struct ReinforcementsSystem : ISystem
     {
         [BurstCompile]
@@ -21,6 +20,7 @@ namespace system.battle.battalion
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            return;
             var battalionIdsToMissingIndexes = new NativeParallelMultiHashMap<long, int>(3000, Allocator.TempJob);
             new CollectBattalionsNeedingReinforcementsJob
                 {

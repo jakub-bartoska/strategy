@@ -25,6 +25,11 @@ namespace system.battle.utils
                 id = battalionId,
                 soldierType = battalionToSpawn.armyType
             };
+            var battleUnitType = new BattleUnitType
+            {
+                id = battalionId,
+                type = BattleUnitTypeEnum.BATTALION
+            };
             var row = new Row
             {
                 value = battalionToSpawn.position.y
@@ -41,7 +46,7 @@ namespace system.battle.utils
             };
             var movementDirection = new MovementDirection
             {
-                direction = direction
+                defaultDirection = direction
             };
             var size = getSizeForBattalionType(battalionToSpawn.armyType);
             var battalionSize = new BattalionWidth
@@ -63,10 +68,9 @@ namespace system.battle.utils
             ecb.AddComponent(newBattalion, movementDirection);
             ecb.AddComponent(newBattalion, row);
             ecb.AddComponent(newBattalion, team);
+            ecb.AddComponent(newBattalion, battleUnitType);
             ecb.AddComponent(newBattalion, battalionSize);
             ecb.AddComponent(newBattalion, transformMatrix);
-
-            ecb.AddBuffer<BattalionFightBuffer>(newBattalion);
 
             ecb.SetComponent(newBattalion, battalionTransform);
 
@@ -92,6 +96,11 @@ namespace system.battle.utils
             {
                 id = battalionId,
                 soldierType = soldierType
+            };
+            var battleUnitType = new BattleUnitType
+            {
+                id = battalionId,
+                type = BattleUnitTypeEnum.BATTALION
             };
             var rowComponent = new Row
             {
@@ -124,7 +133,7 @@ namespace system.battle.utils
 
             var movementDirection = new MovementDirection
             {
-                direction = direction
+                defaultDirection = direction
             };
 
             ecb.AddComponent(0, newBattalion, battalionMarker);
@@ -135,8 +144,8 @@ namespace system.battle.utils
             ecb.AddComponent(0, newBattalion, teamComponent);
             ecb.AddComponent(0, newBattalion, battalionSize);
             ecb.AddComponent(0, newBattalion, transformMatrix);
+            ecb.AddComponent(0, newBattalion, battleUnitType);
 
-            ecb.AddBuffer<BattalionFightBuffer>(0, newBattalion);
             var soldierBuffer = ecb.AddBuffer<BattalionSoldiers>(0, newBattalion);
             soldierBuffer.AddRange(soldiers.AsArray());
 

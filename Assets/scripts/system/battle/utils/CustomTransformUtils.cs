@@ -39,66 +39,67 @@ namespace system.battle.utils
             return getBattalionPositionForSoldiers(0, row).z + 5f;
         }
 
-        public static float3 calculateDesiredPosition(float3 originalPosition, BattalionWidth myWidth, BattalionWidth otherWidth, Direction direction)
+        public static float3 calculateDesiredPosition(float3 originalPosition, BattalionWidth myWidth, BattalionWidth otherWidth, Direction direction, bool isExactPosition)
         {
             switch (direction)
             {
                 case Direction.UP:
                 case Direction.DOWN:
-                    return calculateDesiredPosition(originalPosition, direction);
+                    return calculateDesiredPosition(originalPosition, direction, isExactPosition);
                 case Direction.LEFT:
                 case Direction.RIGHT:
-                    return calculateDesiredPositionInRow(originalPosition, myWidth, otherWidth, direction);
+                    return calculateDesiredPositionInRow(originalPosition, myWidth, otherWidth, direction, isExactPosition);
                 default:
                     throw new Exception("Unknown direction");
             }
         }
 
-        private static float3 calculateDesiredPositionInRow(float3 originalPosition, BattalionWidth myWidth, BattalionWidth otherWidth, Direction direction)
+        private static float3 calculateDesiredPositionInRow(float3 originalPosition, BattalionWidth myWidth, BattalionWidth otherWidth, Direction direction, bool isExactPosition)
         {
             var diff = (myWidth.value + otherWidth.value) / 2 * 1.1f;
+            var result = new float3
+            {
+                x = originalPosition.x + diff,
+                y = originalPosition.y,
+                z = originalPosition.z
+            };
+
             switch (direction)
             {
                 case Direction.LEFT:
-                    return new float3
-                    {
-                        x = originalPosition.x - diff,
-                        y = originalPosition.y,
-                        z = originalPosition.z
-                    };
+                    result.x -= diff;
+                    break;
                 case Direction.RIGHT:
-                    return new float3
-                    {
-                        x = originalPosition.x + diff,
-                        y = originalPosition.y,
-                        z = originalPosition.z
-                    };
+                    result.x += diff;
+                    break;
                 default:
                     throw new Exception("Invalid direction");
             }
+
+            return result;
         }
 
-        public static float3 calculateDesiredPosition(float3 originalPostion, Direction direction)
+        public static float3 calculateDesiredPosition(float3 originalPosition, Direction direction, bool isExactPosition)
         {
+            var result = new float3
+            {
+                x = originalPosition.x,
+                y = originalPosition.y,
+                z = originalPosition.z
+            };
             switch (direction)
             {
                 case Direction.UP:
-                    return new float3
-                    {
-                        x = originalPostion.x,
-                        y = originalPostion.y,
-                        z = originalPostion.z + 10
-                    };
+                    originalPosition.z += 10;
+                    break;
                 case Direction.DOWN:
-                    return new float3
-                    {
-                        x = originalPostion.x,
-                        y = originalPostion.y,
-                        z = originalPostion.z - 10
-                    };
+                    originalPosition.z -= 10;
+                    break;
                 default:
                     throw new Exception("Invalid direction");
             }
+
+            return result;
         }
     }
 }

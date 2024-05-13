@@ -21,6 +21,7 @@ namespace system.battle.battalion.split
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            return;
             var waitingBattalionSoldiers = new NativeParallelMultiHashMap<long, (long, float3)>(500, Allocator.TempJob);
             new CollectWaitingBattalions
                 {

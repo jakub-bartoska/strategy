@@ -3,7 +3,6 @@ using component._common.system_switchers;
 using component.authoring_pairs.PrefabHolder;
 using component.battle.battalion;
 using component.battle.battalion.markers;
-using system.battle.battalion.fight;
 using system.battle.enums;
 using system.battle.utils;
 using Unity.Burst;
@@ -15,7 +14,6 @@ using Unity.Transforms;
 
 namespace system.battle.battalion.split
 {
-    [UpdateAfter(typeof(AddInFightTagSystem))]
     public partial struct SplitSystem : ISystem
     {
         [BurstCompile]
@@ -28,6 +26,7 @@ namespace system.battle.battalion.split
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            return;
             var splitCandidates = SystemAPI.GetSingletonBuffer<SplitCandidate>();
 
             var splitCandidatesMap = new NativeHashMap<long, SplitCandidate>(splitCandidates.Length, Allocator.TempJob);

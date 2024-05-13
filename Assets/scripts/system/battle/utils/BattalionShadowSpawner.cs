@@ -19,7 +19,11 @@ namespace system.battle.utils
             {
                 parentBattalionId = parentBattalionId
             };
-
+            var battleUnitType = new BattleUnitType
+            {
+                id = parentBattalionId,
+                type = BattleUnitTypeEnum.SHADOW
+            };
             var rowComponent = new Row
             {
                 value = row
@@ -44,6 +48,7 @@ namespace system.battle.utils
             ecb.AddComponent(1, newBattalionShadow, teamComponent);
             ecb.AddComponent(1, newBattalionShadow, transformMatrix);
             ecb.AddComponent(1, newBattalionShadow, battalionSize);
+            ecb.AddComponent(1, newBattalionShadow, battleUnitType);
 
             ecb.SetComponent(1, newBattalionShadow, battalionTransform);
 

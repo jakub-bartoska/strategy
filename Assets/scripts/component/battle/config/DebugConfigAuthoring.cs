@@ -28,7 +28,8 @@ namespace component.battle.config
             return new DebugConfig
             {
                 doDamage = doDamage,
-                speed = speed
+                speed = speed,
+                dmgPerSecond = 10f
             };
         }
     }
@@ -36,6 +37,10 @@ namespace component.battle.config
     public struct DebugConfig : IComponentData
     {
         public float speed;
+
         public bool doDamage;
+
+        //damage delaed by 1 fighting soldier (1 unit has 10 soldiers) / 1 sec
+        public float dmgPerSecond;
     }
 }

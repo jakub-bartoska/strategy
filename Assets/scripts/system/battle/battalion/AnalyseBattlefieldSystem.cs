@@ -28,6 +28,7 @@ namespace system.battle.battalion
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            return;
             //row -> id, position, team, battalionSize
             var battalionPositions = new NativeParallelMultiHashMap<int, (long, float3, Team, float)>(1000, Allocator.TempJob);
             var shadowPositions = new NativeParallelMultiHashMap<int, (long, float3, Team, float)>(1000, Allocator.TempJob);
@@ -116,7 +117,7 @@ namespace system.battle.battalion
             var uniqueCount = allRows.Unique();
             var uniqueRows = allRows.GetSubArray(0, uniqueCount);
 
-            var sorter = new MovementSystem.SortByPosition();
+            var sorter = new MovementSystemOld.SortByPosition();
             var rowBattalions = new NativeList<(long, float3, Team, float)>(Allocator.TempJob);
             var rowShadows = new NativeList<(long, float3, Team, float)>(Allocator.TempJob);
             var rowMinusOneUnsorted = new NativeList<(long, float3, Team, float)>(Allocator.TempJob);
@@ -175,7 +176,7 @@ namespace system.battle.battalion
                             blocker = shadowId,
                             victim = myId,
                             direction = direction,
-                            blockerType = BlockerType.SHADOW
+                            blockerType = BattleUnitTypeEnum.SHADOW
                         });
                     }
 
@@ -211,14 +212,14 @@ namespace system.battle.battalion
                             blocker = myId,
                             victim = closestId,
                             direction = Direction.LEFT,
-                            blockerType = BlockerType.BATTALION
+                            blockerType = BattleUnitTypeEnum.BATTALION
                         });
                         movementBlockingPairs.Add(new MovementBlockingPair
                         {
                             blocker = closestId,
                             victim = myId,
                             direction = Direction.RIGHT,
-                            blockerType = BlockerType.BATTALION
+                            blockerType = BattleUnitTypeEnum.BATTALION
                         });
                         continue;
                     }
@@ -247,14 +248,14 @@ namespace system.battle.battalion
                                 blocker = enemyId,
                                 victim = myId,
                                 direction = Direction.UP,
-                                blockerType = BlockerType.BATTALION
+                                blockerType = BattleUnitTypeEnum.BATTALION
                             });
                             movementBlockingPairs.Add(new MovementBlockingPair
                             {
                                 blocker = myId,
                                 victim = enemyId,
                                 direction = Direction.DOWN,
-                                blockerType = BlockerType.BATTALION
+                                blockerType = BattleUnitTypeEnum.BATTALION
                             });
                         }
 
@@ -289,14 +290,14 @@ namespace system.battle.battalion
                                 blocker = enemyId,
                                 victim = myId,
                                 direction = Direction.DOWN,
-                                blockerType = BlockerType.BATTALION
+                                blockerType = BattleUnitTypeEnum.BATTALION
                             });
                             movementBlockingPairs.Add(new MovementBlockingPair
                             {
                                 blocker = myId,
                                 victim = enemyId,
                                 direction = Direction.UP,
-                                blockerType = BlockerType.BATTALION
+                                blockerType = BattleUnitTypeEnum.BATTALION
                             });
                             break;
                         }
@@ -607,7 +608,7 @@ namespace system.battle.battalion
                         };
                     }
 
-                    movementDirection.direction = resultDirection;
+                    movementDirection.defaultDirection = resultDirection;
                     return;
                 }
 
@@ -622,11 +623,11 @@ namespace system.battle.battalion
                     };
                     if (!flankPossible)
                     {
-                        movementDirection.direction = battalionMovementDirections[battalionMarker.id];
+                        movementDirection.defaultDirection = battalionMovementDirections[battalionMarker.id];
                         return;
                     }
 
-                    movementDirection.direction = teamDirection.Item2;
+                    movementDirection.defaultDirection = teamDirection.Item2;
                 }
             }
 
