@@ -9,7 +9,6 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
-using UnityEngine;
 
 namespace system.battle.battalion.analysis
 {
@@ -57,7 +56,6 @@ namespace system.battle.battalion.analysis
             }
 
             createFollowers();
-            Debug.Log("blocker count: " + blockers.Count());
         }
 
         private void addBlocker((long, float3, Team, float, BattleUnitTypeEnum) right, (long, float3, Team, float, BattleUnitTypeEnum) left,

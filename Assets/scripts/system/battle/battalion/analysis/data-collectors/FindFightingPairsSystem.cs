@@ -8,6 +8,7 @@ using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace system.battle.battalion.analysis
 {
@@ -32,6 +33,11 @@ namespace system.battle.battalion.analysis
                 (long, float3, Team, float, BattleUnitTypeEnum)? leftUnitOptional = null;
                 foreach (var me in positions.GetValuesForKey(rowId))
                 {
+                    if (rowId != 0)
+                    {
+                        findDiagonalFightingPairs(me, rowId);
+                    }
+
                     //unit is the most left, there is noone to compare with
                     if (!leftUnitOptional.HasValue)
                     {
@@ -53,31 +59,31 @@ namespace system.battle.battalion.analysis
                     {
                         addFightingPair(me.Item1, leftUnit.Item1, BattalionFightType.NORMAL);
                     }
+                }
+            }
+        }
 
-                    if (rowId == 0)
-                    {
-                        continue;
-                    }
+        private void findDiagonalFightingPairs((long, float3, Team, float, BattleUnitTypeEnum) me, int rowId)
+        {
+            var positions = BattleUnitDataHolder.positions;
+            foreach (var bellow in positions.GetValuesForKey(rowId - 1))
+            {
+                var isTooFarDiagonal = BattleTransformUtils.isTooFar(me.Item2, bellow.Item2, me.Item4, bellow.Item4, 0.5f);
+                if (me.Item3 == bellow.Item3)
+                {
+                    continue;
+                }
 
-                    foreach (var bellow in positions.GetValuesForKey(rowId - 1))
-                    {
-                        var isTooFarDiagonal = BattleTransformUtils.isTooFar(me.Item2, bellow.Item2, me.Item4, bellow.Item4, 0.5f);
-                        if (me.Item3 == bellow.Item3)
-                        {
-                            continue;
-                        }
-
-                        if (!isTooFarDiagonal)
-                        {
-                            addFightingPair(me.Item1, bellow.Item1, BattalionFightType.VERTICAL);
-                        }
-                    }
+                if (!isTooFarDiagonal)
+                {
+                    addFightingPair(me.Item1, bellow.Item1, BattalionFightType.VERTICAL);
                 }
             }
         }
 
         private void addFightingPair(long battalionId1, long battalionId2, BattalionFightType fightType)
         {
+            Debug.Log("adding blocker");
             BattleUnitDataHolder.fightingPairs.Add((battalionId1, battalionId2, fightType));
             BattleUnitDataHolder.notMovingBattalions.Add(battalionId1);
             BattleUnitDataHolder.notMovingBattalions.Add(battalionId2);
