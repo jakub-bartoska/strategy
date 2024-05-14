@@ -69,6 +69,7 @@ namespace system.battle.battalion.analysis
             foreach (var bellow in positions.GetValuesForKey(rowId - 1))
             {
                 var isTooFarDiagonal = BattleTransformUtils.isTooFar(me.Item2, bellow.Item2, me.Item4, bellow.Item4, 0.5f);
+                //skip same team
                 if (me.Item3 == bellow.Item3)
                 {
                     continue;

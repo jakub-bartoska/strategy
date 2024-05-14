@@ -35,6 +35,11 @@ namespace system.battle.battalion.analysis
 
                 foreach (var me in positions.GetValuesForKey(rowId))
                 {
+                    if (rowId != 0)
+                    {
+                        findDiagonalBlockers(me, rowId, blockers);
+                    }
+
                     //unit is the most left, there is noone to compare with
                     if (!leftUnitOptional.HasValue)
                     {
@@ -58,6 +63,20 @@ namespace system.battle.battalion.analysis
             createFollowers();
         }
 
+        private void findDiagonalBlockers((long, float3, Team, float, BattleUnitTypeEnum) me, int rowId, NativeParallelMultiHashMap<long, (long, BattleUnitTypeEnum, Direction)> blockers)
+        {
+            var positions = BattleUnitDataHolder.positions;
+            foreach (var upper in positions.GetValuesForKey(rowId - 1))
+            {
+                var isTooFarDiagonal = BattleTransformUtils.isTooFar(me.Item2, upper.Item2, me.Item4, upper.Item4, 0.5f);
+
+                if (!isTooFarDiagonal)
+                {
+                    addBlockerVertical(me, upper, blockers);
+                }
+            }
+        }
+
         private void addBlocker((long, float3, Team, float, BattleUnitTypeEnum) right, (long, float3, Team, float, BattleUnitTypeEnum) left,
             NativeParallelMultiHashMap<long, (long, BattleUnitTypeEnum, Direction)> blockers)
         {
@@ -66,6 +85,16 @@ namespace system.battle.battalion.analysis
             //right to left
             blockers.Add(right.Item1, (left.Item1, left.Item5, Direction.LEFT));
         }
+
+        private void addBlockerVertical((long, float3, Team, float, BattleUnitTypeEnum) bottom, (long, float3, Team, float, BattleUnitTypeEnum) upper,
+            NativeParallelMultiHashMap<long, (long, BattleUnitTypeEnum, Direction)> blockers)
+        {
+            //upper to down
+            blockers.Add(upper.Item1, (bottom.Item1, bottom.Item5, Direction.DOWN));
+            //down to top
+            blockers.Add(bottom.Item1, (upper.Item1, upper.Item5, Direction.UP));
+        }
+
 
         private void createFollowers()
         {
