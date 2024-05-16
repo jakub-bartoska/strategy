@@ -11,7 +11,7 @@ namespace system.battle.battalion.analysis.data_holder
         /*
          * All alive battalionIds
          */
-        public static NativeList<int> allBattalionIds = new(1000, Allocator.Persistent);
+        public static NativeHashSet<long> allBattalionIds = new(1000, Allocator.Persistent);
 
         /*
          * contains ids of all rows (even empty ones)

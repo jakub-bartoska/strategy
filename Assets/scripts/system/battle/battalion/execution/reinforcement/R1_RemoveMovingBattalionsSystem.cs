@@ -5,6 +5,7 @@ using system.battle.battalion.analysis.data_holder;
 using system.battle.enums;
 using system.battle.system_groups;
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 
 namespace system.battle.battalion.execution.reinforcement
@@ -25,7 +26,11 @@ namespace system.battle.battalion.execution.reinforcement
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            new UpdateMovementDirectionJob()
+            var needReinforcements = DataHolder.needReinforcements;
+            new UpdateMovementDirectionJob
+                {
+                    needReinforcements = needReinforcements
+                }
                 .Schedule(state.Dependency)
                 .Complete();
         }
@@ -33,11 +38,13 @@ namespace system.battle.battalion.execution.reinforcement
         [BurstCompile]
         public partial struct UpdateMovementDirectionJob : IJobEntity
         {
+            public NativeParallelMultiHashMap<long, int> needReinforcements;
+
             private void Execute(BattalionMarker battalionMarker, MovementDirection movementDirection)
             {
                 if (movementDirection.currentDirection != Direction.NONE)
                 {
-                    DataHolder.needReinforcements.Remove(battalionMarker.id);
+                    needReinforcements.Remove(battalionMarker.id);
                 }
             }
         }
