@@ -25,9 +25,9 @@ namespace system.battle.battalion.analysis
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var positions = BattleUnitDataHolder.positions;
-            var blockers = BattleUnitDataHolder.blockers;
-            var allRows = BattleUnitDataHolder.allRowIds;
+            var positions = DataHolder.positions;
+            var blockers = DataHolder.blockers;
+            var allRows = DataHolder.allRowIds;
 
             foreach (var rowId in allRows)
             {
@@ -65,7 +65,7 @@ namespace system.battle.battalion.analysis
 
         private void findDiagonalBlockers((long, float3, Team, float, BattleUnitTypeEnum) me, int rowId, NativeParallelMultiHashMap<long, (long, BattleUnitTypeEnum, Direction)> blockers)
         {
-            var positions = BattleUnitDataHolder.positions;
+            var positions = DataHolder.positions;
             foreach (var upper in positions.GetValuesForKey(rowId - 1))
             {
                 var isTooFarDiagonal = BattleTransformUtils.isTooFar(me.Item2, upper.Item2, me.Item4, upper.Item4, 0.5f);
@@ -98,8 +98,8 @@ namespace system.battle.battalion.analysis
 
         private void createFollowers()
         {
-            var blockers = BattleUnitDataHolder.blockers;
-            var battalionFollowers = BattleUnitDataHolder.battalionFollowers;
+            var blockers = DataHolder.blockers;
+            var battalionFollowers = DataHolder.battalionFollowers;
 
             foreach (var blocked in blockers)
             {

@@ -6,8 +6,13 @@ using Unity.Mathematics;
 
 namespace system.battle.battalion.analysis.data_holder
 {
-    public class BattleUnitDataHolder
+    public class DataHolder
     {
+        /*
+         * All alive battalionIds
+         */
+        public static NativeList<int> allBattalionIds = new(1000, Allocator.Persistent);
+
         /*
          * contains ids of all rows (even empty ones)
          */
@@ -21,7 +26,7 @@ namespace system.battle.battalion.analysis.data_holder
         public static NativeParallelMultiHashMap<int, (long, float3, Team, float, BattleUnitTypeEnum)> positions = new(1000, Allocator.Persistent);
 
         /**
-         * battalionId - (blockerId, blockerType)
+         * blocked battalionId - (blockerId, blockerType)
          * keep in mind that battalion id = shadow id from this battalion. So When shadow is blocked, it is added as battalion
          */
         public static NativeParallelMultiHashMap<long, (long, BattleUnitTypeEnum, Direction)> blockers = new(1000, Allocator.Persistent);
@@ -50,5 +55,13 @@ namespace system.battle.battalion.analysis.data_holder
          * battalions which are not moving
          */
         public static NativeHashSet<long> notMovingBattalions = new(1000, Allocator.Persistent);
+
+        /**
+         * battalionId - missing soldier position within battalion
+         * If battalion with ID 99 has max 10 soldiers and has 2 death on positions 4 and 10, map will contain following records:
+         * 99 - 4
+         * 99 - 10
+         */
+        public static NativeParallelMultiHashMap<long, int> needReinforcements = new(1000, Allocator.Persistent);
     }
 }

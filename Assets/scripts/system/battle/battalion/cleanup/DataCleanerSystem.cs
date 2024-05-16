@@ -18,25 +18,31 @@ namespace system.battle.battalion.analysis
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var battleDataHolder = BattleUnitDataHolder.positions;
+            var battleDataHolder = DataHolder.positions;
             battleDataHolder.Clear();
 
-            var blockers = BattleUnitDataHolder.blockers;
+            var blockers = DataHolder.blockers;
             blockers.Clear();
 
-            var battalionDefaultMovementDirection = BattleUnitDataHolder.battalionDefaultMovementDirection;
+            var battalionDefaultMovementDirection = DataHolder.battalionDefaultMovementDirection;
             battalionDefaultMovementDirection.Clear();
 
-            var battalionFollowers = BattleUnitDataHolder.battalionFollowers;
+            var battalionFollowers = DataHolder.battalionFollowers;
             battalionFollowers.Clear();
 
-            var fightingPairs = BattleUnitDataHolder.fightingPairs;
+            var fightingPairs = DataHolder.fightingPairs;
             fightingPairs.Clear();
 
-            var notMovingBattalions = BattleUnitDataHolder.notMovingBattalions;
+            var notMovingBattalions = DataHolder.notMovingBattalions;
             notMovingBattalions.Clear();
 
-            var allRowIds = BattleUnitDataHolder.allRowIds;
+            var needReinforcements = DataHolder.needReinforcements;
+            needReinforcements.Clear();
+
+            var allBattalionIds = DataHolder.allBattalionIds;
+            allBattalionIds.Clear();
+
+            var allRowIds = DataHolder.allRowIds;
 
             if (allRowIds.IsEmpty)
             {

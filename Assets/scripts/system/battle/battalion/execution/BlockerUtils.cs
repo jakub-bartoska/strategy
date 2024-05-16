@@ -12,7 +12,7 @@ namespace system.battle.battalion.execution
         public static NativeList<long> unblockDirections(NativeList<(long, Direction)> toUnblock)
         {
             var result = new NativeList<long>(Allocator.TempJob);
-            var followers = BattleUnitDataHolder.battalionFollowers;
+            var followers = DataHolder.battalionFollowers;
             foreach (var battalionDirection in toUnblock)
             {
                 unblockFollowers(result, battalionDirection.Item1, battalionDirection.Item2);
@@ -23,7 +23,7 @@ namespace system.battle.battalion.execution
 
         private static void unblockFollowers(NativeList<long> result, long battalionId, Direction direction)
         {
-            var followers = BattleUnitDataHolder.battalionFollowers;
+            var followers = DataHolder.battalionFollowers;
             if (followers.ContainsKey(battalionId))
             {
                 foreach (var follower in followers.GetValuesForKey(battalionId))
@@ -44,7 +44,7 @@ namespace system.battle.battalion.execution
 
         private static bool isBlockedByAnotherBattalion(NativeList<long> result, long battalionId, Direction direction)
         {
-            foreach (var blocked in BattleUnitDataHolder.blockers.GetValuesForKey(battalionId))
+            foreach (var blocked in DataHolder.blockers.GetValuesForKey(battalionId))
             {
                 if (blocked.Item3 != direction)
                 {

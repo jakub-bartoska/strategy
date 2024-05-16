@@ -5,13 +5,16 @@ using system.battle.battalion.analysis.data_holder;
 using system.battle.enums;
 using system.battle.system_groups;
 using Unity.Burst;
-using Unity.Collections;
 using Unity.Entities;
 
-namespace system.battle.battalion.analysis
+namespace system.battle.battalion.execution.reinforcement
 {
-    [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
-    public partial struct BattalionDirectionSystem : ISystem
+    /**
+     * Moving battalions are not able to receive reinforcements
+     */
+    [UpdateInGroup(typeof(BattleExecutionSystemGroup))]
+    [UpdateAfter(typeof(BattalionBehaviorPickerSystem))]
+    public partial struct R1_RemoveMovingBattalionsSystem : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)
@@ -22,22 +25,20 @@ namespace system.battle.battalion.analysis
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var battalionDefaultMovementDirection = DataHolder.battalionDefaultMovementDirection;
-            new CollectBattalionDirections
-                {
-                    battalionDirections = battalionDefaultMovementDirection
-                }.Schedule(state.Dependency)
+            new UpdateMovementDirectionJob()
+                .Schedule(state.Dependency)
                 .Complete();
         }
 
         [BurstCompile]
-        public partial struct CollectBattalionDirections : IJobEntity
+        public partial struct UpdateMovementDirectionJob : IJobEntity
         {
-            public NativeHashMap<long, Direction> battalionDirections;
-
             private void Execute(BattalionMarker battalionMarker, MovementDirection movementDirection)
             {
-                battalionDirections.Add(battalionMarker.id, movementDirection.defaultDirection);
+                if (movementDirection.currentDirection != Direction.NONE)
+                {
+                    DataHolder.needReinforcements.Remove(battalionMarker.id);
+                }
             }
         }
     }

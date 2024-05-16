@@ -124,7 +124,6 @@ namespace system
             ecb.AddComponent(singletonEntity, battalionIdHolder);
             ecb.AddComponent(singletonEntity, new BattleSingletonEntityTag());
             ecb.AddComponent(singletonEntity, new BattleCleanupTag());
-            ecb.AddBuffer<PossibleReinforcements>(singletonEntity);
             ecb.AddBuffer<FightPair>(singletonEntity);
             ecb.AddBuffer<MovementBlockingPair>(singletonEntity);
             ecb.AddBuffer<SplitCandidate>(singletonEntity);

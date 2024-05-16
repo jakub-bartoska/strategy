@@ -20,17 +20,14 @@ namespace system.battle.battalion
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            return;
             var battalionIdsToMissingIndexes = new NativeParallelMultiHashMap<long, int>(3000, Allocator.TempJob);
-            new CollectBattalionsNeedingReinforcementsJob
-                {
-                    battalionIdsToMissingIndexes = battalionIdsToMissingIndexes.AsParallelWriter()
-                }.ScheduleParallel(state.Dependency)
-                .Complete();
 
-            if (battalionIdsToMissingIndexes.Count() == 0) return;
+            //sehnat not moving battalions -> nasetovat v movement systemu
 
-            var possibleReinforcements = SystemAPI.GetSingletonBuffer<PossibleReinforcements>();
+            //zjisti kdo muze komu pomoct (pomoci blocked batalions)
+            //updatovat soldiers na obou stranach
+
+            /*
             var reinforcements = new NativeParallelMultiHashMap<long, BattalionSoldiers>(3000, Allocator.TempJob);
 
             new SendReinforcementsJob
@@ -46,43 +43,16 @@ namespace system.battle.battalion
                     reinforcements = reinforcements
                 }.ScheduleParallel(state.Dependency)
                 .Complete();
+                */
         }
     }
-
-    [BurstCompile]
-    public partial struct CollectBattalionsNeedingReinforcementsJob : IJobEntity
-    {
-        public NativeParallelMultiHashMap<long, int>.ParallelWriter battalionIdsToMissingIndexes;
-
-        private void Execute(BattalionMarker battalionMarker, DynamicBuffer<BattalionSoldiers> soldiers)
-        {
-            if (soldiers.Length == 10) return;
-
-            for (var i = 0; i < 10; i++)
-            {
-                var exists = false;
-                foreach (var soldier in soldiers)
-                {
-                    if (soldier.positionWithinBattalion == i)
-                    {
-                        exists = true;
-                    }
-                }
-
-                if (!exists)
-                {
-                    battalionIdsToMissingIndexes.Add(battalionMarker.id, i);
-                }
-            }
-        }
-    }
+    /*
 
     [BurstCompile]
     public partial struct SendReinforcementsJob : IJobEntity
     {
         [ReadOnly] public NativeParallelMultiHashMap<long, int> battalionIdsToMissingSoldiersCount;
         public NativeParallelMultiHashMap<long, BattalionSoldiers>.ParallelWriter reinforcements;
-        [ReadOnly] public DynamicBuffer<PossibleReinforcements> possibleReinforcements;
 
         private void Execute(BattalionMarker battalionMarker, ref DynamicBuffer<BattalionSoldiers> soldiers, ref BattalionHealth health)
         {
@@ -118,7 +88,7 @@ namespace system.battle.battalion
             }
         }
 
-        private bool reinforcementsUpdated(NativeHashMap<int, (BattalionSoldiers, int)> soldiersMap, int index, DynamicBuffer<BattalionSoldiers> soldiers, PossibleReinforcements possibleReinforcement)
+        private bool reinforcementsUpdated(NativeHashMap<int, (BattalionSoldiers, int)> soldiersMap, int index, DynamicBuffer<BattalionSoldiers> soldiers)
         {
             if (soldiersMap.ContainsKey(index))
             {
@@ -157,4 +127,5 @@ namespace system.battle.battalion
             health.value += healthIncrease;
         }
     }
+    */
 }

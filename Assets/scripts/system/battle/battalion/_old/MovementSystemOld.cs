@@ -31,6 +31,7 @@ namespace system.battle.battalion
         public void OnUpdate(ref SystemState state)
         {
             return;
+            /*
             var speed = SystemAPI.GetSingleton<DebugConfig>().speed;
 
             var fightPairs = SystemAPI.GetSingletonBuffer<FightPair>();
@@ -140,6 +141,7 @@ namespace system.battle.battalion
                     speed = speed
                 }.Schedule(state.Dependency)
                 .Complete();
+                */
         }
 
         private void fillExactPositionForFightingPair(
@@ -181,7 +183,6 @@ namespace system.battle.battalion
             Direction direction,
             NativeParallelMultiHashMap<long, (long, Direction)> movementBlockersMap,
             NativeParallelMultiHashMap<long, Direction> unableToMoveBattalions,
-            DynamicBuffer<PossibleReinforcements> possibleReinforcements,
             NativeHashMap<long, (MovementDirection, float3, BattalionWidth)> battalionInfo,
             NativeHashMap<long, float3> exactPositionTarget)
         {
@@ -194,12 +195,6 @@ namespace system.battle.battalion
 
                 if (blockedBattalion.Item2 != direction) continue;
 
-                possibleReinforcements.Add(new PossibleReinforcements
-                {
-                    needHelpBattalionId = blockedBattalionId,
-                    canHelpBattalionId = blockedBattalion.Item1
-                });
-
                 var exactPosition = CustomTransformUtils.calculateDesiredPosition(
                     battalionInfo[blockedBattalionId].Item2,
                     battalionInfo[blockedBattalion.Item1].Item3,
@@ -209,11 +204,11 @@ namespace system.battle.battalion
                 exactPositionTarget.TryAdd(blockedBattalion.Item1, exactPosition);
                 if (direction == Direction.UP || direction == Direction.DOWN)
                 {
-                    fillBlockedMovement(blockedBattalion.Item1, Direction.LEFT, movementBlockersMap, unableToMoveBattalions, possibleReinforcements, battalionInfo, exactPositionTarget);
-                    fillBlockedMovement(blockedBattalion.Item1, Direction.RIGHT, movementBlockersMap, unableToMoveBattalions, possibleReinforcements, battalionInfo, exactPositionTarget);
+                    fillBlockedMovement(blockedBattalion.Item1, Direction.LEFT, movementBlockersMap, unableToMoveBattalions, battalionInfo, exactPositionTarget);
+                    fillBlockedMovement(blockedBattalion.Item1, Direction.RIGHT, movementBlockersMap, unableToMoveBattalions, battalionInfo, exactPositionTarget);
                 }
 
-                fillBlockedMovement(blockedBattalion.Item1, blockedBattalion.Item2, movementBlockersMap, unableToMoveBattalions, possibleReinforcements, battalionInfo, exactPositionTarget);
+                fillBlockedMovement(blockedBattalion.Item1, blockedBattalion.Item2, movementBlockersMap, unableToMoveBattalions, battalionInfo, exactPositionTarget);
             }
         }
 

@@ -46,7 +46,7 @@ namespace system.battle.battalion
             //can contain multiple dmg since 1 battalion could be attacked by multiple enemies
             var dmgReceived = new NativeParallelMultiHashMap<long, float>(1000, Allocator.TempJob);
 
-            foreach (var fightingPair in BattleUnitDataHolder.fightingPairs)
+            foreach (var fightingPair in DataHolder.fightingPairs)
             {
                 // battalion1 damages battalion2
                 var dmgToReceive = fightingPair.Item3 switch

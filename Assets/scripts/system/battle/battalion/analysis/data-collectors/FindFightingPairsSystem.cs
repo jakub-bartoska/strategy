@@ -25,8 +25,8 @@ namespace system.battle.battalion.analysis
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var positions = BattleUnitDataHolder.positions;
-            var allRows = BattleUnitDataHolder.allRowIds;
+            var positions = DataHolder.positions;
+            var allRows = DataHolder.allRowIds;
 
             foreach (var rowId in allRows)
             {
@@ -65,7 +65,7 @@ namespace system.battle.battalion.analysis
 
         private void findDiagonalFightingPairs((long, float3, Team, float, BattleUnitTypeEnum) me, int rowId)
         {
-            var positions = BattleUnitDataHolder.positions;
+            var positions = DataHolder.positions;
             foreach (var bellow in positions.GetValuesForKey(rowId - 1))
             {
                 var isTooFarDiagonal = BattleTransformUtils.isTooFar(me.Item2, bellow.Item2, me.Item4, bellow.Item4, 0.5f);
@@ -85,9 +85,9 @@ namespace system.battle.battalion.analysis
         private void addFightingPair(long battalionId1, long battalionId2, BattalionFightType fightType)
         {
             Debug.Log("adding blocker");
-            BattleUnitDataHolder.fightingPairs.Add((battalionId1, battalionId2, fightType));
-            BattleUnitDataHolder.notMovingBattalions.Add(battalionId1);
-            BattleUnitDataHolder.notMovingBattalions.Add(battalionId2);
+            DataHolder.fightingPairs.Add((battalionId1, battalionId2, fightType));
+            DataHolder.notMovingBattalions.Add(battalionId1);
+            DataHolder.notMovingBattalions.Add(battalionId2);
         }
     }
 }

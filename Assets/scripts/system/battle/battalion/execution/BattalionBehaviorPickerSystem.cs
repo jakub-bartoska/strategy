@@ -23,12 +23,13 @@ namespace system.battle.battalion.execution
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var blockers = BattleUnitDataHolder.blockers;
-            var battalionDefaultMovementDirection = BattleUnitDataHolder.battalionDefaultMovementDirection;
+            var blockers = DataHolder.blockers;
+            var battalionDefaultMovementDirection = DataHolder.battalionDefaultMovementDirection;
 
+            //battalionID -> direction to move
             var battalionsAbleToMove = new NativeList<(long, Direction)>(1000, Allocator.TempJob);
-            var notMovingBattalions = BattleUnitDataHolder.notMovingBattalions;
-            var allBattalionIds = battalionDefaultMovementDirection.GetKeyArray(Allocator.TempJob);
+            var notMovingBattalions = DataHolder.notMovingBattalions;
+            var allBattalionIds = DataHolder.allBattalionIds;
 
             foreach (var battalionId in allBattalionIds)
             {

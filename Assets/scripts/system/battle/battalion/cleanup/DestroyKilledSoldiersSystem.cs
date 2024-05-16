@@ -6,7 +6,7 @@ using Unity.Entities;
 
 namespace system.battle.battalion
 {
-    [UpdateInGroup(typeof(BattleSetResultsSystemGroup))]
+    [UpdateInGroup(typeof(BattleCleanupSystemGroup))]
     public partial struct DestroyKilledSoldiersSystem : ISystem
     {
         [BurstCompile]

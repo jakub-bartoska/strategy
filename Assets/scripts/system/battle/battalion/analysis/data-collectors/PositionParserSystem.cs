@@ -27,7 +27,7 @@ namespace system.battle.battalion.analysis
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var positions = BattleUnitDataHolder.positions;
+            var positions = DataHolder.positions;
 
             var tmpUnsortedData = new NativeParallelMultiHashMap<int, (long, float3, Team, float, BattleUnitTypeEnum)>(1000, Allocator.TempJob);
             new CollectBattleUnitPositionsJob
@@ -37,7 +37,7 @@ namespace system.battle.battalion.analysis
                 .Complete();
 
             var sorter = new SortByPosition();
-            var allRows = BattleUnitDataHolder.allRowIds;
+            var allRows = DataHolder.allRowIds;
 
             foreach (var row in allRows)
             {
