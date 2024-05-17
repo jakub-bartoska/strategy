@@ -14,7 +14,7 @@ namespace system.battle.battalion.execution.reinforcement
      * Moving battalions are not able to receive reinforcements
      */
     [UpdateInGroup(typeof(BattleExecutionSystemGroup))]
-    [UpdateAfter(typeof(BattalionBehaviorPickerSystem))]
+    [UpdateAfter(typeof(M2_MoveNotBlockedBattalions))]
     public partial struct R1_RemoveMovingBattalionsSystem : ISystem
     {
         [BurstCompile]

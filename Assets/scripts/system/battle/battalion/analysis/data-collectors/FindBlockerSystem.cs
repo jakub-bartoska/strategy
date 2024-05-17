@@ -63,7 +63,7 @@ namespace system.battle.battalion.analysis
             createFollowers();
         }
 
-        private void findDiagonalBlockers((long, float3, Team, float, BattleUnitTypeEnum) me, int rowId, NativeParallelMultiHashMap<long, (long, BattleUnitTypeEnum, Direction)> blockers)
+        private void findDiagonalBlockers((long, float3, Team, float, BattleUnitTypeEnum) me, int rowId, NativeParallelMultiHashMap<long, (long, BattleUnitTypeEnum, Direction, Team)> blockers)
         {
             var positions = DataHolder.positions;
             foreach (var upper in positions.GetValuesForKey(rowId - 1))
@@ -78,21 +78,21 @@ namespace system.battle.battalion.analysis
         }
 
         private void addBlocker((long, float3, Team, float, BattleUnitTypeEnum) right, (long, float3, Team, float, BattleUnitTypeEnum) left,
-            NativeParallelMultiHashMap<long, (long, BattleUnitTypeEnum, Direction)> blockers)
+            NativeParallelMultiHashMap<long, (long, BattleUnitTypeEnum, Direction, Team)> blockers)
         {
             //left to right
-            blockers.Add(left.Item1, (right.Item1, right.Item5, Direction.RIGHT));
+            blockers.Add(left.Item1, (right.Item1, right.Item5, Direction.RIGHT, right.Item3));
             //right to left
-            blockers.Add(right.Item1, (left.Item1, left.Item5, Direction.LEFT));
+            blockers.Add(right.Item1, (left.Item1, left.Item5, Direction.LEFT, left.Item3));
         }
 
         private void addBlockerVertical((long, float3, Team, float, BattleUnitTypeEnum) bottom, (long, float3, Team, float, BattleUnitTypeEnum) upper,
-            NativeParallelMultiHashMap<long, (long, BattleUnitTypeEnum, Direction)> blockers)
+            NativeParallelMultiHashMap<long, (long, BattleUnitTypeEnum, Direction, Team)> blockers)
         {
             //upper to down
-            blockers.Add(upper.Item1, (bottom.Item1, bottom.Item5, Direction.DOWN));
+            blockers.Add(upper.Item1, (bottom.Item1, bottom.Item5, Direction.DOWN, bottom.Item3));
             //down to top
-            blockers.Add(bottom.Item1, (upper.Item1, upper.Item5, Direction.UP));
+            blockers.Add(bottom.Item1, (upper.Item1, upper.Item5, Direction.UP, upper.Item3));
         }
 
 

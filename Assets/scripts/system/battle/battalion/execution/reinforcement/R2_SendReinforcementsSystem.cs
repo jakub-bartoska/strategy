@@ -1,4 +1,5 @@
-﻿using component._common.system_switchers;
+﻿using component;
+using component._common.system_switchers;
 using component.battle.battalion;
 using component.battle.battalion.markers;
 using system.battle.battalion.analysis.data_holder;
@@ -7,7 +8,6 @@ using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using UnityEngine;
 
 namespace system.battle.battalion.execution.reinforcement
 {
@@ -26,7 +26,7 @@ namespace system.battle.battalion.execution.reinforcement
         {
             var blockers = DataHolder.blockers;
             var needReinforcements = DataHolder.needReinforcements;
-            var reinforcements = new NativeParallelMultiHashMap<long, BattalionSoldiers>(1000, Allocator.TempJob);
+            var reinforcements = DataHolder.reinforcements;
 
             new UpdateMovementDirectionJob
                 {
@@ -35,24 +35,20 @@ namespace system.battle.battalion.execution.reinforcement
                     reinforcements = reinforcements
                 }.Schedule(state.Dependency)
                 .Complete();
-
-            if (reinforcements.GetKeyArray(Allocator.Temp).Length > 0)
-            {
-                Debug.Log("posilam posily kundo!");
-            }
         }
 
         [BurstCompile]
         public partial struct UpdateMovementDirectionJob : IJobEntity
         {
             public NativeParallelMultiHashMap<long, int> needReinforcements;
-            public NativeParallelMultiHashMap<long, (long, BattleUnitTypeEnum, Direction)> blockers;
+            public NativeParallelMultiHashMap<long, (long, BattleUnitTypeEnum, Direction, Team)> blockers;
             public NativeParallelMultiHashMap<long, BattalionSoldiers> reinforcements;
 
-            private void Execute(BattalionMarker battalionMarker, MovementDirection movementDirection, ref DynamicBuffer<BattalionSoldiers> soldiers, ref BattalionHealth health)
+            private void Execute(BattalionMarker battalionMarker, MovementDirection movementDirection, BattalionTeam team, ref DynamicBuffer<BattalionSoldiers> soldiers,
+                ref BattalionHealth health)
             {
                 //only not moving battalions can send reinforcements
-                if (movementDirection.currentDirection == Direction.NONE)
+                if (movementDirection.currentDirection != Direction.NONE)
                 {
                     return;
                 }
@@ -60,6 +56,12 @@ namespace system.battle.battalion.execution.reinforcement
                 //follower format: blockerId, shadow/battalion ,direction
                 foreach (var blocker in blockers.GetValuesForKey(battalionMarker.id))
                 {
+                    //can reinforce only same team
+                    if (team.value != blocker.Item4)
+                    {
+                        continue;
+                    }
+
                     //cannot reinforce shadow
                     if (blocker.Item2 == BattleUnitTypeEnum.SHADOW)
                     {
@@ -67,7 +69,7 @@ namespace system.battle.battalion.execution.reinforcement
                     }
 
                     //can reinforce only in my default direction of move
-                    if (blocker.Item3 != movementDirection.defaultDirection)
+                    if (blocker.Item3 != movementDirection.plannedDirection)
                     {
                         continue;
                     }

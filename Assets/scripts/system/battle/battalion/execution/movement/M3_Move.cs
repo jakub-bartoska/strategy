@@ -3,6 +3,7 @@ using component._common.system_switchers;
 using component.battle.battalion;
 using component.battle.battalion.markers;
 using component.battle.config;
+using system.battle.battalion.execution;
 using system.battle.enums;
 using system.battle.system_groups;
 using Unity.Burst;
@@ -13,7 +14,8 @@ using Unity.Transforms;
 namespace system.battle.battalion
 {
     [UpdateInGroup(typeof(BattleExecutionSystemGroup))]
-    public partial struct MovementSystem : ISystem
+    [UpdateAfter(typeof(M2_MoveNotBlockedBattalions))]
+    public partial struct M3_Move : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)

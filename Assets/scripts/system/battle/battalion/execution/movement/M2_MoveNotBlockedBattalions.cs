@@ -2,6 +2,7 @@
 using component.battle.battalion;
 using component.battle.battalion.markers;
 using system.battle.battalion.analysis.data_holder;
+using system.battle.battalion.execution.movement;
 using system.battle.enums;
 using system.battle.system_groups;
 using Unity.Burst;
@@ -11,8 +12,8 @@ using Unity.Entities;
 namespace system.battle.battalion.execution
 {
     [UpdateInGroup(typeof(BattleExecutionSystemGroup))]
-    [UpdateAfter(typeof(FightSystem))]
-    public partial struct BattalionBehaviorPickerSystem : ISystem
+    [UpdateAfter(typeof(M1_SetFlanks))]
+    public partial struct M2_MoveNotBlockedBattalions : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)
@@ -77,7 +78,7 @@ namespace system.battle.battalion.execution
             {
                 if (ableToMoveInDefaultDirection.Contains(battalionMarker.id))
                 {
-                    movementDirection.currentDirection = movementDirection.defaultDirection;
+                    movementDirection.currentDirection = movementDirection.plannedDirection;
                 }
                 else
                 {

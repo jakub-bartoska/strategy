@@ -29,7 +29,7 @@ namespace system.battle.battalion.analysis.data_holder
          * blocked battalionId - (blockerId, blockerType)
          * keep in mind that battalion id = shadow id from this battalion. So When shadow is blocked, it is added as battalion
          */
-        public static NativeParallelMultiHashMap<long, (long, BattleUnitTypeEnum, Direction)> blockers = new(1000, Allocator.Persistent);
+        public static NativeParallelMultiHashMap<long, (long, BattleUnitTypeEnum, Direction, Team)> blockers = new(1000, Allocator.Persistent);
 
         /**
          * blocker battalion id - (battalion which is blocked, direction)
@@ -63,5 +63,26 @@ namespace system.battle.battalion.analysis.data_holder
          * 99 - 10
          */
         public static NativeParallelMultiHashMap<long, int> needReinforcements = new(1000, Allocator.Persistent);
+
+        /**
+         * battalion which should add reinforcements - reinforcement soldier
+         * 1 battalion can receive multiple reinforcements
+         */
+        public static NativeParallelMultiHashMap<long, BattalionSoldiers> reinforcements = new(1000, Allocator.Persistent);
+
+        /**
+         * rowId - (team1FlankPosition, team2FlankPosition)
+         * flank position for team1 = when team1 is on right side of this position, it should go left instead of right
+         * flank position for team2 = when team2 is on left side of this position, it should go right instead of left
+         *
+         * positions are null in case that row contains only other team units
+         */
+        public static NativeHashMap<int, (float3?, float3?)> flankPositions = new(10, Allocator.Persistent);
+
+        /**
+         * battalion id
+         * Battalion ids which are flanking
+         */
+        public static NativeHashSet<long> flankingBattalions = new(1000, Allocator.Persistent);
     }
 }

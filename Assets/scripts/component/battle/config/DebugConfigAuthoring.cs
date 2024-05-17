@@ -13,7 +13,7 @@ namespace component.battle.config
         [SerializeField] private Toggle doDamageToggle;
         private bool doDamage = true;
 
-        private float speed = 1f;
+        private float speed = 10f;
 
         private void Awake()
         {
@@ -29,7 +29,7 @@ namespace component.battle.config
             {
                 doDamage = doDamage,
                 speed = speed,
-                dmgPerSecond = 10f
+                dmgPerSecond = 1f
             };
         }
     }

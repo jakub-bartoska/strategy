@@ -37,7 +37,7 @@ namespace system.battle.battalion.analysis
 
             private void Execute(BattalionMarker battalionMarker, MovementDirection movementDirection)
             {
-                battalionDirections.Add(battalionMarker.id, movementDirection.defaultDirection);
+                battalionDirections.Add(battalionMarker.id, movementDirection.plannedDirection);
             }
         }
     }

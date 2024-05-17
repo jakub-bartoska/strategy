@@ -8,7 +8,6 @@ using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
-using UnityEngine;
 
 namespace system.battle.battalion.analysis
 {
@@ -84,7 +83,6 @@ namespace system.battle.battalion.analysis
 
         private void addFightingPair(long battalionId1, long battalionId2, BattalionFightType fightType)
         {
-            Debug.Log("adding blocker");
             DataHolder.fightingPairs.Add((battalionId1, battalionId2, fightType));
             DataHolder.notMovingBattalions.Add(battalionId1);
             DataHolder.notMovingBattalions.Add(battalionId2);

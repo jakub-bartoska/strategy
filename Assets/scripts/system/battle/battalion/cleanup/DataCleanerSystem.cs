@@ -42,6 +42,15 @@ namespace system.battle.battalion.analysis
             var allBattalionIds = DataHolder.allBattalionIds;
             allBattalionIds.Clear();
 
+            var reinforcements = DataHolder.reinforcements;
+            reinforcements.Clear();
+
+            var flankPositions = DataHolder.flankPositions;
+            flankPositions.Clear();
+
+            var flankingBattalions = DataHolder.flankingBattalions;
+            flankingBattalions.Clear();
+
             var allRowIds = DataHolder.allRowIds;
 
             if (allRowIds.IsEmpty)
