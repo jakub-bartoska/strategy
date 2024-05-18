@@ -18,38 +18,19 @@ namespace system.battle.battalion.analysis
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var battleDataHolder = DataHolder.positions;
-            battleDataHolder.Clear();
-
-            var blockers = DataHolder.blockers;
-            blockers.Clear();
-
-            var battalionDefaultMovementDirection = DataHolder.battalionDefaultMovementDirection;
-            battalionDefaultMovementDirection.Clear();
-
-            var battalionFollowers = DataHolder.battalionFollowers;
-            battalionFollowers.Clear();
-
-            var fightingPairs = DataHolder.fightingPairs;
-            fightingPairs.Clear();
-
-            var notMovingBattalions = DataHolder.notMovingBattalions;
-            notMovingBattalions.Clear();
-
-            var needReinforcements = DataHolder.needReinforcements;
-            needReinforcements.Clear();
-
-            var allBattalionIds = DataHolder.allBattalionIds;
-            allBattalionIds.Clear();
-
-            var reinforcements = DataHolder.reinforcements;
-            reinforcements.Clear();
-
-            var flankPositions = DataHolder.flankPositions;
-            flankPositions.Clear();
-
-            var flankingBattalions = DataHolder.flankingBattalions;
-            flankingBattalions.Clear();
+            DataHolder.positions.Clear();
+            DataHolder.blockers.Clear();
+            DataHolder.battalionDefaultMovementDirection.Clear();
+            DataHolder.battalionFollowers.Clear();
+            DataHolder.fightingPairs.Clear();
+            DataHolder.notMovingBattalions.Clear();
+            DataHolder.needReinforcements.Clear();
+            DataHolder.allBattalionIds.Clear();
+            DataHolder.reinforcements.Clear();
+            DataHolder.flankPositions.Clear();
+            DataHolder.flankingBattalions.Clear();
+            DataHolder.rowChanges.Clear();
+            DataHolder.battalionSwitchRowDirections.Clear();
 
             var allRowIds = DataHolder.allRowIds;
 

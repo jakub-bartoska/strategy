@@ -84,5 +84,19 @@ namespace system.battle.battalion.analysis.data_holder
          * Battalion ids which are flanking
          */
         public static NativeHashSet<long> flankingBattalions = new(1000, Allocator.Persistent);
+
+        /**
+         * rowId - (team1 row change direction - closest enemy row, team2 row change direction - closest enemy row)
+         *  - if Team 2 has any unit in row 3, value for team1 direction will be NONE - 3
+         *  - if them 2 has 0 units in row 3, 1 in row 5 and 1 in row 2, direction for team 1 for row 3 will be up-3 since it is the most close enemy row
+         */
+        public static NativeHashMap<int, ((Direction, int), (Direction, int))> rowChanges = new(10, Allocator.Persistent);
+
+        /**
+         * battalionId - direction in which battalion should switch row
+         * does not contain all battalions, jsut battalions which should switch row
+         * can contain only directions up or down
+         */
+        public static NativeHashMap<long, Direction> battalionSwitchRowDirections = new(1000, Allocator.Persistent);
     }
 }
