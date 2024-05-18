@@ -28,7 +28,7 @@ namespace system.battle.battalion.execution.reinforcement
             var needReinforcements = DataHolder.needReinforcements;
             var reinforcements = DataHolder.reinforcements;
 
-            new UpdateMovementDirectionJob
+            new UpdateReinforcementsJob
                 {
                     needReinforcements = needReinforcements,
                     blockers = blockers,
@@ -38,7 +38,7 @@ namespace system.battle.battalion.execution.reinforcement
         }
 
         [BurstCompile]
-        public partial struct UpdateMovementDirectionJob : IJobEntity
+        public partial struct UpdateReinforcementsJob : IJobEntity
         {
             public NativeParallelMultiHashMap<long, int> needReinforcements;
             public NativeParallelMultiHashMap<long, (long, BattleUnitTypeEnum, Direction, Team)> blockers;

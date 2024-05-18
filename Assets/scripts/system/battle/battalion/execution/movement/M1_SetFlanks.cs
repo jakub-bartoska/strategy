@@ -2,6 +2,7 @@
 using component.battle.battalion;
 using component.battle.battalion.markers;
 using system.battle.battalion.analysis.data_holder;
+using system.battle.battalion.row_change;
 using system.battle.enums;
 using system.battle.system_groups;
 using Unity.Burst;
@@ -11,7 +12,7 @@ using Unity.Entities;
 namespace system.battle.battalion.execution.movement
 {
     [UpdateInGroup(typeof(BattleExecutionSystemGroup))]
-    [UpdateAfter(typeof(FightSystem))]
+    [UpdateAfter(typeof(RC3_MoveBetweenRows))]
     public partial struct M1_SetFlanks : ISystem
     {
         [BurstCompile]

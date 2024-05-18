@@ -3,6 +3,7 @@ using component.battle.battalion;
 using component.battle.battalion.markers;
 using system.battle.battalion.analysis.data_holder;
 using system.battle.enums;
+using system.battle.soldiers;
 using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Collections;
@@ -14,7 +15,7 @@ namespace system.battle.battalion.execution.reinforcement
      * Moving battalions are not able to receive reinforcements
      */
     [UpdateInGroup(typeof(BattleExecutionSystemGroup))]
-    [UpdateAfter(typeof(M2_MoveNotBlockedBattalions))]
+    [UpdateAfter(typeof(M4_SoldiersFollowBattalionSystem))]
     public partial struct R1_RemoveMovingBattalionsSystem : ISystem
     {
         [BurstCompile]

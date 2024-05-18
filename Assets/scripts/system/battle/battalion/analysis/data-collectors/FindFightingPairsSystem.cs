@@ -84,8 +84,8 @@ namespace system.battle.battalion.analysis
         private void addFightingPair(long battalionId1, long battalionId2, BattalionFightType fightType)
         {
             DataHolder.fightingPairs.Add((battalionId1, battalionId2, fightType));
-            DataHolder.notMovingBattalions.Add(battalionId1);
-            DataHolder.notMovingBattalions.Add(battalionId2);
+            DataHolder.battalionsPerformingAction.Add(battalionId1);
+            DataHolder.battalionsPerformingAction.Add(battalionId2);
         }
     }
 }

@@ -54,7 +54,7 @@ namespace system.battle.battalion.analysis.data_holder
          * battalionId
          * battalions which are not moving
          */
-        public static NativeHashSet<long> notMovingBattalions = new(1000, Allocator.Persistent);
+        public static NativeHashSet<long> battalionsPerformingAction = new(1000, Allocator.Persistent);
 
         /**
          * battalionId - missing soldier position within battalion

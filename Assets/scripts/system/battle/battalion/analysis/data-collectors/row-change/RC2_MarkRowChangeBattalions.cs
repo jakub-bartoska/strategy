@@ -6,7 +6,6 @@ using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
-using UnityEngine;
 
 namespace system.battle.battalion.analysis.row_change
 {
@@ -56,8 +55,6 @@ namespace system.battle.battalion.analysis.row_change
                     }
                 }
             }
-
-            Debug.Log(result.Count);
         }
 
         private float3? getFlankingPositionForRow(int targetRow, Team team)

@@ -23,7 +23,7 @@ namespace system.battle.battalion.analysis
             DataHolder.battalionDefaultMovementDirection.Clear();
             DataHolder.battalionFollowers.Clear();
             DataHolder.fightingPairs.Clear();
-            DataHolder.notMovingBattalions.Clear();
+            DataHolder.battalionsPerformingAction.Clear();
             DataHolder.needReinforcements.Clear();
             DataHolder.allBattalionIds.Clear();
             DataHolder.reinforcements.Clear();

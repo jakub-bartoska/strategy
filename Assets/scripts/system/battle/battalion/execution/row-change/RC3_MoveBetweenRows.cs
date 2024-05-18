@@ -4,54 +4,52 @@ using component.battle.battalion;
 using component.battle.battalion.markers;
 using component.battle.config;
 using system.battle.battalion.analysis.data_holder;
-using system.battle.battalion.execution;
 using system.battle.enums;
 using system.battle.system_groups;
+using system.battle.utils;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-namespace system.battle.battalion
+namespace system.battle.battalion.row_change
 {
     [UpdateInGroup(typeof(BattleExecutionSystemGroup))]
-    [UpdateAfter(typeof(M2_MoveNotBlockedBattalions))]
-    public partial struct M3_Move : ISystem
+    [UpdateAfter(typeof(RC2_FinishRowChange))]
+    public partial struct RC3_MoveBetweenRows : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
-            state.RequireForUpdate<DebugConfig>();
-            state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
             state.RequireForUpdate<BattleMapStateMarker>();
-            state.RequireForUpdate<BattalionMarker>();
+            state.RequireForUpdate<DebugConfig>();
         }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             var deltaTime = SystemAPI.Time.DeltaTime;
-            var debugConfig = SystemAPI.GetSingleton<DebugConfig>();
+            var speed = SystemAPI.GetSingleton<DebugConfig>().speed;
             var battalionsPerformingAction = DataHolder.battalionsPerformingAction;
 
-            new MoveBattalionJob
+            new MoveToNewLineJob
                 {
-                    debugConfig = debugConfig,
                     deltaTime = deltaTime,
+                    speed = speed,
                     battalionsPerformingAction = battalionsPerformingAction
                 }.Schedule(state.Dependency)
                 .Complete();
         }
 
         [BurstCompile]
-        public partial struct MoveBattalionJob : IJobEntity
+        public partial struct MoveToNewLineJob : IJobEntity
         {
-            public DebugConfig debugConfig;
-            public float deltaTime;
+            [ReadOnly] public float deltaTime;
+            [ReadOnly] public float speed;
             public NativeHashSet<long> battalionsPerformingAction;
 
-            private void Execute(BattalionMarker battalionMarker, ref LocalTransform transform, MovementDirection movementDirection)
+            private void Execute(BattalionMarker battalionMarker, ChangeRow changeRow, ref LocalTransform localTransform, Row row)
             {
                 if (battalionsPerformingAction.Contains(battalionMarker.id))
                 {
@@ -60,19 +58,22 @@ namespace system.battle.battalion
 
                 battalionsPerformingAction.Add(battalionMarker.id);
 
-                var finalSpeed = debugConfig.speed * deltaTime;
-                var directionCoefficient = movementDirection.currentDirection switch
+                var targetZ = CustomTransformUtils.getBattalionZPosition(row.value);
+                var travelDistance = deltaTime * speed * 0.5f;
+                var distanceToTarget = math.abs(localTransform.Position.z - targetZ);
+                if (distanceToTarget <= travelDistance)
                 {
-                    Direction.LEFT => -1,
-                    Direction.RIGHT => 1,
-                    Direction.NONE => 0,
-                    Direction.UP => 0,
-                    Direction.DOWN => 0,
-                    _ => throw new Exception("Unknown direction")
-                };
+                    localTransform.Position.z = targetZ;
+                    return;
+                }
 
-                var delta = new float3(directionCoefficient * finalSpeed, 0, 0);
-                transform.Position += delta;
+                var resultZ = changeRow.direction switch
+                {
+                    Direction.UP => localTransform.Position.z + travelDistance,
+                    Direction.DOWN => localTransform.Position.z - travelDistance,
+                    _ => throw new NotImplementedException()
+                };
+                localTransform.Position.z = resultZ;
             }
         }
     }

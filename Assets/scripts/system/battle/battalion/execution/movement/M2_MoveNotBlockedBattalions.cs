@@ -29,12 +29,12 @@ namespace system.battle.battalion.execution
 
             //battalionID -> direction to move
             var battalionsAbleToMove = new NativeList<(long, Direction)>(1000, Allocator.TempJob);
-            var notMovingBattalions = DataHolder.notMovingBattalions;
+            var battalionsPerformingAction = DataHolder.battalionsPerformingAction;
             var allBattalionIds = DataHolder.allBattalionIds;
 
             foreach (var battalionId in allBattalionIds)
             {
-                if (notMovingBattalions.Contains(battalionId))
+                if (battalionsPerformingAction.Contains(battalionId))
                 {
                     continue;
                 }
