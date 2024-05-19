@@ -46,7 +46,8 @@ namespace system.battle.battalion.analysis.row_change
 
                     if (battalionInfo.Item3 == Team.TEAM1)
                     {
-                        if (battalionInfo.Item2.x + battalionInfo.Item4 < team1Position.Value.x)
+                        //battalion position + battalion width < flank position
+                        if (battalionInfo.Item2.x + battalionInfo.Item4 * 1.1f < team1Position.Value.x)
                         {
                             result.Add(battalionInfo.Item1, team1Direction);
                         }
@@ -54,7 +55,8 @@ namespace system.battle.battalion.analysis.row_change
 
                     if (battalionInfo.Item3 == Team.TEAM2)
                     {
-                        if (battalionInfo.Item2.x - battalionInfo.Item4 > team2Position.Value.x)
+                        //battalion position - battalion width > flank position
+                        if (battalionInfo.Item2.x - battalionInfo.Item4 * 1.1f > team2Position.Value.x)
                         {
                             result.Add(battalionInfo.Item1, team2Direction);
                         }
