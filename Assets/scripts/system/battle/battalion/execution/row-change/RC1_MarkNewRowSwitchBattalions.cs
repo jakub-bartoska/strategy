@@ -1,13 +1,16 @@
 ﻿using System;
 using component._common.system_switchers;
+using component.authoring_pairs.PrefabHolder;
 using component.battle.battalion;
 using component.battle.battalion.markers;
 using system.battle.battalion.analysis.data_holder;
 using system.battle.enums;
 using system.battle.system_groups;
+using system.battle.utils;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Transforms;
 
 namespace system.battle.battalion.row_change
 {
@@ -28,13 +31,15 @@ namespace system.battle.battalion.row_change
                 .CreateCommandBuffer(state.WorldUnmanaged);
             var battalionSwitchRowDirections = DataHolder.battalionSwitchRowDirections;
             var battalionsPerformingAction = DataHolder.battalionsPerformingAction;
+            var prefabHolder = SystemAPI.GetSingleton<PrefabHolder>();
 
             //todo filter out not moving battalions
             new MarkRowSwitchJob
                 {
                     battalionSwitchRowDirections = battalionSwitchRowDirections,
                     ecb = ecb,
-                    battalionsPerformingAction = battalionsPerformingAction
+                    battalionsPerformingAction = battalionsPerformingAction,
+                    prefabHolder = prefabHolder
                 }.Schedule(state.Dependency)
                 .Complete();
         }
@@ -46,8 +51,9 @@ namespace system.battle.battalion.row_change
             public EntityCommandBuffer ecb;
             public NativeHashMap<long, Direction> battalionSwitchRowDirections;
             public NativeHashSet<long> battalionsPerformingAction;
+            public PrefabHolder prefabHolder;
 
-            private void Execute(BattalionMarker battalionMarker, Entity entity, ref Row row)
+            private void Execute(BattalionMarker battalionMarker, Entity entity, ref Row row, LocalTransform transform, BattalionTeam team, BattalionWidth width)
             {
                 if (battalionsPerformingAction.Contains(battalionMarker.id))
                 {
@@ -56,9 +62,11 @@ namespace system.battle.battalion.row_change
 
                 if (battalionSwitchRowDirections.TryGetValue(battalionMarker.id, out var direction) && direction != Direction.NONE)
                 {
+                    var shadowEntity = BattalionShadowSpawner.spawnBattalionShadow(ecb, prefabHolder, transform.Position, battalionMarker.id, row.value, team.value, width.value);
                     ecb.AddComponent(entity, new ChangeRow
                     {
                         direction = direction,
+                        shadowEntity = shadowEntity
                     });
                     var newRow = direction switch
                     {

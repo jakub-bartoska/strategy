@@ -47,7 +47,7 @@ namespace system.battle.battalion.row_change
                 if (distanceToTarget < 0.02f)
                 {
                     localTransform.Position.z = targetZ;
-                    //ecb.DestroyEntity(changeRow.shadowEntity);
+                    ecb.DestroyEntity(changeRow.shadowEntity);
                     ecb.RemoveComponent<ChangeRow>(entity);
                 }
             }

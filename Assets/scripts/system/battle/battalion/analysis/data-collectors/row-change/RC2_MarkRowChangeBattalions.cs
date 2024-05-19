@@ -1,6 +1,7 @@
 ﻿using System;
 using component;
 using component._common.system_switchers;
+using component.battle.battalion;
 using system.battle.battalion.analysis.data_holder;
 using system.battle.system_groups;
 using Unity.Burst;
@@ -38,6 +39,11 @@ namespace system.battle.battalion.analysis.row_change
 
                 foreach (var battalionInfo in positions.GetValuesForKey(rowId))
                 {
+                    if (battalionInfo.Item5 == BattleUnitTypeEnum.SHADOW)
+                    {
+                        continue;
+                    }
+
                     if (battalionInfo.Item3 == Team.TEAM1)
                     {
                         if (battalionInfo.Item2.x + battalionInfo.Item4 < team1Position.Value.x)

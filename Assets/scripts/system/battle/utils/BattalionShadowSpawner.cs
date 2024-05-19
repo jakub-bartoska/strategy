@@ -10,11 +10,11 @@ namespace system.battle.utils
 {
     public class BattalionShadowSpawner
     {
-        public static Entity spawnBattalionShadow(EntityCommandBuffer.ParallelWriter ecb, PrefabHolder prefabHolder, float3 battalionPosition, long parentBattalionId, int row, Team team,
+        public static Entity spawnBattalionShadow(EntityCommandBuffer ecb, PrefabHolder prefabHolder, float3 battalionPosition, long parentBattalionId, int row, Team team,
             float size)
         {
             var battalionShadowPrefab = prefabHolder.battalionShadowPrefab;
-            var newBattalionShadow = ecb.Instantiate(0, battalionShadowPrefab);
+            var newBattalionShadow = ecb.Instantiate(battalionShadowPrefab);
             var battalionShadowMarker = new BattalionShadowMarker
             {
                 parentBattalionId = parentBattalionId
@@ -43,14 +43,14 @@ namespace system.battle.utils
             battalionPosition.z = CustomTransformUtils.getBattalionZPosition(row);
             var battalionTransform = LocalTransform.FromPosition(battalionPosition);
 
-            ecb.AddComponent(1, newBattalionShadow, battalionShadowMarker);
-            ecb.AddComponent(1, newBattalionShadow, rowComponent);
-            ecb.AddComponent(1, newBattalionShadow, teamComponent);
-            ecb.AddComponent(1, newBattalionShadow, transformMatrix);
-            ecb.AddComponent(1, newBattalionShadow, battalionSize);
-            ecb.AddComponent(1, newBattalionShadow, battleUnitType);
+            ecb.AddComponent(newBattalionShadow, battalionShadowMarker);
+            ecb.AddComponent(newBattalionShadow, rowComponent);
+            ecb.AddComponent(newBattalionShadow, teamComponent);
+            ecb.AddComponent(newBattalionShadow, transformMatrix);
+            ecb.AddComponent(newBattalionShadow, battalionSize);
+            ecb.AddComponent(newBattalionShadow, battleUnitType);
 
-            ecb.SetComponent(1, newBattalionShadow, battalionTransform);
+            ecb.SetComponent(newBattalionShadow, battalionTransform);
 
             return newBattalionShadow;
         }

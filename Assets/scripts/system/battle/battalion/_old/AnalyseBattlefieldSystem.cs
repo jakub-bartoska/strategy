@@ -86,7 +86,7 @@ namespace system.battle.battalion
             new AddRowChangeTags
                 {
                     rowChanges = rowChanges,
-                    ecb = ecb.AsParallelWriter(),
+                    ecb = ecb,
                     team1FlankPositions = team1FlankPositions,
                     team2FlankPositions = team2FlankPositions,
                     prefabHolder = prefabHolder
@@ -511,7 +511,7 @@ namespace system.battle.battalion
             [ReadOnly] public NativeHashMap<int, float3> team1FlankPositions;
             [ReadOnly] public NativeHashMap<int, float3> team2FlankPositions;
             [ReadOnly] public PrefabHolder prefabHolder;
-            public EntityCommandBuffer.ParallelWriter ecb;
+            public EntityCommandBuffer ecb;
 
             private void Execute(BattalionMarker battalionMarker, Entity entity, PossibleSplit split, LocalTransform transform, Row row, BattalionTeam team, BattalionWidth width)
             {
@@ -530,7 +530,7 @@ namespace system.battle.battalion
                     if (!canChange) return;
 
                     var shadowEntity = BattalionShadowSpawner.spawnBattalionShadow(ecb, prefabHolder, transform.Position, battalionMarker.id, row.value, team.value, width.value);
-                    ecb.AddComponent(2, entity, new ChangeRow
+                    ecb.AddComponent(entity, new ChangeRow
                     {
                         direction = teamDirection.Item2,
                         shadowEntity = shadowEntity
