@@ -55,8 +55,6 @@ namespace system.battle.battalion.analysis
                     {
                         addBlocker(me, leftUnit, blockers);
                     }
-
-                    //compare to units in row above
                 }
             }
 
@@ -68,7 +66,7 @@ namespace system.battle.battalion.analysis
             var positions = DataHolder.positions;
             foreach (var upper in positions.GetValuesForKey(rowId - 1))
             {
-                var isTooFarDiagonal = BattleTransformUtils.isTooFar(me.Item2, upper.Item2, me.Item4, upper.Item4, 0.5f);
+                var isTooFarDiagonal = BattleTransformUtils.isTooFar(me.Item2, upper.Item2, me.Item4, upper.Item4);
 
                 if (!isTooFarDiagonal)
                 {

@@ -14,6 +14,7 @@ namespace system.battle.battalion.analysis.row_change
 {
     [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
     [UpdateAfter(typeof(F2_FindFlankBattalions))]
+    [UpdateAfter(typeof(FindBlockerSystem))]
     public partial struct RC1_GetRowChangeDirections : ISystem
     {
         [BurstCompile]
