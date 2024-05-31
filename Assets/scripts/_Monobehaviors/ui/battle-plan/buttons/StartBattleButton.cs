@@ -1,4 +1,5 @@
 ﻿using System;
+using _Monobehaviors.scriptable_objects.battle;
 using _Monobehaviors.ui.battle_plan.army_card;
 using _Monobehaviors.ui.battle_plan.counter;
 using component._common.system_switchers;
@@ -12,6 +13,7 @@ namespace _Monobehaviors.ui.battle_plan.buttons
     public class StartBattleButton : MonoBehaviour
     {
         public static StartBattleButton instance;
+        [SerializeField] private BattleCompositionSo battleComposition;
         private Color active = new(0.1627803f, 0.5849056f, 0.2474526f);
         private EntityQuery battalionToSpawn;
         private EntityManager entityManager;
@@ -38,6 +40,12 @@ namespace _Monobehaviors.ui.battle_plan.buttons
             var buffer = battalionToSpawn.GetSingletonBuffer<BattalionToSpawn>();
             buffer.Clear();
             buffer.AddRange(battalions.AsArray());
+
+            battleComposition.battalions.Clear();
+            foreach (var toSpawn in battalions)
+            {
+                battleComposition.battalions.Add(toSpawn);
+            }
 
             StateManagerForMonos.getInstance().updateStatusFromMonos(SystemStatus.BATTLE);
         }

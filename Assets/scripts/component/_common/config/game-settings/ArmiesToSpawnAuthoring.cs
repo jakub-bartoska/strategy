@@ -31,6 +31,7 @@ namespace component.config.game_settings
         public int count;
     }
 
+    [Serializable]
     public struct BattalionToSpawn : IBufferElementData
     {
         public long armyCompanyId;

@@ -30,6 +30,17 @@ namespace _Monobehaviors.ui.battle_plan.army_card
             }
         }
 
+        public void clear()
+        {
+            foreach (var cardsValue in cards.Values)
+            {
+                Destroy(cardsValue.Item1.gameObject);
+                Destroy(cardsValue.Item2.gameObject);
+            }
+
+            cards.Clear();
+        }
+
         public void updateCard(SoldierType type, int count)
         {
             cards[type].Item1.setCountText(count);

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using _Monobehaviors.ui.battle_plan.buttons;
 using _Monobehaviors.ui.battle_plan.counter;
+using component.config.game_settings;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -19,7 +20,7 @@ namespace _Monobehaviors.ui.battle_plan.battle_grid
             instance = this;
         }
 
-        public void spawn()
+        public void spawn(List<BattalionToSpawn> battalions)
         {
             clearOldButtons();
 
@@ -28,8 +29,22 @@ namespace _Monobehaviors.ui.battle_plan.battle_grid
                 var newInstance = Instantiate(gridPrefab, target.transform);
                 oldButtons.Add(newInstance);
                 var newPosition = new int2(i / 10, i % 10);
-                setupPosition(newInstance, newPosition);
+                var battalion = getBattalion(battalions, newPosition);
+                setupPosition(newInstance, newPosition, battalion);
             }
+        }
+
+        private BattalionToSpawn? getBattalion(List<BattalionToSpawn> battalions, int2 position)
+        {
+            foreach (var battalionToSpawn in battalions)
+            {
+                if (battalionToSpawn.position.Equals(position))
+                {
+                    return battalionToSpawn;
+                }
+            }
+
+            return null;
         }
 
         private void clearOldButtons()
@@ -37,10 +52,15 @@ namespace _Monobehaviors.ui.battle_plan.battle_grid
             oldButtons.ForEach(old => { Destroy(old); });
         }
 
-        private void setupPosition(GameObject newInstance, int2 newPosition)
+        private void setupPosition(GameObject newInstance, int2 newPosition, BattalionToSpawn? battalion)
         {
             var dragTarget = newInstance.GetComponent<ButtonDropTarget>();
             dragTarget.position = newPosition;
+            if (battalion.HasValue)
+            {
+                dragTarget.add(battalion.Value.team);
+            }
+
             ArmyFormationManager.instance.add(dragTarget);
         }
     }
