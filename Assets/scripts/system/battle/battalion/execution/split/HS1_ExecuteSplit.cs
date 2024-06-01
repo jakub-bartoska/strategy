@@ -54,7 +54,8 @@ namespace system.battle.battalion.split
 
         private void Execute(BattalionMarker battalionMarker,
             ref DynamicBuffer<BattalionSoldiers> soldiers,
-            BattalionTeam team, Row row,
+            BattalionTeam team,
+            Row row,
             ref BattalionHealth health,
             LocalTransform localTransform,
             BattalionWidth width)
@@ -79,6 +80,7 @@ namespace system.battle.battalion.split
             {
                 soldiersToMove.Add(soldiers[i]);
                 soldiers.RemoveAt(i);
+                health.value -= 10;
             }
 
             BattalionSpawner.spawnBattalionParallel(ecb, prefabHolder, battalionIdHolder.ValueRW.nextBattalionId++, newPosition, team.value, row.value, soldiersToMove, battalionMarker.soldierType);

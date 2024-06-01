@@ -51,6 +51,12 @@ namespace system.battle.battalion.analysis.data_holder
         public static NativeList<(long, long, BattalionFightType)> fightingPairs = new(1000, Allocator.Persistent);
 
         /**
+         * battalion id
+         * Battalions which are currently in any form of fight
+         */
+        public static NativeHashSet<long> fightingBattalions = new(1000, Allocator.Persistent);
+
+        /**
          * battalionId
          * battalions which are not moving
          */

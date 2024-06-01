@@ -33,6 +33,7 @@ namespace system.battle.battalion.analysis
             DataHolder.battalionSwitchRowDirections.Clear();
             DataHolder.blockedHorizontalSplits.Clear();
             DataHolder.splitBattalions.Clear();
+            DataHolder.fightingBattalions.Clear();
 
             var allRowIds = DataHolder.allRowIds;
 

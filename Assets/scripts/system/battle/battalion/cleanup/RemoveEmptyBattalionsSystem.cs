@@ -30,12 +30,12 @@ namespace system.battle.battalion
         }
 
         [BurstCompile]
-        [WithAll(typeof(BattalionMarker))]
+        //[WithAll(typeof(BattalionMarker))]
         public partial struct DestroyEmptyBattalionsJob : IJobEntity
         {
             public EntityCommandBuffer ecb;
 
-            private void Execute(DynamicBuffer<BattalionSoldiers> soldiers, Entity entity)
+            private void Execute(DynamicBuffer<BattalionSoldiers> soldiers, Entity entity, BattalionMarker battalionMarker)
             {
                 if (soldiers.Length == 0)
                 {

@@ -36,7 +36,7 @@ namespace system.battle.battalion
             private void Execute(ref DynamicBuffer<BattalionSoldiers> soldiers, BattalionHealth health)
             {
                 var soldiersToDestroy = soldiers.Length - (int) (health.value / 10) - 1;
-                if (soldiersToDestroy == 0)
+                if (soldiersToDestroy <= 0)
                 {
                     return;
                 }

@@ -53,6 +53,12 @@ namespace system.battle.battalion.execution.reinforcement
                     return;
                 }
 
+                //fighting battalions cannot send reinforcements
+                if (DataHolder.fightingBattalions.Contains(battalionMarker.id))
+                {
+                    return;
+                }
+
                 //follower format: blockerId, shadow/battalion ,direction
                 foreach (var blocker in blockers.GetValuesForKey(battalionMarker.id))
                 {
