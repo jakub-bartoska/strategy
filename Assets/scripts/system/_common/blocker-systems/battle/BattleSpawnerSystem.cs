@@ -126,7 +126,6 @@ namespace system
             ecb.AddComponent(singletonEntity, new BattleCleanupTag());
             ecb.AddBuffer<FightPair>(singletonEntity);
             ecb.AddBuffer<MovementBlockingPair>(singletonEntity);
-            ecb.AddBuffer<SplitCandidate>(singletonEntity);
 
             var battleSoldierCounts = new BattleSoldierCounts
             {
