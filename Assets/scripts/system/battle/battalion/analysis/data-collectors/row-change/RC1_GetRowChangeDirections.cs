@@ -95,7 +95,7 @@ namespace system.battle.battalion.analysis.row_change
 
                 if (closestDown.Item1 == -1)
                 {
-                    tmpResult.Add(rowId, (Direction.UP, closestDown.Item2));
+                    tmpResult.Add(rowId, (Direction.UP, closestUp.Item2));
                     continue;
                 }
 
