@@ -31,6 +31,8 @@ namespace system.battle.battalion.analysis
             DataHolder.flankingBattalions.Clear();
             DataHolder.rowChanges.Clear();
             DataHolder.battalionSwitchRowDirections.Clear();
+            DataHolder.blockedHorizontalSplits.Clear();
+            DataHolder.splitBattalions.Clear();
 
             var allRowIds = DataHolder.allRowIds;
 

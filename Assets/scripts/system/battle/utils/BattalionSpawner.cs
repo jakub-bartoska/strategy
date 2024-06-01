@@ -78,7 +78,7 @@ namespace system.battle.utils
         }
 
         public static Entity spawnBattalionParallel(
-            EntityCommandBuffer.ParallelWriter ecb,
+            EntityCommandBuffer ecb,
             PrefabHolder prefabHolder,
             long battalionId,
             float3 battalionPosition,
@@ -89,7 +89,7 @@ namespace system.battle.utils
         )
         {
             var battalionPrefab = prefabHolder.battalionPrefab;
-            var newBattalion = ecb.Instantiate(0, battalionPrefab);
+            var newBattalion = ecb.Instantiate(battalionPrefab);
             battalionPosition.y = 0.02f;
             var battalionTransform = LocalTransform.FromPosition(battalionPosition);
             var battalionMarker = new BattalionMarker
@@ -136,29 +136,29 @@ namespace system.battle.utils
                 defaultDirection = direction
             };
 
-            ecb.AddComponent(0, newBattalion, battalionMarker);
-            ecb.AddComponent(0, newBattalion, possibleSplits);
-            ecb.AddComponent(0, newBattalion, new WaitForSoldiers());
-            ecb.AddComponent(0, newBattalion, movementDirection);
-            ecb.AddComponent(0, newBattalion, rowComponent);
-            ecb.AddComponent(0, newBattalion, teamComponent);
-            ecb.AddComponent(0, newBattalion, battalionSize);
-            ecb.AddComponent(0, newBattalion, transformMatrix);
-            ecb.AddComponent(0, newBattalion, battleUnitType);
+            ecb.AddComponent(newBattalion, battalionMarker);
+            ecb.AddComponent(newBattalion, possibleSplits);
+            ecb.AddComponent(newBattalion, new WaitForSoldiers());
+            ecb.AddComponent(newBattalion, movementDirection);
+            ecb.AddComponent(newBattalion, rowComponent);
+            ecb.AddComponent(newBattalion, teamComponent);
+            ecb.AddComponent(newBattalion, battalionSize);
+            ecb.AddComponent(newBattalion, transformMatrix);
+            ecb.AddComponent(newBattalion, battleUnitType);
 
-            var soldierBuffer = ecb.AddBuffer<BattalionSoldiers>(0, newBattalion);
+            var soldierBuffer = ecb.AddBuffer<BattalionSoldiers>(newBattalion);
             soldierBuffer.AddRange(soldiers.AsArray());
 
-            ecb.SetComponent(0, newBattalion, battalionTransform);
+            ecb.SetComponent(newBattalion, battalionTransform);
 
             addAdditionalComponents(newBattalion, ecb);
 
             return newBattalion;
         }
 
-        private static void addAdditionalComponents(Entity entity, EntityCommandBuffer.ParallelWriter ecb)
+        private static void addAdditionalComponents(Entity entity, EntityCommandBuffer ecb)
         {
-            ecb.AddComponent(0, entity, new WaitForSoldiers());
+            ecb.AddComponent(entity, new WaitForSoldiers());
         }
 
         private static float getSizeForBattalionType(SoldierType soldierType)

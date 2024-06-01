@@ -98,5 +98,19 @@ namespace system.battle.battalion.analysis.data_holder
          * can contain only directions up or down
          */
         public static NativeHashMap<long, Direction> battalionSwitchRowDirections = new(1000, Allocator.Persistent);
+
+        /**
+         * battalionID - direction for not allowed horizontal split
+         * - list can contain only directions LEFT and RIGHT
+         * - lists all battalions which can not split horizontally
+         */
+        public static NativeParallelMultiHashMap<long, Direction> blockedHorizontalSplits = new(1000, Allocator.Persistent);
+
+        /**
+         * battalionId - direction of split
+         * contains only battalions which should split + direction of split.
+         * direction is final, so 1 battalion can contain only 1 record
+         */
+        public static NativeHashMap<long, Direction> splitBattalions = new(1000, Allocator.Persistent);
     }
 }
