@@ -1,4 +1,5 @@
-﻿using component._common.system_switchers;
+﻿using System;
+using component._common.system_switchers;
 using component.battle.battalion;
 using system.battle.battalion.analysis.data_holder;
 using system.battle.system_groups;
@@ -42,14 +43,63 @@ namespace system.battle.battalion.execution.reinforcement
                     return;
                 }
 
+                var existingPositions = getExistingIndexes(soldiers);
+
                 var healthIncrease = 0;
                 foreach (var soldier in reinforcements.GetValuesForKey(battalionMarker.id))
                 {
+                    //if reinforcement have index within battalion E.G. 1, and battalion have already soldier on position 1, reinforcement has to go to different position within battalion
+                    //if index within battalion is free, soldier is unchanged
+                    var updatedSoldier = updatePositionWithinBattalion(existingPositions, soldier);
+
                     healthIncrease += 10;
-                    soldiers.Add(soldier);
+
+                    soldiers.Add(updatedSoldier);
                 }
 
                 health.value += healthIncrease;
+            }
+
+            private BattalionSoldiers updatePositionWithinBattalion(NativeHashSet<int> existingPositions, BattalionSoldiers soldier)
+            {
+                if (!existingPositions.Contains(soldier.positionWithinBattalion))
+                {
+                    return soldier;
+                }
+
+                var emptyIndex = getFirstEmptyPosition(existingPositions);
+                existingPositions.Add(emptyIndex);
+                soldier.positionWithinBattalion = emptyIndex;
+                return new BattalionSoldiers
+                {
+                    positionWithinBattalion = emptyIndex,
+                    entity = soldier.entity,
+                    soldierId = soldier.soldierId
+                };
+            }
+
+            private int getFirstEmptyPosition(NativeHashSet<int> existingPositions)
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    if (!existingPositions.Contains(i))
+                    {
+                        return i;
+                    }
+                }
+
+                throw new Exception("unable to receive reinforcements, no empty position in battalion");
+            }
+
+            private NativeHashSet<int> getExistingIndexes(DynamicBuffer<BattalionSoldiers> soldiers)
+            {
+                var existingPositions = new NativeHashSet<int>(10, Allocator.Temp);
+                foreach (var soldier in soldiers)
+                {
+                    existingPositions.Add(soldier.positionWithinBattalion);
+                }
+
+                return existingPositions;
             }
         }
     }
