@@ -34,12 +34,14 @@ namespace system.battle.battalion
             var deltaTime = SystemAPI.Time.DeltaTime;
             var debugConfig = SystemAPI.GetSingleton<DebugConfig>();
             var battalionsPerformingAction = DataHolder.battalionsPerformingAction;
+            var exactPositionMovementBattalions = DataHolder.exactPositionMovementDirections.GetKeyArray(Allocator.TempJob);
 
             new MoveBattalionJob
                 {
                     debugConfig = debugConfig,
                     deltaTime = deltaTime,
-                    battalionsPerformingAction = battalionsPerformingAction
+                    battalionsPerformingAction = battalionsPerformingAction,
+                    exactPositionMovementBattalions = exactPositionMovementBattalions
                 }.Schedule(state.Dependency)
                 .Complete();
         }
@@ -50,12 +52,16 @@ namespace system.battle.battalion
             public DebugConfig debugConfig;
             public float deltaTime;
             public NativeHashSet<long> battalionsPerformingAction;
+            public NativeArray<long> exactPositionMovementBattalions;
 
             private void Execute(BattalionMarker battalionMarker, ref LocalTransform transform, MovementDirection movementDirection)
             {
                 if (battalionsPerformingAction.Contains(battalionMarker.id))
                 {
-                    return;
+                    if (!exactPositionMovementBattalions.Contains(battalionMarker.id))
+                    {
+                        return;
+                    }
                 }
 
                 battalionsPerformingAction.Add(battalionMarker.id);

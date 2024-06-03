@@ -25,22 +25,25 @@ namespace system.battle.battalion.execution
         public void OnUpdate(ref SystemState state)
         {
             var blockers = DataHolder.blockers;
-            var battalionDefaultMovementDirection = DataHolder.battalionDefaultMovementDirection;
 
             //battalionID -> direction to move
             var battalionsAbleToMove = new NativeList<(long, Direction)>(1000, Allocator.TempJob);
             var battalionsPerformingAction = DataHolder.battalionsPerformingAction;
             var allBattalionIds = DataHolder.allBattalionIds;
+            var exactPositionMovementDirections = DataHolder.exactPositionMovementDirections;
 
             foreach (var battalionId in allBattalionIds)
             {
                 if (battalionsPerformingAction.Contains(battalionId))
                 {
-                    continue;
+                    if (!exactPositionMovementDirections.ContainsKey(battalionId))
+                    {
+                        continue;
+                    }
                 }
 
                 var blockedForDirection = false;
-                var direction = battalionDefaultMovementDirection[battalionId];
+                var direction = getDirection(battalionId);
                 foreach (var valueTuple in blockers.GetValuesForKey(battalionId))
                 {
                     if (valueTuple.Item3 == direction)
@@ -59,7 +62,7 @@ namespace system.battle.battalion.execution
             var ableToMoveInDefaultDirection = BlockerUtils.unblockDirections(battalionsAbleToMove);
             foreach (var valueTuple in battalionsAbleToMove)
             {
-                ableToMoveInDefaultDirection.Add(valueTuple.Item1);
+                ableToMoveInDefaultDirection.Add(valueTuple.Item1, valueTuple.Item2);
             }
 
             new UpdateMovementDirectionJob
@@ -69,16 +72,26 @@ namespace system.battle.battalion.execution
                 .Complete();
         }
 
+        private Direction getDirection(long battalionId)
+        {
+            if (DataHolder.exactPositionMovementDirections.TryGetValue(battalionId, out var direction))
+            {
+                return direction.Item1;
+            }
+
+            return DataHolder.battalionDefaultMovementDirection[battalionId];
+        }
+
         [BurstCompile]
         public partial struct UpdateMovementDirectionJob : IJobEntity
         {
-            public NativeList<long> ableToMoveInDefaultDirection;
+            public NativeHashMap<long, Direction> ableToMoveInDefaultDirection;
 
             private void Execute(BattalionMarker battalionMarker, ref MovementDirection movementDirection)
             {
-                if (ableToMoveInDefaultDirection.Contains(battalionMarker.id))
+                if (ableToMoveInDefaultDirection.TryGetValue(battalionMarker.id, out var direction))
                 {
-                    movementDirection.currentDirection = movementDirection.plannedDirection;
+                    movementDirection.currentDirection = direction;
                 }
                 else
                 {

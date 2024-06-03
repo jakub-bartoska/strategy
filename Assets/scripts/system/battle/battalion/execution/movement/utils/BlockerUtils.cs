@@ -9,10 +9,9 @@ namespace system.battle.battalion.execution
         /**
          * battalionID - directions to remove from blockers
          */
-        public static NativeList<long> unblockDirections(NativeList<(long, Direction)> toUnblock)
+        public static NativeHashMap<long, Direction> unblockDirections(NativeList<(long, Direction)> toUnblock)
         {
-            var result = new NativeList<long>(Allocator.TempJob);
-            var followers = DataHolder.battalionFollowers;
+            var result = new NativeHashMap<long, Direction>(1000, Allocator.TempJob);
             foreach (var battalionDirection in toUnblock)
             {
                 unblockFollowers(result, battalionDirection.Item1, battalionDirection.Item2);
@@ -21,7 +20,7 @@ namespace system.battle.battalion.execution
             return result;
         }
 
-        private static void unblockFollowers(NativeList<long> result, long battalionId, Direction direction)
+        private static void unblockFollowers(NativeHashMap<long, Direction> result, long battalionId, Direction direction)
         {
             var followers = DataHolder.battalionFollowers;
             if (followers.ContainsKey(battalionId))
@@ -35,14 +34,14 @@ namespace system.battle.battalion.execution
 
                     if (!isBlockedByAnotherBattalion(result, follower.Item1, follower.Item2))
                     {
-                        result.Add(follower.Item1);
+                        result.Add(follower.Item1, follower.Item2);
                         unblockFollowers(result, follower.Item1, follower.Item2);
                     }
                 }
             }
         }
 
-        private static bool isBlockedByAnotherBattalion(NativeList<long> result, long battalionId, Direction direction)
+        private static bool isBlockedByAnotherBattalion(NativeHashMap<long, Direction> result, long battalionId, Direction direction)
         {
             foreach (var blocked in DataHolder.blockers.GetValuesForKey(battalionId))
             {
@@ -51,7 +50,7 @@ namespace system.battle.battalion.execution
                     continue;
                 }
 
-                if (!result.Contains(blocked.Item1))
+                if (!result.ContainsKey(blocked.Item1))
                 {
                     return true;
                 }

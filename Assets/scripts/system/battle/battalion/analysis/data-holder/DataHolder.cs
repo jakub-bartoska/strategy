@@ -26,6 +26,11 @@ namespace system.battle.battalion.analysis.data_holder
         public static NativeParallelMultiHashMap<int, (long, float3, Team, float, BattleUnitTypeEnum)> positions = new(1000, Allocator.Persistent);
 
         /**
+         * battalionId - (position, team, width)
+         */
+        public static NativeHashMap<long, (float3, Team, float)> battalionInfo = new(1000, Allocator.Persistent);
+
+        /**
          * blocked battalionId - (blockerId, blockerType)
          * keep in mind that battalion id = shadow id from this battalion. So When shadow is blocked, it is added as battalion
          */
@@ -47,6 +52,7 @@ namespace system.battle.battalion.analysis.data_holder
         /**
          * (battalionId, battalionId, BattalionFightType)
          * 2 battalions fighting each other + type of the fight
+         * each fighting pair should be added only once
          */
         public static NativeList<(long, long, BattalionFightType)> fightingPairs = new(1000, Allocator.Persistent);
 
@@ -118,5 +124,12 @@ namespace system.battle.battalion.analysis.data_holder
          * direction is final, so 1 battalion can contain only 1 record
          */
         public static NativeHashMap<long, Direction> splitBattalions = new(1000, Allocator.Persistent);
+
+        /**
+         * battalionId - (direction, distance)
+         * contains only battalions which should move in exact direction
+         * X axis distance from closest enemy
+         */
+        public static NativeHashMap<long, (Direction, float)> exactPositionMovementDirections = new(1000, Allocator.Persistent);
     }
 }

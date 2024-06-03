@@ -45,6 +45,10 @@ namespace system.battle.battalion.analysis
                 foreach (var value in tmpUnsortedData.GetValuesForKey(row))
                 {
                     unsortedRowData.Add(value);
+                    if (value.Item5 == BattleUnitTypeEnum.BATTALION)
+                    {
+                        DataHolder.battalionInfo.Add(value.Item1, (value.Item2, value.Item3, value.Item4));
+                    }
                 }
 
                 if (unsortedRowData.IsEmpty)
