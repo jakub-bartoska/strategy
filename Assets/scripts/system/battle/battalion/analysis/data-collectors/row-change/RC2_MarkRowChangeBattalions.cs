@@ -3,6 +3,7 @@ using component;
 using component._common.system_switchers;
 using component.battle.battalion;
 using system.battle.battalion.analysis.data_holder;
+using system.battle.battalion.analysis.data_holder.movement;
 using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Entities;
@@ -67,7 +68,7 @@ namespace system.battle.battalion.analysis.row_change
 
         private float3? getFlankingPositionForRow(int targetRow, Team team)
         {
-            DataHolder.flankPositions.TryGetValue(targetRow, out var teamFlanks);
+            MovementDataHolder.flankPositions.TryGetValue(targetRow, out var teamFlanks);
             return team switch
             {
                 Team.TEAM1 => teamFlanks.Item1,

@@ -1,7 +1,7 @@
 ﻿using component._common.system_switchers;
 using component.battle.battalion;
 using component.battle.battalion.markers;
-using system.battle.battalion.analysis.data_holder;
+using system.battle.battalion.analysis.data_holder.movement;
 using system.battle.enums;
 using system.battle.system_groups;
 using Unity.Burst;
@@ -22,7 +22,7 @@ namespace system.battle.battalion.analysis
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var battalionDefaultMovementDirection = DataHolder.battalionDefaultMovementDirection;
+            var battalionDefaultMovementDirection = MovementDataHolder.battalionDefaultMovementDirection;
             new CollectBattalionDirections
                 {
                     battalionDirections = battalionDefaultMovementDirection
@@ -37,7 +37,7 @@ namespace system.battle.battalion.analysis
 
             private void Execute(BattalionMarker battalionMarker, MovementDirection movementDirection)
             {
-                battalionDirections.Add(battalionMarker.id, movementDirection.plannedDirection);
+                battalionDirections.Add(battalionMarker.id, movementDirection.defaultDirection);
             }
         }
     }

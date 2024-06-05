@@ -1,7 +1,6 @@
 ﻿using component._common.system_switchers;
-using component.battle.battalion;
-using component.battle.battalion.markers;
 using system.battle.battalion.analysis.data_holder;
+using system.battle.battalion.analysis.data_holder.movement;
 using system.battle.battalion.execution.movement;
 using system.battle.enums;
 using system.battle.system_groups;
@@ -12,7 +11,7 @@ using Unity.Entities;
 namespace system.battle.battalion.execution
 {
     [UpdateInGroup(typeof(BattleExecutionSystemGroup))]
-    [UpdateAfter(typeof(M1_SetFlanks))]
+    [UpdateAfter(typeof(MD3_AdjustByBattleMovements))]
     public partial struct M2_MoveNotBlockedBattalions : ISystem
     {
         [BurstCompile]
@@ -24,26 +23,22 @@ namespace system.battle.battalion.execution
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var blockers = DataHolder.blockers;
+            var blockers = MovementDataHolder.blockers;
 
             //battalionID -> direction to move
             var battalionsAbleToMove = new NativeList<(long, Direction)>(1000, Allocator.TempJob);
-            var battalionsPerformingAction = DataHolder.battalionsPerformingAction;
+            var stoppedBattalions = getNotMovingBattalionIds();
             var allBattalionIds = DataHolder.allBattalionIds;
-            var exactPositionMovementDirections = DataHolder.exactPositionMovementDirections;
 
             foreach (var battalionId in allBattalionIds)
             {
-                if (battalionsPerformingAction.Contains(battalionId))
+                if (stoppedBattalions.Contains(battalionId))
                 {
-                    if (!exactPositionMovementDirections.ContainsKey(battalionId))
-                    {
-                        continue;
-                    }
+                    continue;
                 }
 
                 var blockedForDirection = false;
-                var direction = getDirection(battalionId);
+                var direction = MovementDataHolder.plannedMovementDirections[battalionId];
                 foreach (var valueTuple in blockers.GetValuesForKey(battalionId))
                 {
                     if (valueTuple.Item3 == direction)
@@ -65,39 +60,26 @@ namespace system.battle.battalion.execution
                 ableToMoveInDefaultDirection.Add(valueTuple.Item1, valueTuple.Item2);
             }
 
-            new UpdateMovementDirectionJob
-                {
-                    ableToMoveInDefaultDirection = ableToMoveInDefaultDirection
-                }.Schedule(state.Dependency)
-                .Complete();
+            foreach (var battalion in ableToMoveInDefaultDirection)
+            {
+                MovementDataHolder.movingBattalions.Add(battalion.Key, battalion.Value);
+            }
         }
 
-        private Direction getDirection(long battalionId)
+        private NativeHashSet<long> getNotMovingBattalionIds()
         {
-            if (DataHolder.exactPositionMovementDirections.TryGetValue(battalionId, out var direction))
+            var result = new NativeHashSet<long>(1000, Allocator.TempJob);
+            foreach (var inActionBattalion in DataHolder.battalionsPerformingAction)
             {
-                return direction.Item1;
+                result.Add(inActionBattalion);
             }
 
-            return DataHolder.battalionDefaultMovementDirection[battalionId];
-        }
-
-        [BurstCompile]
-        public partial struct UpdateMovementDirectionJob : IJobEntity
-        {
-            public NativeHashMap<long, Direction> ableToMoveInDefaultDirection;
-
-            private void Execute(BattalionMarker battalionMarker, ref MovementDirection movementDirection)
+            foreach (var fightAndMoveBattalions in MovementDataHolder.inFightMovement.GetKeyArray(Allocator.TempJob))
             {
-                if (ableToMoveInDefaultDirection.TryGetValue(battalionMarker.id, out var direction))
-                {
-                    movementDirection.currentDirection = direction;
-                }
-                else
-                {
-                    movementDirection.currentDirection = Direction.NONE;
-                }
+                result.Remove(fightAndMoveBattalions);
             }
+
+            return result;
         }
     }
 }

@@ -1,12 +1,9 @@
 ﻿using component._common.system_switchers;
-using component.battle.battalion;
-using component.battle.battalion.markers;
 using system.battle.battalion.analysis.data_holder;
-using system.battle.enums;
+using system.battle.battalion.analysis.data_holder.movement;
 using system.battle.soldiers;
 using system.battle.system_groups;
 using Unity.Burst;
-using Unity.Collections;
 using Unity.Entities;
 
 namespace system.battle.battalion.execution.reinforcement
@@ -28,25 +25,9 @@ namespace system.battle.battalion.execution.reinforcement
         public void OnUpdate(ref SystemState state)
         {
             var needReinforcements = DataHolder.needReinforcements;
-            new UpdateMovementDirectionJob
-                {
-                    needReinforcements = needReinforcements
-                }
-                .Schedule(state.Dependency)
-                .Complete();
-        }
-
-        [BurstCompile]
-        public partial struct UpdateMovementDirectionJob : IJobEntity
-        {
-            public NativeParallelMultiHashMap<long, int> needReinforcements;
-
-            private void Execute(BattalionMarker battalionMarker, MovementDirection movementDirection)
+            foreach (var movingBattalion in MovementDataHolder.movingBattalions)
             {
-                if (movementDirection.currentDirection != Direction.NONE)
-                {
-                    needReinforcements.Remove(battalionMarker.id);
-                }
+                needReinforcements.Remove(movingBattalion.Key);
             }
         }
     }

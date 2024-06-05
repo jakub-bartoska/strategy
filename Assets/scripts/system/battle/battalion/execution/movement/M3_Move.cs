@@ -1,9 +1,8 @@
 ﻿using System;
 using component._common.system_switchers;
 using component.battle.battalion;
-using component.battle.battalion.markers;
 using component.battle.config;
-using system.battle.battalion.analysis.data_holder;
+using system.battle.battalion.analysis.data_holder.movement;
 using system.battle.battalion.execution;
 using system.battle.enums;
 using system.battle.system_groups;
@@ -33,52 +32,43 @@ namespace system.battle.battalion
         {
             var deltaTime = SystemAPI.Time.DeltaTime;
             var debugConfig = SystemAPI.GetSingleton<DebugConfig>();
-            var battalionsPerformingAction = DataHolder.battalionsPerformingAction;
-            var exactPositionMovementBattalions = DataHolder.exactPositionMovementDirections.GetKeyArray(Allocator.TempJob);
+            var movingBattalions = MovementDataHolder.movingBattalions;
 
             new MoveBattalionJob
                 {
                     debugConfig = debugConfig,
                     deltaTime = deltaTime,
-                    battalionsPerformingAction = battalionsPerformingAction,
-                    exactPositionMovementBattalions = exactPositionMovementBattalions
+                    movingBattalions = movingBattalions
                 }.Schedule(state.Dependency)
                 .Complete();
         }
 
         [BurstCompile]
+        [WithAll(typeof(BattalionMarker))]
         public partial struct MoveBattalionJob : IJobEntity
         {
             public DebugConfig debugConfig;
             public float deltaTime;
-            public NativeHashSet<long> battalionsPerformingAction;
-            public NativeArray<long> exactPositionMovementBattalions;
+            public NativeHashMap<long, Direction> movingBattalions;
 
-            private void Execute(BattalionMarker battalionMarker, ref LocalTransform transform, MovementDirection movementDirection)
+            private void Execute(BattalionMarker battalionMarker, ref LocalTransform transform)
             {
-                if (battalionsPerformingAction.Contains(battalionMarker.id))
+                if (movingBattalions.TryGetValue(battalionMarker.id, out var direction))
                 {
-                    if (!exactPositionMovementBattalions.Contains(battalionMarker.id))
+                    var finalSpeed = debugConfig.speed * deltaTime;
+                    var directionCoefficient = direction switch
                     {
-                        return;
-                    }
+                        Direction.LEFT => -1,
+                        Direction.RIGHT => 1,
+                        Direction.NONE => 0,
+                        Direction.UP => 0,
+                        Direction.DOWN => 0,
+                        _ => throw new Exception("Unknown direction")
+                    };
+
+                    var delta = new float3(directionCoefficient * finalSpeed, 0, 0);
+                    transform.Position += delta;
                 }
-
-                battalionsPerformingAction.Add(battalionMarker.id);
-
-                var finalSpeed = debugConfig.speed * deltaTime;
-                var directionCoefficient = movementDirection.currentDirection switch
-                {
-                    Direction.LEFT => -1,
-                    Direction.RIGHT => 1,
-                    Direction.NONE => 0,
-                    Direction.UP => 0,
-                    Direction.DOWN => 0,
-                    _ => throw new Exception("Unknown direction")
-                };
-
-                var delta = new float3(directionCoefficient * finalSpeed, 0, 0);
-                transform.Position += delta;
             }
         }
     }

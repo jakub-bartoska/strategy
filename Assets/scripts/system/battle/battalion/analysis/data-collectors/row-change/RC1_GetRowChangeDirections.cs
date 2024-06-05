@@ -2,6 +2,7 @@
 using component;
 using component._common.system_switchers;
 using system.battle.battalion.analysis.data_holder;
+using system.battle.battalion.analysis.data_holder.movement;
 using system.battle.battalion.analysis.flank;
 using system.battle.enums;
 using system.battle.system_groups;
@@ -51,7 +52,7 @@ namespace system.battle.battalion.analysis.row_change
 
         private void setNoRowChanges(NativeHashMap<int, (Direction, int)> tmpResult, Team team)
         {
-            var flankPositions = DataHolder.flankPositions;
+            var flankPositions = MovementDataHolder.flankPositions;
             var allRowIds = DataHolder.allRowIds;
 
             foreach (var rowId in allRowIds)

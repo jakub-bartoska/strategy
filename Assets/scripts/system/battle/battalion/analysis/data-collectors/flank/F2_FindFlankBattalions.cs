@@ -2,6 +2,7 @@
 using component;
 using component._common.system_switchers;
 using system.battle.battalion.analysis.data_holder;
+using system.battle.battalion.analysis.data_holder.movement;
 using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Entities;
@@ -23,7 +24,7 @@ namespace system.battle.battalion.analysis.flank
         {
             var positions = DataHolder.positions;
             //rowId - (team1FlankPosition, team2FlankPosition)
-            var flankPositions = DataHolder.flankPositions;
+            var flankPositions = MovementDataHolder.flankPositions;
             var flankingBattalions = DataHolder.flankingBattalions;
             var allRowIds = DataHolder.allRowIds;
 

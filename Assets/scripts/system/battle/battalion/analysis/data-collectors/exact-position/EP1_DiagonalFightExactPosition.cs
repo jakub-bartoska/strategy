@@ -1,6 +1,7 @@
 ﻿using System;
 using component._common.system_switchers;
 using system.battle.battalion.analysis.data_holder;
+using system.battle.battalion.analysis.data_holder.movement;
 using system.battle.battalion.analysis.horizontal_split;
 using system.battle.enums;
 using system.battle.system_groups;
@@ -111,7 +112,7 @@ namespace system.battle.battalion.analysis.exact_position
 
                 if (!conflict && direction != Direction.NONE)
                 {
-                    DataHolder.exactPositionMovementDirections.Add(key, (direction, minXDistance));
+                    MovementDataHolder.inFightMovement.Add(key, (direction, minXDistance));
                 }
             }
         }

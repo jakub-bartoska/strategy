@@ -1,6 +1,7 @@
 ﻿using component._common.system_switchers;
 using component.battle.battalion;
 using system.battle.battalion.analysis.data_holder;
+using system.battle.battalion.analysis.data_holder.movement;
 using system.battle.enums;
 using system.battle.system_groups;
 using Unity.Burst;
@@ -23,7 +24,7 @@ namespace system.battle.battalion.analysis.row_change
         public void OnUpdate(ref SystemState state)
         {
             var battalionSwitchRowDirectionsCopy = getBattalionSwitchRowDirectionsCopy();
-            var blockers = DataHolder.blockers;
+            var blockers = MovementDataHolder.blockers;
 
             foreach (var battalionSwitchRowDirection in battalionSwitchRowDirectionsCopy)
             {

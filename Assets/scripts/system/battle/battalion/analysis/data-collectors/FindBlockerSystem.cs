@@ -2,6 +2,7 @@
 using component._common.system_switchers;
 using component.battle.battalion;
 using system.battle.battalion.analysis.data_holder;
+using system.battle.battalion.analysis.data_holder.movement;
 using system.battle.battalion.analysis.utils;
 using system.battle.enums;
 using system.battle.system_groups;
@@ -26,7 +27,7 @@ namespace system.battle.battalion.analysis
         public void OnUpdate(ref SystemState state)
         {
             var positions = DataHolder.positions;
-            var blockers = DataHolder.blockers;
+            var blockers = MovementDataHolder.blockers;
             var allRows = DataHolder.allRowIds;
 
             foreach (var rowId in allRows)
@@ -96,8 +97,8 @@ namespace system.battle.battalion.analysis
 
         private void createFollowers()
         {
-            var blockers = DataHolder.blockers;
-            var battalionFollowers = DataHolder.battalionFollowers;
+            var blockers = MovementDataHolder.blockers;
+            var battalionFollowers = MovementDataHolder.battalionFollowers;
 
             foreach (var blocked in blockers)
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using component._common.system_switchers;
 using system.battle.battalion.analysis.data_holder;
+using system.battle.battalion.analysis.data_holder.movement;
 using system.battle.enums;
 using system.battle.system_groups;
 using Unity.Burst;
@@ -27,7 +28,7 @@ namespace system.battle.battalion.analysis.horizontal_split
             var verticalFighters = getVerticalFighters();
             removeBlockedBattalions(verticalFighters);
 
-            var battalionDefaultMovementDirection = DataHolder.battalionDefaultMovementDirection;
+            var battalionDefaultMovementDirection = MovementDataHolder.battalionDefaultMovementDirection;
             foreach (var verticalFighter in verticalFighters)
             {
                 battalionDefaultMovementDirection.TryGetValue(verticalFighter, out var defaultDirection);
@@ -70,7 +71,7 @@ namespace system.battle.battalion.analysis.horizontal_split
 
         private void removeBlockedBattalions(NativeHashSet<long> fightingBattalionIds)
         {
-            var battalionDefaultMovementDirection = DataHolder.battalionDefaultMovementDirection;
+            var battalionDefaultMovementDirection = MovementDataHolder.battalionDefaultMovementDirection;
             var blockedHorizontalSplits = DataHolder.blockedHorizontalSplits;
 
             var blockedBattalions = new NativeHashSet<long>(1000, Allocator.Temp);

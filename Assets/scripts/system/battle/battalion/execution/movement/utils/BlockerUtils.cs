@@ -1,4 +1,4 @@
-﻿using system.battle.battalion.analysis.data_holder;
+﻿using system.battle.battalion.analysis.data_holder.movement;
 using system.battle.enums;
 using Unity.Collections;
 
@@ -22,7 +22,7 @@ namespace system.battle.battalion.execution
 
         private static void unblockFollowers(NativeHashMap<long, Direction> result, long battalionId, Direction direction)
         {
-            var followers = DataHolder.battalionFollowers;
+            var followers = MovementDataHolder.battalionFollowers;
             if (followers.ContainsKey(battalionId))
             {
                 foreach (var follower in followers.GetValuesForKey(battalionId))
@@ -43,7 +43,7 @@ namespace system.battle.battalion.execution
 
         private static bool isBlockedByAnotherBattalion(NativeHashMap<long, Direction> result, long battalionId, Direction direction)
         {
-            foreach (var blocked in DataHolder.blockers.GetValuesForKey(battalionId))
+            foreach (var blocked in MovementDataHolder.blockers.GetValuesForKey(battalionId))
             {
                 if (blocked.Item3 != direction)
                 {
