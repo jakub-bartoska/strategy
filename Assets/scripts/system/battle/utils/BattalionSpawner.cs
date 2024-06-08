@@ -136,6 +136,12 @@ namespace system.battle.utils
                 defaultDirection = direction
             };
 
+            var battalionHealth = new BattalionHealth
+            {
+                value = soldiers.Length * 10
+            };
+
+            ecb.AddComponent(newBattalion, battalionHealth);
             ecb.AddComponent(newBattalion, battalionMarker);
             ecb.AddComponent(newBattalion, possibleSplits);
             ecb.AddComponent(newBattalion, new WaitForSoldiers());
