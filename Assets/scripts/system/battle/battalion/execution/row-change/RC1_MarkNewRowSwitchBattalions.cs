@@ -16,7 +16,7 @@ namespace system.battle.battalion.row_change
 {
     [UpdateInGroup(typeof(BattleExecutionSystemGroup))]
     [UpdateAfter(typeof(FightSystem))]
-    public partial struct RC1_MarkNewROwSwitchBattalions : ISystem
+    public partial struct RC1_MarkNewRowSwitchBattalions : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)

@@ -1,7 +1,6 @@
 ﻿using component._common.system_switchers;
 using component.battle.battalion;
 using component.battle.battalion.markers;
-using system.battle.battalion.analysis.row_change;
 using system.battle.system_groups;
 using system.battle.utils;
 using Unity.Burst;
@@ -12,7 +11,7 @@ using Unity.Transforms;
 namespace system.battle.battalion.row_change
 {
     [UpdateInGroup(typeof(BattleExecutionSystemGroup))]
-    [UpdateAfter(typeof(RC1_GetRowChangeDirections))]
+    [UpdateAfter(typeof(RC1_MarkNewRowSwitchBattalions))]
     public partial struct RC2_FinishRowChange : ISystem
     {
         [BurstCompile]
