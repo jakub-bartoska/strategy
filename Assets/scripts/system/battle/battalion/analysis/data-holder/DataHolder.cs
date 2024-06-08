@@ -58,7 +58,8 @@ namespace system.battle.battalion.analysis.data_holder
         public static NativeParallelMultiHashMap<long, int> needReinforcements = new(1000, Allocator.Persistent);
 
         /**
-         * battalion which should add reinforcements - reinforcement soldier
+         * battalion which should receive reinforcements - reinforcement soldier
+         * list contains soldiers which are moving from old battalion to new one (new one is key in this map)
          * 1 battalion can receive multiple reinforcements
          */
         public static NativeParallelMultiHashMap<long, BattalionSoldiers> reinforcements = new(1000, Allocator.Persistent);

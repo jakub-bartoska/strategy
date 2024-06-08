@@ -29,6 +29,7 @@ namespace system.battle.battalion.execution.reinforcement
             var reinforcements = DataHolder.reinforcements;
             var movingBattalions = MovementDataHolder.movingBattalions;
             var plannedMovementDirections = MovementDataHolder.plannedMovementDirections;
+            var battalionsPerformingAction = DataHolder.battalionsPerformingAction;
 
             new UpdateReinforcementsJob
                 {
@@ -36,7 +37,8 @@ namespace system.battle.battalion.execution.reinforcement
                     blockers = blockers,
                     reinforcements = reinforcements,
                     movingBattalions = movingBattalions,
-                    plannedMovementDirections = plannedMovementDirections
+                    plannedMovementDirections = plannedMovementDirections,
+                    battalionsPerformingAction = battalionsPerformingAction
                 }.Schedule(state.Dependency)
                 .Complete();
         }
@@ -49,6 +51,7 @@ namespace system.battle.battalion.execution.reinforcement
             public NativeParallelMultiHashMap<long, BattalionSoldiers> reinforcements;
             public NativeHashMap<long, Direction> movingBattalions;
             public NativeHashMap<long, Direction> plannedMovementDirections;
+            public NativeHashSet<long> battalionsPerformingAction;
 
             private void Execute(BattalionMarker battalionMarker, BattalionTeam team, ref DynamicBuffer<BattalionSoldiers> soldiers,
                 ref BattalionHealth health)
@@ -59,8 +62,8 @@ namespace system.battle.battalion.execution.reinforcement
                     return;
                 }
 
-                //fighting battalions cannot send reinforcements
-                if (DataHolder.fightingBattalions.Contains(battalionMarker.id))
+                //battalions alrerady performing any action should not send reinforcements
+                if (battalionsPerformingAction.Contains(battalionMarker.id))
                 {
                     return;
                 }

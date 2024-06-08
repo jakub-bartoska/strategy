@@ -75,6 +75,7 @@ namespace system.battle.battalion.row_change
                         _ => throw new Exception("unknown direction")
                     };
                     row.value = newRow;
+                    battalionsPerformingAction.Add(battalionMarker.id);
                 }
             }
         }
