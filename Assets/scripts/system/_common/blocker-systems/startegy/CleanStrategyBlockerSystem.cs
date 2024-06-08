@@ -50,6 +50,7 @@ namespace system._common.army_to_spawn_switcher.startegy
                 }
             }
 
+            oldBufferData.Dispose();
             return containsArmySpawn;
         }
 

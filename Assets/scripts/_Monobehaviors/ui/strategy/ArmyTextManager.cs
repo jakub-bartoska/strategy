@@ -51,6 +51,7 @@ namespace _Monobehaviors
                 Destroy(labelToDestroy);
                 armyTexts.Remove(id);
             });
+            labels.Dispose();
         }
     }
 }

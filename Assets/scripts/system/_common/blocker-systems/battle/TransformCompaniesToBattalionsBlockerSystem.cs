@@ -53,14 +53,14 @@ namespace system._common.blocker_systems.battle
                 });
             }
 
-            ArmyFormationManager.instance.prepare(battalionsToSpawn.ToNativeArray(Allocator.TempJob));
+            ArmyFormationManager.instance.prepare(battalionsToSpawn.ToNativeArray(Allocator.Persistent));
         }
 
         private bool containsBlocker(DynamicBuffer<SystemSwitchBlocker> blockers)
         {
             if (blockers.Length == 0) return false;
 
-            var oldBufferData = blockers.ToNativeArray(Allocator.TempJob);
+            var oldBufferData = blockers.ToNativeArray(Allocator.Temp);
             blockers.Clear();
             var containsArmySpawn = false;
             foreach (var blocker in oldBufferData)

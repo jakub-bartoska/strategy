@@ -35,7 +35,7 @@ namespace system._common.blocker_systems.battle
         {
             if (blockers.Length == 0) return false;
 
-            var oldBufferData = blockers.ToNativeArray(Allocator.TempJob);
+            var oldBufferData = blockers.ToNativeArray(Allocator.Temp);
             blockers.Clear();
             var containsArmySpawn = false;
             foreach (var blocker in oldBufferData)
