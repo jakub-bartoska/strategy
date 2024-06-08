@@ -47,6 +47,7 @@ namespace _Monobehaviors.ui.battle_plan.buttons
                 battleComposition.battalions.Add(toSpawn);
             }
 
+            battalions.Dispose();
             StateManagerForMonos.getInstance().updateStatusFromMonos(SystemStatus.BATTLE);
         }
 

@@ -47,7 +47,7 @@ namespace system
             var teamColors = SystemAPI.GetSingletonBuffer<TeamColor>();
             var prefabHolder = SystemAPI.GetSingleton<PrefabHolder>();
             var random = SystemAPI.GetSingletonRW<GameRandom>();
-            var ecb = new EntityCommandBuffer(Allocator.TempJob);
+            var ecb = new EntityCommandBuffer(Allocator.TempJob); //ok
 
             var mapTransform = CustomTransformUtils.getMapTransform();
             mapTransform.Rotation = quaternion.RotateY(math.PI / 2);
@@ -72,7 +72,7 @@ namespace system
 
                 var newBattalion = BattalionSpawner.spawnBattalion(ecb, battalionToSpawn, prefabHolder, battalionId++);
 
-                var battalionSoldiers = new NativeParallelHashSet<BattalionSoldiers>(battalionToSpawn.count, Allocator.TempJob);
+                var battalionSoldiers = new NativeParallelHashSet<BattalionSoldiers>(battalionToSpawn.count, Allocator.TempJob); //ok
 
                 new SpawnerJob
                     {
@@ -109,6 +109,8 @@ namespace system
                 {
                     team2SoldierSum += battalionToSpawn.count;
                 }
+
+                battalionSoldiers.Dispose();
             }
 
             var singletonEntity = ecb.CreateEntity();

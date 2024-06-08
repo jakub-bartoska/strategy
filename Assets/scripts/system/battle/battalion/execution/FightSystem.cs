@@ -35,7 +35,7 @@ namespace system.battle.battalion
             }
 
             //battalion id - soldier count per battalion
-            var soldierCountsPerBattalion = new NativeHashMap<long, int>(1000, Allocator.TempJob);
+            var soldierCountsPerBattalion = new NativeHashMap<long, int>(1000, Allocator.TempJob); //ok
             new CollectSoldierCountPerBattalionJob
                 {
                     soldierCountPerBattalion = soldierCountsPerBattalion
@@ -44,7 +44,7 @@ namespace system.battle.battalion
 
             //received damage - battalionId, dmg
             //can contain multiple dmg since 1 battalion could be attacked by multiple enemies
-            var dmgReceived = new NativeParallelMultiHashMap<long, float>(1000, Allocator.TempJob);
+            var dmgReceived = new NativeParallelMultiHashMap<long, float>(1000, Allocator.TempJob); //ok
 
             foreach (var fightingPair in DataHolder.fightingPairs)
             {
@@ -74,6 +74,9 @@ namespace system.battle.battalion
                     dmgReceived = dmgReceived
                 }.Schedule(state.Dependency)
                 .Complete();
+
+            soldierCountsPerBattalion.Dispose();
+            dmgReceived.Dispose();
         }
 
         [BurstCompile]

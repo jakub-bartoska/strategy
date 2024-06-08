@@ -35,10 +35,8 @@ namespace component.strategy.interactions.town
                 }
             }
 
-            var createEventArray = createEvents.ToNativeArray(Allocator.TempJob);
-
-            var result = new NativeList<(Team, float3, int)>(createEventArray.Length, Allocator.TempJob);
-            var companyIdToCompany = new NativeHashMap<long, ArmyCompany>(createEvents.Length * 10, Allocator.TempJob);
+            var result = new NativeList<(Team, float3, int)>(createEvents.Length, Allocator.TempJob); //ok
+            var companyIdToCompany = new NativeHashMap<long, ArmyCompany>(createEvents.Length * 10, Allocator.TempJob); //ok
             new GetCompaniesFromDeployerJob
                 {
                     createArmyCompanyToGroup = createArmyCompanyToGroup,
@@ -64,6 +62,14 @@ namespace component.strategy.interactions.town
                 ArmySpawner.spawnArmy(team, position, companies, ecb, prefabHolder, idGenerator, teamColors);
             }
 
+            //cleanup
+            foreach (var createNewArmyEvent in createEvents)
+            {
+                createNewArmyEvent.companiesToDeploy.Dispose();
+            }
+
+            result.Dispose();
+            companyIdToCompany.Dispose();
             createEvents.Clear();
         }
     }
@@ -77,6 +83,7 @@ namespace component.strategy.interactions.town
         private void Execute(ref DynamicBuffer<ArmyCompany> companiesBuffer, TeamComponent teamComponent,
             LocalTransform transform)
         {
+            //todo keys could be move outside job, so I dont allocate each loop
             var indexesToRemove = new NativeList<int>(Allocator.Temp);
             var keys = createArmyCompanyToGroup.GetKeyArray(Allocator.Temp);
 

@@ -25,7 +25,7 @@ namespace system.battle.battalion.shadow
         public void OnUpdate(ref SystemState state)
         {
             return;
-            var battalionPositions = new NativeParallelMultiHashMap<long, float3>(1000, Allocator.TempJob);
+            var battalionPositions = new NativeParallelMultiHashMap<long, float3>(1000, Allocator.TempJob); //ok
             new CollectBattalionPositions
                 {
                     battalionPositions = battalionPositions.AsParallelWriter()

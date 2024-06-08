@@ -48,7 +48,7 @@ namespace system.battle.battalion.analysis.row_change
         private NativeHashMap<long, Direction> getBattalionSwitchRowDirectionsCopy()
         {
             var battalionSwitchRowDirections = DataHolder.battalionSwitchRowDirections;
-            var result = new NativeHashMap<long, Direction>(battalionSwitchRowDirections.Count, Allocator.TempJob);
+            var result = new NativeHashMap<long, Direction>(battalionSwitchRowDirections.Count, Allocator.Temp);
             foreach (var record in battalionSwitchRowDirections)
             {
                 result.Add(record.Key, record.Value);

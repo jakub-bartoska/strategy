@@ -28,8 +28,8 @@ namespace system.battle.battalion.analysis.row_change
         public void OnUpdate(ref SystemState state)
         {
             //rowId - flank direction (UP/DOWN), rowId to switch to
-            var team1RowChanges = new NativeHashMap<int, (Direction, int)>(10, Allocator.TempJob);
-            var team2RowChanges = new NativeHashMap<int, (Direction, int)>(10, Allocator.TempJob);
+            var team1RowChanges = new NativeHashMap<int, (Direction, int)>(10, Allocator.Temp);
+            var team2RowChanges = new NativeHashMap<int, (Direction, int)>(10, Allocator.Temp);
             setNoRowChanges(team1RowChanges, Team.TEAM1);
             setNoRowChanges(team2RowChanges, Team.TEAM2);
             fillClosestRows(team1RowChanges);

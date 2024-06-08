@@ -35,8 +35,8 @@ namespace system.battle.battle_finish
             if (systemSwitchHolder.ValueRO.desiredStatus != SystemStatus.BATTLE) return;
 
             //companyId - soldierId
-            var team1 = new NativeParallelMultiHashMap<long, int>(10000, Allocator.TempJob);
-            var team2 = new NativeParallelMultiHashMap<long, int>(10000, Allocator.TempJob);
+            var team1 = new NativeParallelMultiHashMap<long, int>(10000, Allocator.TempJob); //ok
+            var team2 = new NativeParallelMultiHashMap<long, int>(10000, Allocator.TempJob); //ok
             new RemainingSoldiersCollectorJob
                 {
                     team1 = team1.AsParallelWriter(),
@@ -46,12 +46,14 @@ namespace system.battle.battle_finish
 
             if (team1.Count() != 0 && team2.Count() != 0)
             {
+                team1.Dispose();
+                team2.Dispose();
                 return;
             }
 
-            var companyCounts = new NativeHashMap<long, int>(team1.Count() + team2.Count(), Allocator.TempJob);
-            var uniquesTeam1 = team1.GetUniqueKeyArray(Allocator.TempJob);
-            var uniquesTeam2 = team2.GetUniqueKeyArray(Allocator.TempJob);
+            var companyCounts = new NativeHashMap<long, int>(team1.Count() + team2.Count(), Allocator.TempJob); //ok
+            var uniquesTeam1 = team1.GetUniqueKeyArray(Allocator.TempJob); //ok
+            var uniquesTeam2 = team2.GetUniqueKeyArray(Allocator.TempJob); //ok
 
             foreach (var companyId in uniquesTeam1.Item1.GetSubArray(0, uniquesTeam1.Item2))
             {
@@ -64,7 +66,7 @@ namespace system.battle.battle_finish
             }
 
             var armyToSpawnBuffer = SystemAPI.GetSingletonBuffer<CompanyToSpawn>();
-            var fightingArmies = new NativeHashSet<(long, HolderType)>(armyToSpawnBuffer.Length, Allocator.TempJob);
+            var fightingArmies = new NativeHashSet<(long, HolderType)>(armyToSpawnBuffer.Length, Allocator.TempJob); //ok
             foreach (var armyToSpawn in armyToSpawnBuffer)
             {
                 fightingArmies.Add((armyToSpawn.originalArmyId, armyToSpawn.originalArmyType));
@@ -81,7 +83,7 @@ namespace system.battle.battle_finish
             var prefabHolder = SystemAPI.GetSingleton<PrefabHolder>();
 
             var loosingTeam = team1.Count() == 0 ? Team.TEAM1 : Team.TEAM2;
-            var battlePosition = new NativeList<float3>(2, Allocator.TempJob);
+            var battlePosition = new NativeList<float3>(2, Allocator.TempJob); //ok
             new SetProperArmyStateJob
                 {
                     ecb = ecb,
@@ -110,6 +112,14 @@ namespace system.battle.battle_finish
             {
                 blocker = Blocker.AUTO_ADD_BLOCKERS
             });
+
+            fightingArmies.Dispose();
+            companyCounts.Dispose();
+            battlePosition.Dispose();
+            uniquesTeam1.Item1.Dispose();
+            uniquesTeam2.Item1.Dispose();
+            team1.Dispose();
+            team2.Dispose();
         }
     }
 

@@ -75,7 +75,7 @@ namespace system.battle.battalion.split
 
             var newPosition = BattleTransformUtils.getNewPositionForSplit(localTransform.Position, width.value, splitBattalions[battalionMarker.id]);
 
-            var soldiersToMove = new NativeList<BattalionSoldiers>(10, Allocator.TempJob);
+            var soldiersToMove = new NativeList<BattalionSoldiers>(10, Allocator.Temp);
             for (var i = soldiers.Length - 1; i > soldierCountToStay - 1; i--)
             {
                 soldiersToMove.Add(soldiers[i]);

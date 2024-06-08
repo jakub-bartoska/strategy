@@ -11,7 +11,7 @@ namespace system.battle.battalion.execution
          */
         public static NativeHashMap<long, Direction> unblockDirections(NativeList<(long, Direction)> toUnblock)
         {
-            var result = new NativeHashMap<long, Direction>(1000, Allocator.TempJob);
+            var result = new NativeHashMap<long, Direction>(1000, Allocator.Temp);
             foreach (var battalionDirection in toUnblock)
             {
                 unblockFollowers(result, battalionDirection.Item1, battalionDirection.Item2);

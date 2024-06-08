@@ -22,7 +22,7 @@ namespace system.battle.battalion.split
         public void OnUpdate(ref SystemState state)
         {
             return;
-            var waitingBattalionSoldiers = new NativeParallelMultiHashMap<long, (long, float3)>(500, Allocator.TempJob);
+            var waitingBattalionSoldiers = new NativeParallelMultiHashMap<long, (long, float3)>(500, Allocator.TempJob); //ok
             new CollectWaitingBattalions
                 {
                     waitingBattalionSoldiers = waitingBattalionSoldiers.AsParallelWriter()
@@ -31,7 +31,7 @@ namespace system.battle.battalion.split
 
             if (waitingBattalionSoldiers.IsEmpty) return;
 
-            var battalionsReadyForTagRemoval = new NativeParallelHashSet<long>(500, Allocator.TempJob);
+            var battalionsReadyForTagRemoval = new NativeParallelHashSet<long>(500, Allocator.TempJob); //ok
 
             new CollectBattalionsReadyForTagRemovalJob
                 {

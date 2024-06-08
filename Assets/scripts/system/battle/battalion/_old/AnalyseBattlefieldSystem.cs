@@ -30,8 +30,8 @@ namespace system.battle.battalion
         {
             return;
             //row -> id, position, team, battalionSize
-            var battalionPositions = new NativeParallelMultiHashMap<int, (long, float3, Team, float)>(1000, Allocator.TempJob);
-            var shadowPositions = new NativeParallelMultiHashMap<int, (long, float3, Team, float)>(1000, Allocator.TempJob);
+            var battalionPositions = new NativeParallelMultiHashMap<int, (long, float3, Team, float)>(1000, Allocator.TempJob); //ok
+            var shadowPositions = new NativeParallelMultiHashMap<int, (long, float3, Team, float)>(1000, Allocator.TempJob); //ok
             new CollectBattalionPositionsJob
                 {
                     battalionPositions = battalionPositions.AsParallelWriter()
@@ -50,9 +50,9 @@ namespace system.battle.battalion
             fightPairs.Clear();
             movementBlockingPairs.Clear();
 
-            var possibleSplitDirections = new NativeParallelMultiHashMap<long, Direction>(4000, Allocator.TempJob);
+            var possibleSplitDirections = new NativeParallelMultiHashMap<long, Direction>(4000, Allocator.TempJob); //ok
             //row -> (team1, team2)
-            var rowToTeamCount = new NativeHashMap<int, (int, int)>(10, Allocator.TempJob);
+            var rowToTeamCount = new NativeHashMap<int, (int, int)>(10, Allocator.TempJob); //ok
 
             fillBlockers(battalionPositions, shadowPositions, fightPairs, movementBlockingPairs, possibleSplitDirections, rowToTeamCount);
 
@@ -62,11 +62,11 @@ namespace system.battle.battalion
                 }.ScheduleParallel(state.Dependency)
                 .Complete();
 
-            var team1FlankPositions = new NativeHashMap<int, float3>(10, Allocator.TempJob);
-            var team2FlankPositions = new NativeHashMap<int, float3>(10, Allocator.TempJob);
+            var team1FlankPositions = new NativeHashMap<int, float3>(10, Allocator.TempJob); //ok
+            var team2FlankPositions = new NativeHashMap<int, float3>(10, Allocator.TempJob); //ok
 
-            var battalionMovementDirections = new NativeHashMap<long, Direction>(1000, Allocator.TempJob);
-            foreach (var battalionPosition in battalionPositions.GetValueArray(Allocator.TempJob))
+            var battalionMovementDirections = new NativeHashMap<long, Direction>(1000, Allocator.TempJob); //ok
+            foreach (var battalionPosition in battalionPositions.GetValueArray(Allocator.TempJob)) //ok
             {
                 var direction = battalionPosition.Item3 switch
                 {
@@ -112,16 +112,16 @@ namespace system.battle.battalion
             NativeParallelMultiHashMap<long, Direction> possibleSplitDirections,
             NativeHashMap<int, (int, int)> rowToTeamCount)
         {
-            var allRows = battalionPositions.GetKeyArray(Allocator.TempJob);
+            var allRows = battalionPositions.GetKeyArray(Allocator.TempJob); //ok
             allRows.Sort();
             var uniqueCount = allRows.Unique();
             var uniqueRows = allRows.GetSubArray(0, uniqueCount);
 
             var sorter = new MovementSystemOld.SortByPosition();
-            var rowBattalions = new NativeList<(long, float3, Team, float)>(Allocator.TempJob);
-            var rowShadows = new NativeList<(long, float3, Team, float)>(Allocator.TempJob);
-            var rowMinusOneUnsorted = new NativeList<(long, float3, Team, float)>(Allocator.TempJob);
-            var rowPlusOneUnsorted = new NativeList<(long, float3, Team, float)>(Allocator.TempJob);
+            var rowBattalions = new NativeList<(long, float3, Team, float)>(Allocator.TempJob); //ok
+            var rowShadows = new NativeList<(long, float3, Team, float)>(Allocator.TempJob); //ok
+            var rowMinusOneUnsorted = new NativeList<(long, float3, Team, float)>(Allocator.TempJob); //ok
+            var rowPlusOneUnsorted = new NativeList<(long, float3, Team, float)>(Allocator.TempJob); //ok 
             //iterate over sorted rows
             foreach (var row in uniqueRows)
             {
@@ -314,7 +314,7 @@ namespace system.battle.battalion
         private NativeHashMap<int, (Team, Direction)> prepareRowSwitchTags(NativeHashMap<int, (int, int)> rowToTeamCount)
         {
             //row -> team, direction
-            var result = new NativeHashMap<int, (Team, Direction)>(10, Allocator.TempJob);
+            var result = new NativeHashMap<int, (Team, Direction)>(10, Allocator.TempJob); //ok
 
             foreach (var row in rowToTeamCount)
             {

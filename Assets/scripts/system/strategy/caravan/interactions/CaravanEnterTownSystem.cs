@@ -22,14 +22,14 @@ namespace system.strategy.minors.interactions
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var townPositions = new NativeHashMap<long, LocalTransform>(200, Allocator.TempJob);
+            var townPositions = new NativeHashMap<long, LocalTransform>(200, Allocator.TempJob); //ok
             new CollectTownsJob
                 {
                     townPositions = townPositions
                 }.Schedule(state.Dependency)
                 .Complete();
 
-            var townIdResourceHolderToAdd = new NativeParallelMultiHashMap<long, ResourceHolder>(100, Allocator.TempJob);
+            var townIdResourceHolderToAdd = new NativeParallelMultiHashMap<long, ResourceHolder>(100, Allocator.TempJob); //ok
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
                 .CreateCommandBuffer(state.WorldUnmanaged);
             new DestroyFinishedCaravansJob
@@ -47,6 +47,9 @@ namespace system.strategy.minors.interactions
                     townResources = townIdResourceHolderToAdd
                 }.ScheduleParallel(state.Dependency)
                 .Complete();
+
+            townPositions.Dispose();
+            townIdResourceHolderToAdd.Dispose();
         }
 
         public partial struct CollectTownsJob : IJobEntity

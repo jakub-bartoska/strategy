@@ -22,7 +22,7 @@ namespace _Monobehaviors
 
         public void Update()
         {
-            var labels = query.ToComponentDataArray<StrategyUiLabel>(Allocator.TempJob);
+            var labels = query.ToComponentDataArray<StrategyUiLabel>(Allocator.TempJob); //ok
             var labelsToDelete = new List<long>(armyTexts.Keys);
             foreach (var label in labels)
             {

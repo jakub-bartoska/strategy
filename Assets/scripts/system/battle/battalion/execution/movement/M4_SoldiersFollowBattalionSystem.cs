@@ -28,8 +28,8 @@ namespace system.battle.soldiers
         public void OnUpdate(ref SystemState state)
         {
             var speed = SystemAPI.GetSingleton<DebugConfig>().speed;
-            var battalionPositions = new NativeParallelHashMap<long, float3>(1000, Allocator.TempJob);
-            var soldierToBattalionMap = new NativeParallelHashMap<long, (long, BattalionSoldiers)>(10000, Allocator.TempJob);
+            var battalionPositions = new NativeParallelHashMap<long, float3>(1000, Allocator.TempJob); //ok
+            var soldierToBattalionMap = new NativeParallelHashMap<long, (long, BattalionSoldiers)>(10000, Allocator.TempJob); //ok
             var deltaTime = SystemAPI.Time.DeltaTime;
 
             new CollectBattalionPositionsJob
@@ -47,6 +47,8 @@ namespace system.battle.soldiers
                     speed = speed
                 }.ScheduleParallel(state.Dependency)
                 .Complete();
+            battalionPositions.Dispose();
+            soldierToBattalionMap.Dispose();
         }
 
         [BurstCompile]

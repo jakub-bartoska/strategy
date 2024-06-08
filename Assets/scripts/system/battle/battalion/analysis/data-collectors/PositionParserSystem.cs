@@ -41,7 +41,7 @@ namespace system.battle.battalion.analysis
 
             foreach (var row in allRows)
             {
-                var unsortedRowData = new NativeList<(long, float3, Team, float, BattleUnitTypeEnum)>(100, Allocator.TempJob);
+                var unsortedRowData = new NativeList<(long, float3, Team, float, BattleUnitTypeEnum)>(100, Allocator.Temp);
                 foreach (var value in tmpUnsortedData.GetValuesForKey(row))
                 {
                     unsortedRowData.Add(value);
@@ -62,6 +62,8 @@ namespace system.battle.battalion.analysis
                     positions.Add(row, value);
                 }
             }
+
+            tmpUnsortedData.Dispose();
         }
 
         public class SortByPosition : IComparer<(long, float3, Team, float, BattleUnitTypeEnum)>

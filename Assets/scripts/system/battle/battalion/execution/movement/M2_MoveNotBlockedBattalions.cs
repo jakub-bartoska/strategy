@@ -26,7 +26,7 @@ namespace system.battle.battalion.execution
             var blockers = MovementDataHolder.blockers;
 
             //battalionID -> direction to move
-            var battalionsAbleToMove = new NativeList<(long, Direction)>(1000, Allocator.TempJob);
+            var battalionsAbleToMove = new NativeList<(long, Direction)>(1000, Allocator.Temp);
             var stoppedBattalions = getNotMovingBattalionIds();
             var allBattalionIds = DataHolder.allBattalionIds;
 
@@ -68,13 +68,13 @@ namespace system.battle.battalion.execution
 
         private NativeHashSet<long> getNotMovingBattalionIds()
         {
-            var result = new NativeHashSet<long>(1000, Allocator.TempJob);
+            var result = new NativeHashSet<long>(1000, Allocator.Temp);
             foreach (var inActionBattalion in DataHolder.battalionsPerformingAction)
             {
                 result.Add(inActionBattalion);
             }
 
-            foreach (var fightAndMoveBattalions in MovementDataHolder.inFightMovement.GetKeyArray(Allocator.TempJob))
+            foreach (var fightAndMoveBattalions in MovementDataHolder.inFightMovement.GetKeyArray(Allocator.Temp))
             {
                 result.Remove(fightAndMoveBattalions);
             }

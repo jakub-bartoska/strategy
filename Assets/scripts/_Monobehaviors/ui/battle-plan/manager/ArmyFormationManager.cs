@@ -17,10 +17,10 @@ namespace _Monobehaviors.ui.battle_plan.counter
         public static ArmyFormationManager instance;
         [SerializeField] private BattleCompositionSo battleComposition;
         private List<ButtonDropTarget> allButtonDropTargets = new();
+        private NativeArray<BattalionToSpawn> battalionsBackup;
         private SoldierType selectedType = SoldierType.SWORDSMAN;
         private Dictionary<SoldierType, List<BattalionToSpawn>> team1 = new();
         private Dictionary<SoldierType, List<BattalionToSpawn>> team2 = new();
-        private NativeArray<BattalionToSpawn> battalionsBackup;
 
         private void Awake()
         {
@@ -79,7 +79,7 @@ namespace _Monobehaviors.ui.battle_plan.counter
 
         public NativeList<BattalionToSpawn> getAllBattalions()
         {
-            var result = new NativeList<BattalionToSpawn>(Allocator.TempJob);
+            var result = new NativeList<BattalionToSpawn>(Allocator.TempJob); //ok
             foreach (var allButtonDropTarget in allButtonDropTargets)
             {
                 var battalion = allButtonDropTarget.getBattalion();

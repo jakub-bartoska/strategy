@@ -35,7 +35,7 @@ namespace system._common.army_to_spawn_switcher.startegy
         {
             if (blockers.Length == 0) return false;
 
-            var oldBufferData = blockers.ToNativeArray(Allocator.TempJob);
+            var oldBufferData = blockers.ToNativeArray(Allocator.Temp);
             blockers.Clear();
             var containsArmySpawn = false;
             foreach (var blocker in oldBufferData)
@@ -50,7 +50,6 @@ namespace system._common.army_to_spawn_switcher.startegy
                 }
             }
 
-            oldBufferData.Dispose();
             return containsArmySpawn;
         }
 
