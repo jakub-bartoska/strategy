@@ -2,12 +2,14 @@
 using component._common.system_switchers;
 using component.config.game_settings;
 using component.strategy.general;
+using system._common.army_to_spawn_switcher.common;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 
 namespace system._common.army_to_spawn_switcher
 {
+    [UpdateAfter(typeof(AutoAddBlockersSystem))]
     public partial struct ArmyToSpawnMonoToEntitySystem : ISystem
     {
         [BurstCompile]
@@ -16,6 +18,7 @@ namespace system._common.army_to_spawn_switcher
             state.RequireForUpdate<CompanyToSpawn>();
             state.RequireForUpdate<CompanyToSpawnMono>();
             state.RequireForUpdate<SystemSwitchBlocker>();
+            state.RequireForUpdate<SystemStatusHolder>();
         }
 
         [BurstCompile]

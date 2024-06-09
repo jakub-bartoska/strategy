@@ -2,12 +2,14 @@
 using component._common.general;
 using component._common.system_switchers;
 using component.config.game_settings;
+using system._common.army_to_spawn_switcher;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 
 namespace system._common.blocker_systems.battle
 {
+    [UpdateAfter(typeof(ArmyToSpawnMonoToEntitySystem))]
     public partial struct TransformCompaniesToBattalionsBlockerSystem : ISystem
     {
         [BurstCompile]

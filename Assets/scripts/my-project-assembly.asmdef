@@ -23,7 +23,6 @@
     "Unity.Entities.Graphics",
     "Unity.Physics",
     "Unity.InputSystem",
-    "Assembly-CSharp.Player",
     "Unity.Entities.Hybrid"
   ],
   "includePlatforms": [],
