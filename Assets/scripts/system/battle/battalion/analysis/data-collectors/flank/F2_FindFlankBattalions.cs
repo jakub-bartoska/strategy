@@ -11,6 +11,7 @@ namespace system.battle.battalion.analysis.flank
 {
     [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
     [UpdateAfter(typeof(PositionParserSystem))]
+    [UpdateAfter(typeof(F1_FindFlankPositions))]
     public partial struct F2_FindFlankBattalions : ISystem
     {
         [BurstCompile]
