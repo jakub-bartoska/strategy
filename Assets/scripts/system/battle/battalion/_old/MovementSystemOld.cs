@@ -30,22 +30,20 @@ namespace system.battle.battalion
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            return;
-            /*
             var speed = SystemAPI.GetSingleton<DebugConfig>().speed;
 
             var fightPairs = SystemAPI.GetSingletonBuffer<FightPair>();
             var movementBlockingPairs = SystemAPI.GetSingletonBuffer<MovementBlockingPair>();
             //battalion id -> movement direction
-            var unableToMoveBattalions = new NativeParallelMultiHashMap<long, Direction>(300, Allocator.TempJob);//ok
+            var unableToMoveBattalions = new NativeParallelMultiHashMap<long, Direction>(300, Allocator.TempJob); //ok
 
             //blocker id -> victim id, direction
-            var movementBlockersMap = new NativeParallelMultiHashMap<long, (long, Direction)>(1000, Allocator.TempJob);//ok
-            var shadowBlockers = new NativeParallelMultiHashMap<long, (long, Direction)>(1000, Allocator.TempJob);//ok
+            var movementBlockersMap = new NativeParallelMultiHashMap<long, (long, Direction)>(1000, Allocator.TempJob); //ok
+            var shadowBlockers = new NativeParallelMultiHashMap<long, (long, Direction)>(1000, Allocator.TempJob); //ok
             //battalion id -> direction I want move, position
-            var battalionInfo = new NativeHashMap<long, (MovementDirection, float3, BattalionWidth)>(1000, Allocator.TempJob);//ok
+            var battalionInfo = new NativeHashMap<long, (MovementDirection, float3, BattalionWidth)>(1000, Allocator.TempJob); //ok
             //battalion id -> target position
-            var exactPositionTarget = new NativeHashMap<long, float3>(1000, Allocator.TempJob);//ok
+            var exactPositionTarget = new NativeHashMap<long, float3>(1000, Allocator.TempJob); //ok
 
             foreach (var movementBlockingPair in movementBlockingPairs)
             {
@@ -69,7 +67,7 @@ namespace system.battle.battalion
             var possibleReinforcements = SystemAPI.GetSingletonBuffer<PossibleReinforcements>();
             possibleReinforcements.Clear();
 
-            var waitingBattalions = new NativeParallelHashSet<long>(500, Allocator.TempJob);//ok
+            var waitingBattalions = new NativeParallelHashSet<long>(500, Allocator.TempJob); //ok
             new CollectBattalionWaitingPositionsJob
                 {
                     waitingBattalions = waitingBattalions.AsParallelWriter()
@@ -141,7 +139,6 @@ namespace system.battle.battalion
                     speed = speed
                 }.Schedule(state.Dependency)
                 .Complete();
-                */
         }
 
         private void fillExactPositionForFightingPair(
