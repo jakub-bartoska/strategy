@@ -12,4 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a970add31f04fab9e8387d5bbf9c702, type: 3}
   m_Name: Battle-composition
   m_EditorClassIdentifier: 
-  battalions: []
+  battalions:
+  - armyCompanyId: 1
+    team: 0
+    armyType: 1
+    count: 10
+    position:
+      x: 10
+      y: 10

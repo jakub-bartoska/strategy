@@ -1,4 +1,4 @@
-﻿using System;
+﻿using _Monobehaviors.scriptable_objects.battle;
 using TMPro;
 using Unity.Entities;
 using UnityEngine;
@@ -50,13 +50,5 @@ namespace component.battle.config
 
         //damage delaed by 1 fighting soldier (1 unit has 10 soldiers) / 1 sec
         public float dmgPerSecond;
-    }
-
-    [CreateAssetMenu(fileName = "config", menuName = "ScriptableObjects/DebugConfigSO")]
-    public class DebugConfigSO : ScriptableObject
-    {
-        [SerializeField] public float speed = 10f;
-        [SerializeField] public bool doDamage = true;
-        [SerializeField] public float dmgPerSecond = 1f;
     }
 }

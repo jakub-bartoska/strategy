@@ -2,17 +2,24 @@
     "name": "Tests",
     "rootNamespace": "",
     "references": [
-        "Unity.Entities",
         "Unity.Entities.Tests",
+      "UnityEditor.TestRunner",
+      "UnityEngine.TestRunner",
+      "Unity.Burst",
+      "Unity.Collections",
+      "Unity.Entities",
         "Unity.Mathematics",
-        "Unity.Transforms"
+      "Unity.Mathematics.Extensions",
+      "Unity.PerformanceTesting",
+      "Unity.Transforms",
+      "my-project-assembly"
     ],
     "includePlatforms": [
         "Editor"
     ],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
-    "overrideReferences": false,
+  "allowUnsafeCode": true,
+  "overrideReferences": true,
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],

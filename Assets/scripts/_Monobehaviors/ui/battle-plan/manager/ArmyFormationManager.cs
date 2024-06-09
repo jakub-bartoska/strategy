@@ -41,7 +41,19 @@ namespace _Monobehaviors.ui.battle_plan.counter
 
             CardManager.instance.spawn(team1);
             GridSpawner.instance.spawn(battleComposition.battalions);
-            updateSelectedType(team1.Keys.First());
+
+            var soldierType = getSoldierType();
+            updateSelectedType(soldierType);
+        }
+
+        private SoldierType getSoldierType()
+        {
+            if (team1.Count == 0)
+            {
+                return SoldierType.SWORDSMAN;
+            }
+
+            return team2.Keys.First();
         }
 
         private void addTeamBattalion(BattalionToSpawn battalion)
