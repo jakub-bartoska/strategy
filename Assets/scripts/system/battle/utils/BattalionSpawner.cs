@@ -55,16 +55,7 @@ namespace system.battle.utils
             };
             var transformMatrix = getPostTransformMatrixFromBattalionSize(size);
 
-            var possibleSplits = new PossibleSplit
-            {
-                up = false,
-                down = false,
-                left = false,
-                right = false
-            };
-
             ecb.AddComponent(newBattalion, battalionMarker);
-            ecb.AddComponent(newBattalion, possibleSplits);
             ecb.AddComponent(newBattalion, movementDirection);
             ecb.AddComponent(newBattalion, row);
             ecb.AddComponent(newBattalion, team);
@@ -110,13 +101,7 @@ namespace system.battle.utils
             {
                 value = team
             };
-            var possibleSplits = new PossibleSplit
-            {
-                up = false,
-                down = false,
-                left = false,
-                right = false
-            };
+
             var size = getSizeForBattalionType(soldierType);
             var battalionSize = new BattalionWidth
             {
@@ -143,7 +128,6 @@ namespace system.battle.utils
 
             ecb.AddComponent(newBattalion, battalionHealth);
             ecb.AddComponent(newBattalion, battalionMarker);
-            ecb.AddComponent(newBattalion, possibleSplits);
             ecb.AddComponent(newBattalion, movementDirection);
             ecb.AddComponent(newBattalion, rowComponent);
             ecb.AddComponent(newBattalion, teamComponent);

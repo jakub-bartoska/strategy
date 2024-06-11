@@ -3,7 +3,6 @@ using component;
 using component._common.system_switchers;
 using component.authoring_pairs.PrefabHolder;
 using component.battle.battalion;
-using component.battle.battalion.markers;
 using component.battle.config;
 using component.config.authoring_pairs;
 using component.config.game_settings;
@@ -126,15 +125,7 @@ namespace system
             ecb.AddComponent(singletonEntity, battalionIdHolder);
             ecb.AddComponent(singletonEntity, new BattleSingletonEntityTag());
             ecb.AddComponent(singletonEntity, new BattleCleanupTag());
-            ecb.AddBuffer<FightPair>(singletonEntity);
-            ecb.AddBuffer<MovementBlockingPair>(singletonEntity);
 
-            var battleSoldierCounts = new BattleSoldierCounts
-            {
-                team1Count = team1SoldierSum,
-                team2Count = team2SoldierSum
-            };
-            ecb.AddComponent(singletonEntity, battleSoldierCounts);
             randomPerThread.Dispose();
             ecb.Playback(state.EntityManager);
             ecb.Dispose();
