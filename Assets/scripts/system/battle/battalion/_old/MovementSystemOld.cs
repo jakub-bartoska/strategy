@@ -30,6 +30,8 @@ namespace system.battle.battalion
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            return;
+            /*
             var speed = SystemAPI.GetSingleton<DebugConfig>().speed;
 
             var fightPairs = SystemAPI.GetSingletonBuffer<FightPair>();
@@ -139,6 +141,7 @@ namespace system.battle.battalion
                     speed = speed
                 }.Schedule(state.Dependency)
                 .Complete();
+                */
         }
 
         private void fillExactPositionForFightingPair(
@@ -256,7 +259,7 @@ namespace system.battle.battalion
         }
 
         [BurstCompile]
-        [WithAll(typeof(WaitForSoldiers))]
+        //[WithAll(typeof(WaitForSoldiers))]
         public partial struct CollectBattalionWaitingPositionsJob : IJobEntity
         {
             public NativeParallelHashSet<long>.ParallelWriter waitingBattalions;
@@ -279,7 +282,7 @@ namespace system.battle.battalion
         }
 
         [BurstCompile]
-        [WithNone(typeof(WaitForSoldiers))]
+        //[WithNone(typeof(WaitForSoldiers))]
         [WithNone(typeof(MoveToExactPosition))]
         public partial struct MoveBattalionJob : IJobEntity
         {
@@ -314,7 +317,7 @@ namespace system.battle.battalion
         }
 
         [BurstCompile]
-        [WithNone(typeof(WaitForSoldiers))]
+        //[WithNone(typeof(WaitForSoldiers))]
         public partial struct MoveBattalionJobForExactPositions : IJobEntity
         {
             public float deltaTime;

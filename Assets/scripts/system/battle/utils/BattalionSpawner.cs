@@ -144,7 +144,6 @@ namespace system.battle.utils
             ecb.AddComponent(newBattalion, battalionHealth);
             ecb.AddComponent(newBattalion, battalionMarker);
             ecb.AddComponent(newBattalion, possibleSplits);
-            ecb.AddComponent(newBattalion, new WaitForSoldiers());
             ecb.AddComponent(newBattalion, movementDirection);
             ecb.AddComponent(newBattalion, rowComponent);
             ecb.AddComponent(newBattalion, teamComponent);
@@ -157,14 +156,7 @@ namespace system.battle.utils
 
             ecb.SetComponent(newBattalion, battalionTransform);
 
-            addAdditionalComponents(newBattalion, ecb);
-
             return newBattalion;
-        }
-
-        private static void addAdditionalComponents(Entity entity, EntityCommandBuffer ecb)
-        {
-            ecb.AddComponent(entity, new WaitForSoldiers());
         }
 
         private static float getSizeForBattalionType(SoldierType soldierType)
