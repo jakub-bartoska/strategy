@@ -11,6 +11,7 @@ namespace component
 
     public enum Team
     {
-        TEAM1, TEAM2
+        TEAM1,
+        TEAM2
     }
 }

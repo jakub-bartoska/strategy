@@ -45,7 +45,7 @@ namespace system.battle.utils
                 Value = teamColor
             };
 
-            ecb.SetName(index, newEntity, "Soldier " + soldierStats.index);
+            ecb.SetName(index, newEntity, $"Soldier {soldierStats.index}");
 
             //add components
             ecb.AddComponent(index, newEntity, soldierStats);

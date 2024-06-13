@@ -9,12 +9,12 @@ namespace component.strategy.buildings.building_costs
 
         public bool Equals(BuildingCostTag other)
         {
-            return buildingType == other.buildingType;
+            return (int) buildingType == (int) other.buildingType;
         }
 
         public override int GetHashCode()
         {
-            return buildingType.GetHashCode();
+            return ((int) buildingType).GetHashCode();
         }
     }
 }

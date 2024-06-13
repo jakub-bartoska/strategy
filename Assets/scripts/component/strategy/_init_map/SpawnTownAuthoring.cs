@@ -33,12 +33,12 @@ namespace component.strategy._init_map
 
         public bool Equals(SpawnTown other)
         {
-            return team.Equals(other.team) && position.Equals(other.position);
+            return ((int) team).Equals((int) other.team) && position.Equals(other.position);
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(team, position);
+            return HashCode.Combine((int) team, position);
         }
     }
 

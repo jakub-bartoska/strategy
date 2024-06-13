@@ -225,19 +225,19 @@ MonoBehaviour:
   armies:
   - team: 0
     armyType: 1
-    count: 100
+    count: 1000
     distanceBetweenSoldiers: 0
   - team: 0
     armyType: 0
-    count: 100
+    count: 1000
     distanceBetweenSoldiers: 0
   - team: 1
     armyType: 1
-    count: 100
+    count: 1000
     distanceBetweenSoldiers: 0
   - team: 1
     armyType: 0
-    count: 100
+    count: 1000
     distanceBetweenSoldiers: 0
 --- !u!4 &1898180281
 Transform:

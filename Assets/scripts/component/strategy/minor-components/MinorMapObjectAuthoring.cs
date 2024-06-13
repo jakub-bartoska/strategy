@@ -23,12 +23,12 @@ namespace component.strategy.minor_objects
 
         public bool Equals(SpawnMinorMapObject other)
         {
-            return team.Equals(other.team) && position.Equals(other.position) && type.Equals(other.type);
+            return ((int) team).Equals((int) other.team) && position.Equals(other.position) && ((int) type).Equals((int) other.type);
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(team, position, type);
+            return HashCode.Combine((int) team, position, (int) type);
         }
     }
 
