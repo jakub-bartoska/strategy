@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using component;
 using component._common.camera;
 using component._common.system_switchers;
@@ -82,7 +83,7 @@ namespace system.battle.battle_finish
                     .CreateCommandBuffer(state.WorldUnmanaged);
             var prefabHolder = SystemAPI.GetSingleton<PrefabHolder>();
 
-            var loosingTeam = team1.Count() == 0 ? Team.TEAM1 : Team.TEAM2;
+            var loosingTeam = !team1.Any() ? Team.TEAM1 : Team.TEAM2;
             var battlePosition = new NativeList<float3>(2, Allocator.TempJob); //ok
             new SetProperArmyStateJob
                 {
@@ -145,15 +146,14 @@ namespace system.battle.battle_finish
     [BurstCompile]
     public partial struct SetProperArmyStateJob : IJobEntity
     {
-        [ReadOnly] public NativeHashSet<(long, HolderType)> fightingArmies;
-        [ReadOnly] public NativeHashMap<long, int> companyIdCounts;
+        public NativeHashSet<(long, HolderType)> fightingArmies;
+        public NativeHashMap<long, int> companyIdCounts;
         public EntityCommandBuffer ecb;
         public NativeList<float3> battlePosition;
         public Team loosingTeam;
         public PrefabHolder prefabHolder;
 
-        private void Execute(Entity entity, ref DynamicBuffer<ArmyCompany> companies, IdHolder idHolder,
-            LocalTransform transform, ref TeamComponent team)
+        private void Execute(Entity entity, ref DynamicBuffer<ArmyCompany> companies, IdHolder idHolder, LocalTransform transform, ref TeamComponent team)
         {
             foreach (var (id, type) in fightingArmies)
             {
@@ -261,11 +261,13 @@ namespace system.battle.battle_finish
         }
     }
 
+    [BurstCompile]
+    [WithAll(typeof(BattleCleanupTag))]
     public partial struct DeleteAllBattleEntities : IJobEntity
     {
         public EntityCommandBuffer.ParallelWriter ecb;
 
-        public void Execute(BattleCleanupTag marker, Entity entity)
+        public void Execute(Entity entity)
         {
             ecb.DestroyEntity(entity.Index, entity);
         }
