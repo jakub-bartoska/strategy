@@ -51,11 +51,6 @@ namespace system.battle.battalion.row_change
 
             private void Execute(BattalionMarker battalionMarker, ChangeRow changeRow, ref LocalTransform localTransform, Row row)
             {
-                if (battalionsPerformingAction.Contains(battalionMarker.id))
-                {
-                    return;
-                }
-
                 battalionsPerformingAction.Add(battalionMarker.id);
 
                 var targetZ = CustomTransformUtils.getBattalionZPosition(row.value);

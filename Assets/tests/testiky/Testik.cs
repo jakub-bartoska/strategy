@@ -45,7 +45,6 @@ namespace tests.testiky
             // Assert that data is modified according to the test case
             //var movementData = Manager.GetComponentData<MovementDirectionData>(entity);
             //Assert.AreEqual(0, movementData.Movement.x);
-            var ss = "ss";
             Assert.IsTrue(true);
         }
     }
