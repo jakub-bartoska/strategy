@@ -43,6 +43,12 @@ namespace system.battle.battalion.analysis.row_change
                     DataHolder.battalionSwitchRowDirections.Remove(battalionSwitchRowDirection.Key);
                 }
             }
+
+            var waitingForSoldiersBattalions = MovementDataHolder.waitingForSoldiersBattalions;
+            foreach (var waitingForSoldiersBattalion in waitingForSoldiersBattalions)
+            {
+                DataHolder.battalionSwitchRowDirections.Remove(waitingForSoldiersBattalion);
+            }
         }
 
         private NativeHashMap<long, Direction> getBattalionSwitchRowDirectionsCopy()

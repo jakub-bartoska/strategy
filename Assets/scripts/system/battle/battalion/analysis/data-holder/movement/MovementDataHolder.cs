@@ -56,5 +56,11 @@ namespace system.battle.battalion.analysis.data_holder.movement
          * contains only battalions which are moving
          */
         public static NativeHashMap<long, Direction> movingBattalions = new(1000, Allocator.Persistent);
+
+        /**
+         * battalionId
+         * contains newly created battalions which were just created and are waiting till their soldiers arrive
+         */
+        public static NativeHashSet<long> waitingForSoldiersBattalions = new(1000, Allocator.Persistent);
     }
 }

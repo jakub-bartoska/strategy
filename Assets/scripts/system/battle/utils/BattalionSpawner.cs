@@ -53,6 +53,8 @@ namespace system.battle.utils
             {
                 value = size
             };
+            var waitForSoldiers = new WaitForSoldiersTag();
+
             var transformMatrix = getPostTransformMatrixFromBattalionSize(size);
 
             ecb.AddComponent(newBattalion, battalionMarker);
@@ -62,6 +64,7 @@ namespace system.battle.utils
             ecb.AddComponent(newBattalion, battleUnitType);
             ecb.AddComponent(newBattalion, battalionSize);
             ecb.AddComponent(newBattalion, transformMatrix);
+            ecb.AddComponent(newBattalion, waitForSoldiers);
 
             ecb.SetComponent(newBattalion, battalionTransform);
 
@@ -125,6 +128,7 @@ namespace system.battle.utils
             {
                 value = soldiers.Length * 10
             };
+            var waitForSoldiers = new WaitForSoldiersTag();
 
             ecb.AddComponent(newBattalion, battalionHealth);
             ecb.AddComponent(newBattalion, battalionMarker);
@@ -134,6 +138,7 @@ namespace system.battle.utils
             ecb.AddComponent(newBattalion, battalionSize);
             ecb.AddComponent(newBattalion, transformMatrix);
             ecb.AddComponent(newBattalion, battleUnitType);
+            ecb.AddComponent(newBattalion, waitForSoldiers);
 
             var soldierBuffer = ecb.AddBuffer<BattalionSoldiers>(newBattalion);
             soldierBuffer.AddRange(soldiers.AsArray());

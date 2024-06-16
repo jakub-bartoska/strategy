@@ -40,6 +40,7 @@ namespace system.battle.battalion.analysis
             MovementDataHolder.blockers.Clear();
             MovementDataHolder.battalionDefaultMovementDirection.Clear();
             MovementDataHolder.battalionFollowers.Clear();
+            MovementDataHolder.waitingForSoldiersBattalions.Clear();
 
             var allRowIds = DataHolder.allRowIds;
 

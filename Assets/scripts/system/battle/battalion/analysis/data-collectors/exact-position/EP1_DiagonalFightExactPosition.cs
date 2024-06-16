@@ -13,7 +13,7 @@ using UnityEngine;
 namespace system.battle.battalion.analysis.exact_position
 {
     [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
-    [UpdateAfter(typeof(HS2_FindSplitCandidates))]
+    [UpdateAfter(typeof(HS3_RemoveWaitingBattalions))]
     public partial struct EP1_DiagonalFightExactPosition : ISystem
     {
         [BurstCompile]
