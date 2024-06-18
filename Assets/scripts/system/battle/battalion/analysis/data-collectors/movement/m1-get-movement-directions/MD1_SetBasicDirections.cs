@@ -1,4 +1,5 @@
 ﻿using component.battle.battalion;
+using system.battle.battalion.analysis;
 using system.battle.battalion.analysis.data_holder.movement;
 using system.battle.system_groups;
 using Unity.Burst;
@@ -7,6 +8,7 @@ using Unity.Entities;
 namespace system.battle.battalion.execution.movement
 {
     [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
+    [UpdateAfter(typeof(BattalionDirectionSystem))]
     public partial struct MD1_SetBasicDirections : ISystem
     {
         [BurstCompile]

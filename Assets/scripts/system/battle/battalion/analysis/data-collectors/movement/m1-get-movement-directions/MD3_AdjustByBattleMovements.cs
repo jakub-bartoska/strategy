@@ -1,5 +1,6 @@
 ﻿using component.battle.battalion;
 using system.battle.battalion.analysis.data_holder.movement;
+using system.battle.battalion.analysis.exact_position;
 using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Entities;
@@ -8,6 +9,7 @@ namespace system.battle.battalion.execution.movement
 {
     [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
     [UpdateAfter(typeof(MD2_OverrideByFlanks))]
+    [UpdateAfter(typeof(EP1_DiagonalFightExactPosition))]
     public partial struct MD3_AdjustByBattleMovements : ISystem
     {
         [BurstCompile]

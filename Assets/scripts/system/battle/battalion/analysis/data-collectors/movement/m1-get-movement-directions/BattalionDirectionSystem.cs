@@ -2,6 +2,7 @@
 using component.battle.battalion;
 using component.battle.battalion.markers;
 using system.battle.battalion.analysis.data_holder.movement;
+using system.battle.battalion.analysis.flank;
 using system.battle.enums;
 using system.battle.system_groups;
 using Unity.Burst;
@@ -11,6 +12,7 @@ using Unity.Entities;
 namespace system.battle.battalion.analysis
 {
     [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
+    [UpdateAfter(typeof(F2_FindFlankBattalions))]
     public partial struct BattalionDirectionSystem : ISystem
     {
         [BurstCompile]

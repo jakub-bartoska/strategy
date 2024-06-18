@@ -28,11 +28,11 @@ namespace system.battle.battalion.analysis.horizontal_split
             var verticalFighters = getVerticalFighters();
             removeBlockedBattalions(verticalFighters);
 
-            var battalionDefaultMovementDirection = MovementDataHolder.battalionDefaultMovementDirection;
+            var battalionDefaultMovementDirection = MovementDataHolder.plannedMovementDirections;
             foreach (var verticalFighter in verticalFighters)
             {
-                battalionDefaultMovementDirection.TryGetValue(verticalFighter, out var defaultDirection);
-                result.Add(verticalFighter, defaultDirection);
+                battalionDefaultMovementDirection.TryGetValue(verticalFighter, out var direction);
+                result.Add(verticalFighter, direction);
             }
         }
 
