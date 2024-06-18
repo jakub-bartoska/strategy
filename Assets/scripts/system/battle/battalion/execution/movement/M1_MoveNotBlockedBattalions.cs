@@ -1,7 +1,7 @@
 ﻿using component._common.system_switchers;
 using system.battle.battalion.analysis.data_holder;
 using system.battle.battalion.analysis.data_holder.movement;
-using system.battle.battalion.execution.movement;
+using system.battle.battalion.row_change;
 using system.battle.enums;
 using system.battle.system_groups;
 using Unity.Burst;
@@ -11,8 +11,8 @@ using Unity.Entities;
 namespace system.battle.battalion.execution
 {
     [UpdateInGroup(typeof(BattleExecutionSystemGroup))]
-    [UpdateAfter(typeof(MD3_AdjustByBattleMovements))]
-    public partial struct M2_MoveNotBlockedBattalions : ISystem
+    [UpdateAfter(typeof(RC3_MoveBetweenRows))]
+    public partial struct M1_MoveNotBlockedBattalions : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)

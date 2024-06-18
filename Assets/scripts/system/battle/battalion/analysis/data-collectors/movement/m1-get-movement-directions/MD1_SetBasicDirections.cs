@@ -6,9 +6,8 @@ using Unity.Entities;
 
 namespace system.battle.battalion.execution.movement
 {
-    [UpdateInGroup(typeof(BattleExecutionSystemGroup))]
-    [UpdateAfter(typeof(MD2_OverrideByFlanks))]
-    public partial struct MD3_AdjustByBattleMovements : ISystem
+    [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
+    public partial struct MD1_SetBasicDirections : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)
@@ -19,11 +18,10 @@ namespace system.battle.battalion.execution.movement
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var inFightMovement = MovementDataHolder.inFightMovement;
-            foreach (var battalionDirectionDistance in inFightMovement)
+            var defaultDirections = MovementDataHolder.battalionDefaultMovementDirection;
+            foreach (var defaultDirection in defaultDirections)
             {
-                var newDirection = battalionDirectionDistance.Value.Item1;
-                MovementDataHolder.plannedMovementDirections[battalionDirectionDistance.Key] = newDirection;
+                MovementDataHolder.plannedMovementDirections.Add(defaultDirection.Key, defaultDirection.Value);
             }
         }
     }

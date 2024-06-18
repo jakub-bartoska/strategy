@@ -15,7 +15,7 @@ using Unity.Transforms;
 namespace system.battle.battalion
 {
     [UpdateInGroup(typeof(BattleExecutionSystemGroup))]
-    [UpdateAfter(typeof(M2_MoveNotBlockedBattalions))]
+    [UpdateAfter(typeof(M1_MoveNotBlockedBattalions))]
     public partial struct M3_Move : ISystem
     {
         [BurstCompile]

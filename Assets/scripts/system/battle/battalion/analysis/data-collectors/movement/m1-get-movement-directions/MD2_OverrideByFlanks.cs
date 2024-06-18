@@ -9,7 +9,7 @@ using Unity.Entities;
 
 namespace system.battle.battalion.execution.movement
 {
-    [UpdateInGroup(typeof(BattleExecutionSystemGroup))]
+    [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
     [UpdateAfter(typeof(MD1_SetBasicDirections))]
     public partial struct MD2_OverrideByFlanks : ISystem
     {
