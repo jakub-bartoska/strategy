@@ -15,7 +15,7 @@ namespace system.battle.battalion.analysis.horizontal_split
     [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
     [UpdateAfter(typeof(PositionParserSystem))]
     [UpdateAfter(typeof(FindFightingPairsSystem))]
-    [UpdateAfter(typeof(MD2_OverrideByFlanks))]
+    [UpdateAfter(typeof(MD3_OverrideByFlanks))]
     public partial struct HS1_FindHorizontalSplitBlockers : ISystem
     {
         [BurstCompile]

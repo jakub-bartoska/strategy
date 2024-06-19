@@ -8,9 +8,9 @@ using Unity.Entities;
 namespace system.battle.battalion.execution.movement
 {
     [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
-    [UpdateAfter(typeof(MD2_OverrideByFlanks))]
+    [UpdateAfter(typeof(MD3_OverrideByFlanks))]
     [UpdateAfter(typeof(EP1_DiagonalFightExactPosition))]
-    public partial struct MD3_AdjustByBattleMovements : ISystem
+    public partial struct MD4_AdjustByBattleMovements : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)

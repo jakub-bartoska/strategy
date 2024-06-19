@@ -13,7 +13,7 @@ namespace system.battle.battalion.analysis
 {
     [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
     [UpdateAfter(typeof(F2_FindFlankBattalions))]
-    public partial struct BattalionDirectionSystem : ISystem
+    public partial struct MD1_DefaultDirectionsSystem : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)

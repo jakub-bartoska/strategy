@@ -8,8 +8,8 @@ using Unity.Entities;
 namespace system.battle.battalion.execution.movement
 {
     [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
-    [UpdateAfter(typeof(BattalionDirectionSystem))]
-    public partial struct MD1_SetBasicDirections : ISystem
+    [UpdateAfter(typeof(MD1_DefaultDirectionsSystem))]
+    public partial struct MD2_SetBasicDirections : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)

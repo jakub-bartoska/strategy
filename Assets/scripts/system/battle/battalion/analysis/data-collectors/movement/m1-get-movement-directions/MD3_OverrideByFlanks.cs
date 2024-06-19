@@ -10,8 +10,8 @@ using Unity.Entities;
 namespace system.battle.battalion.execution.movement
 {
     [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
-    [UpdateAfter(typeof(MD1_SetBasicDirections))]
-    public partial struct MD2_OverrideByFlanks : ISystem
+    [UpdateAfter(typeof(MD2_SetBasicDirections))]
+    public partial struct MD3_OverrideByFlanks : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)
