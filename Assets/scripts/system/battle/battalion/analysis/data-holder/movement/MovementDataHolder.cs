@@ -37,12 +37,14 @@ namespace system.battle.battalion.analysis.data_holder.movement
         public static NativeHashMap<int, (float3?, float3?)> flankPositions = new(10, Allocator.Persistent);
 
         /**
-         * battalionId - (direction, distance)
-         * battalionId - (direction, distance)
+         * battalionId - (direction, distance, mindDistanceEnemyId)
+         * battalionId - (direction, distance, mindDistanceEnemyId)
          * contains only battalions which should move in exact direction
          * X axis distance from closest enemy
+         * distance is always positive number (even when enemy is behind)
+         * id of enemy which is causing direction change
          */
-        public static NativeHashMap<long, (Direction, float)> inFightMovement = new(1000, Allocator.Persistent);
+        public static NativeHashMap<long, (Direction, float, long)> inFightMovement = new(1000, Allocator.Persistent);
 
         /**
          * battalionId - direction
@@ -56,6 +58,12 @@ namespace system.battle.battalion.analysis.data_holder.movement
          * contains only battalions which are moving
          */
         public static NativeHashMap<long, Direction> movingBattalions = new(1000, Allocator.Persistent);
+
+        /**
+         * battalionId - distance
+         * contains only battalions which should move in exact distance
+         */
+        public static NativeHashMap<long, float> battalionExactDistance = new(1000, Allocator.Persistent);
 
         /**
          * battalionId

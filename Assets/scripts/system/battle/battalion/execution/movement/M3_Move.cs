@@ -33,12 +33,14 @@ namespace system.battle.battalion
             var deltaTime = SystemAPI.Time.DeltaTime;
             var debugConfig = SystemAPI.GetSingleton<DebugConfig>();
             var movingBattalions = MovementDataHolder.movingBattalions;
+            var battalionExactDistance = MovementDataHolder.battalionExactDistance;
 
             new MoveBattalionJob
                 {
                     debugConfig = debugConfig,
                     deltaTime = deltaTime,
-                    movingBattalions = movingBattalions
+                    movingBattalions = movingBattalions,
+                    battalionExactDistance = battalionExactDistance
                 }.Schedule(state.Dependency)
                 .Complete();
         }
@@ -50,12 +52,18 @@ namespace system.battle.battalion
             public DebugConfig debugConfig;
             public float deltaTime;
             public NativeHashMap<long, Direction> movingBattalions;
+            public NativeHashMap<long, float> battalionExactDistance;
 
             private void Execute(BattalionMarker battalionMarker, ref LocalTransform transform)
             {
                 if (movingBattalions.TryGetValue(battalionMarker.id, out var direction))
                 {
                     var finalSpeed = debugConfig.speed * deltaTime;
+                    if (battalionExactDistance.TryGetValue(battalionMarker.id, out var distance))
+                    {
+                        finalSpeed = distance;
+                    }
+
                     var directionCoefficient = direction switch
                     {
                         Direction.LEFT => -1,

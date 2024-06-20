@@ -72,6 +72,7 @@ namespace system.battle.battalion.analysis.exact_position
                 var direction = Direction.NONE;
                 var conflict = false;
                 var minXDistance = -1f;
+                var minDistanceEnemyId = -1L;
                 foreach (var enemyId in diagonalFights.GetValuesForKey(key))
                 {
                     var enemyPosition = battalionInfo[enemyId].Item1;
@@ -107,12 +108,13 @@ namespace system.battle.battalion.analysis.exact_position
                     if (Mathf.Approximately(minXDistance, -1f) || Math.Abs(xDistance) < minXDistance)
                     {
                         minXDistance = Math.Abs(xDistance);
+                        minDistanceEnemyId = enemyId;
                     }
                 }
 
                 if (!conflict && direction != Direction.NONE)
                 {
-                    MovementDataHolder.inFightMovement.Add(key, (direction, minXDistance));
+                    MovementDataHolder.inFightMovement.Add(key, (direction, minXDistance, minDistanceEnemyId));
                 }
             }
         }

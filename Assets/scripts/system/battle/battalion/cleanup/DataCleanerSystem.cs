@@ -41,6 +41,7 @@ namespace system.battle.battalion.analysis
             MovementDataHolder.battalionDefaultMovementDirection.Clear();
             MovementDataHolder.battalionFollowers.Clear();
             MovementDataHolder.waitingForSoldiersBattalions.Clear();
+            MovementDataHolder.battalionExactDistance.Clear();
 
             var allRowIds = DataHolder.allRowIds;
 
