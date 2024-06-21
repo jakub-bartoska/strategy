@@ -1,7 +1,6 @@
 ﻿using System;
 using component._common.system_switchers;
-using system.battle.battalion.analysis.data_holder;
-using system.battle.battalion.analysis.data_holder.movement;
+using component.battle.battalion.data_holders;
 using system.battle.enums;
 using system.battle.system_groups;
 using Unity.Burst;
@@ -23,12 +22,14 @@ namespace system.battle.battalion.analysis.horizontal_split
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var result = DataHolder.splitBattalions;
+            var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
+            var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
+            var result = dataHolder.ValueRO.splitBattalions;
             //containns battalions which fight vertically only
-            var verticalFighters = getVerticalFighters();
-            removeBlockedBattalions(verticalFighters);
+            var verticalFighters = getVerticalFighters(dataHolder.ValueRO);
+            removeBlockedBattalions(verticalFighters, movementDataHolder.ValueRO, dataHolder.ValueRO);
 
-            var battalionDefaultMovementDirection = MovementDataHolder.plannedMovementDirections;
+            var battalionDefaultMovementDirection = movementDataHolder.ValueRO.plannedMovementDirections;
             foreach (var verticalFighter in verticalFighters)
             {
                 battalionDefaultMovementDirection.TryGetValue(verticalFighter, out var direction);
@@ -36,9 +37,9 @@ namespace system.battle.battalion.analysis.horizontal_split
             }
         }
 
-        private NativeHashSet<long> getVerticalFighters()
+        private NativeHashSet<long> getVerticalFighters(DataHolder dataHolder)
         {
-            var fightingPairs = DataHolder.fightingPairs;
+            var fightingPairs = dataHolder.fightingPairs;
             //UP/DOWN
             var verticalFights = new NativeHashSet<long>(1000, Allocator.Temp);
             //LEFT/RIGHT
@@ -69,10 +70,10 @@ namespace system.battle.battalion.analysis.horizontal_split
             return verticalFights;
         }
 
-        private void removeBlockedBattalions(NativeHashSet<long> fightingBattalionIds)
+        private void removeBlockedBattalions(NativeHashSet<long> fightingBattalionIds, MovementDataHolder movementDataHolder, DataHolder dataHolder)
         {
-            var battalionDefaultMovementDirection = MovementDataHolder.battalionDefaultMovementDirection;
-            var blockedHorizontalSplits = DataHolder.blockedHorizontalSplits;
+            var battalionDefaultMovementDirection = movementDataHolder.battalionDefaultMovementDirection;
+            var blockedHorizontalSplits = dataHolder.blockedHorizontalSplits;
 
             var blockedBattalions = new NativeHashSet<long>(1000, Allocator.Temp);
             foreach (var fightingBattalionId in fightingBattalionIds)

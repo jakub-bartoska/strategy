@@ -1,5 +1,5 @@
 ﻿using component.battle.battalion;
-using system.battle.battalion.analysis.data_holder;
+using component.battle.battalion.data_holders;
 using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Collections;
@@ -19,7 +19,8 @@ namespace system.battle.battalion.analysis.reinforcements
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var needReinforcements = DataHolder.needReinforcements;
+            var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
+            var needReinforcements = dataHolder.ValueRW.needReinforcements;
 
             new CollectBattalionsNeedingReinforcementsJob
                 {

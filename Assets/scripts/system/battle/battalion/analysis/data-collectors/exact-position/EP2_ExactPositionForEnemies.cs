@@ -1,6 +1,6 @@
 ﻿using component._common.system_switchers;
+using component.battle.battalion.data_holders;
 using component.battle.config;
-using system.battle.battalion.analysis.data_holder.movement;
 using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Collections;
@@ -21,11 +21,12 @@ namespace system.battle.battalion.analysis.exact_position
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
             var deltaTime = SystemAPI.Time.DeltaTime;
             var debugConfig = SystemAPI.GetSingleton<DebugConfig>();
             var finalSpeed = debugConfig.speed * deltaTime;
 
-            var inFightMovement = MovementDataHolder.inFightMovement;
+            var inFightMovement = movementDataHolder.ValueRO.inFightMovement;
 
             var battalionsToUpdate = new NativeHashMap<long, long>(1000, Allocator.Temp);
 
@@ -53,21 +54,21 @@ namespace system.battle.battalion.analysis.exact_position
                     }
                 }
 
-                MovementDataHolder.battalionExactDistance.Add(kvPair.Key, kvPair.Value.Item2);
+                movementDataHolder.ValueRW.battalionExactDistance.Add(kvPair.Key, kvPair.Value.Item2);
             }
 
             foreach (var kvPair in battalionsToUpdate)
             {
-                updateBattalionInFightMovementByHalf(kvPair.Key);
-                updateBattalionInFightMovementByHalf(kvPair.Value);
+                updateBattalionInFightMovementByHalf(kvPair.Key, movementDataHolder);
+                updateBattalionInFightMovementByHalf(kvPair.Value, movementDataHolder);
             }
         }
 
-        private void updateBattalionInFightMovementByHalf(long battalionId)
+        private void updateBattalionInFightMovementByHalf(long battalionId, RefRW<MovementDataHolder> movementDataHolder)
         {
-            var currentValue = MovementDataHolder.inFightMovement[battalionId];
+            var currentValue = movementDataHolder.ValueRO.inFightMovement[battalionId];
             var newDistance = currentValue.Item2 / 2;
-            MovementDataHolder.battalionExactDistance.Add(battalionId, newDistance);
+            movementDataHolder.ValueRW.battalionExactDistance.Add(battalionId, newDistance);
         }
     }
 }

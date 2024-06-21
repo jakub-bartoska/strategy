@@ -1,6 +1,5 @@
 ﻿using component._common.system_switchers;
-using system.battle.battalion.analysis.data_holder;
-using system.battle.battalion.analysis.data_holder.movement;
+using component.battle.battalion.data_holders;
 using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Entities;
@@ -19,39 +18,32 @@ namespace system.battle.battalion.analysis
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            DataHolder.positions.Clear();
-            DataHolder.fightingPairs.Clear();
-            DataHolder.battalionsPerformingAction.Clear();
-            DataHolder.needReinforcements.Clear();
-            DataHolder.allBattalionIds.Clear();
-            DataHolder.reinforcements.Clear();
-            MovementDataHolder.flankPositions.Clear();
-            DataHolder.flankingBattalions.Clear();
-            DataHolder.rowChanges.Clear();
-            DataHolder.battalionSwitchRowDirections.Clear();
-            DataHolder.blockedHorizontalSplits.Clear();
-            DataHolder.splitBattalions.Clear();
-            DataHolder.fightingBattalions.Clear();
-            DataHolder.battalionInfo.Clear();
+            var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
+            var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
 
-            MovementDataHolder.inFightMovement.Clear();
-            MovementDataHolder.movingBattalions.Clear();
-            MovementDataHolder.plannedMovementDirections.Clear();
-            MovementDataHolder.blockers.Clear();
-            MovementDataHolder.battalionDefaultMovementDirection.Clear();
-            MovementDataHolder.battalionFollowers.Clear();
-            MovementDataHolder.waitingForSoldiersBattalions.Clear();
-            MovementDataHolder.battalionExactDistance.Clear();
+            dataHolder.ValueRW.positions.Clear();
+            dataHolder.ValueRW.fightingPairs.Clear();
+            dataHolder.ValueRW.battalionsPerformingAction.Clear();
+            dataHolder.ValueRW.needReinforcements.Clear();
+            dataHolder.ValueRW.allBattalionIds.Clear();
+            dataHolder.ValueRW.reinforcements.Clear();
+            dataHolder.ValueRW.flankingBattalions.Clear();
+            dataHolder.ValueRW.rowChanges.Clear();
+            dataHolder.ValueRW.battalionSwitchRowDirections.Clear();
+            dataHolder.ValueRW.blockedHorizontalSplits.Clear();
+            dataHolder.ValueRW.splitBattalions.Clear();
+            dataHolder.ValueRW.fightingBattalions.Clear();
+            dataHolder.ValueRW.battalionInfo.Clear();
 
-            var allRowIds = DataHolder.allRowIds;
-
-            if (allRowIds.IsEmpty)
-            {
-                for (int i = 0; i < 10; i++)
-                {
-                    allRowIds.Add(i);
-                }
-            }
+            movementDataHolder.ValueRW.flankPositions.Clear();
+            movementDataHolder.ValueRW.inFightMovement.Clear();
+            movementDataHolder.ValueRW.movingBattalions.Clear();
+            movementDataHolder.ValueRW.plannedMovementDirections.Clear();
+            movementDataHolder.ValueRW.blockers.Clear();
+            movementDataHolder.ValueRW.battalionDefaultMovementDirection.Clear();
+            movementDataHolder.ValueRW.battalionFollowers.Clear();
+            movementDataHolder.ValueRW.waitingForSoldiersBattalions.Clear();
+            movementDataHolder.ValueRW.battalionExactDistance.Clear();
         }
     }
 }

@@ -1,8 +1,7 @@
 ﻿using System;
 using component;
 using component._common.system_switchers;
-using system.battle.battalion.analysis.data_holder;
-using system.battle.battalion.analysis.data_holder.movement;
+using component.battle.battalion.data_holders;
 using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Entities;
@@ -23,11 +22,13 @@ namespace system.battle.battalion.analysis.flank
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var positions = DataHolder.positions;
+            var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
+            var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
+            var positions = dataHolder.ValueRO.positions;
             //rowId - (team1FlankPosition, team2FlankPosition)
-            var flankPositions = MovementDataHolder.flankPositions;
-            var flankingBattalions = DataHolder.flankingBattalions;
-            var allRowIds = DataHolder.allRowIds;
+            var flankPositions = movementDataHolder.ValueRO.flankPositions;
+            var flankingBattalions = dataHolder.ValueRW.flankingBattalions;
+            var allRowIds = dataHolder.ValueRO.allRowIds;
 
             foreach (var rowId in allRowIds)
             {

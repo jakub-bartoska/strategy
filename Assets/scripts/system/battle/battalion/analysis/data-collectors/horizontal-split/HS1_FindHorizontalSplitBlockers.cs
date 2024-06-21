@@ -1,7 +1,7 @@
 ﻿using component;
 using component._common.system_switchers;
 using component.battle.battalion;
-using system.battle.battalion.analysis.data_holder;
+using component.battle.battalion.data_holders;
 using system.battle.battalion.analysis.utils;
 using system.battle.battalion.execution.movement;
 using system.battle.enums;
@@ -27,9 +27,10 @@ namespace system.battle.battalion.analysis.horizontal_split
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var positions = DataHolder.positions;
-            var allRows = DataHolder.allRowIds;
-            var blockedHorizontalSplits = DataHolder.blockedHorizontalSplits;
+            var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
+            var positions = dataHolder.ValueRO.positions;
+            var allRows = dataHolder.ValueRO.allRowIds;
+            var blockedHorizontalSplits = dataHolder.ValueRW.blockedHorizontalSplits;
 
             foreach (var rowId in allRows)
             {

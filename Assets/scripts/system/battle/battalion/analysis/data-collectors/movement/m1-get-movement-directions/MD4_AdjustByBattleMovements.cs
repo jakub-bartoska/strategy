@@ -1,5 +1,5 @@
 ﻿using component.battle.battalion;
-using system.battle.battalion.analysis.data_holder.movement;
+using component.battle.battalion.data_holders;
 using system.battle.battalion.analysis.exact_position;
 using system.battle.system_groups;
 using Unity.Burst;
@@ -21,11 +21,12 @@ namespace system.battle.battalion.execution.movement
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var inFightMovement = MovementDataHolder.inFightMovement;
+            var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
+            var inFightMovement = movementDataHolder.ValueRO.inFightMovement;
             foreach (var battalionDirectionDistance in inFightMovement)
             {
                 var newDirection = battalionDirectionDistance.Value.Item1;
-                MovementDataHolder.plannedMovementDirections[battalionDirectionDistance.Key] = newDirection;
+                movementDataHolder.ValueRW.plannedMovementDirections[battalionDirectionDistance.Key] = newDirection;
             }
         }
     }

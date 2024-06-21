@@ -1,7 +1,7 @@
 ﻿using component._common.system_switchers;
 using component.authoring_pairs.PrefabHolder;
 using component.battle.battalion;
-using system.battle.battalion.analysis.data_holder;
+using component.battle.battalion.data_holders;
 using system.battle.battalion.analysis.utils;
 using system.battle.enums;
 using system.battle.system_groups;
@@ -21,13 +21,15 @@ namespace system.battle.battalion.split
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
+            state.RequireForUpdate<PrefabHolder>();
             state.RequireForUpdate<BattleMapStateMarker>();
         }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var splitBattalions = DataHolder.splitBattalions;
+            var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
+            var splitBattalions = dataHolder.ValueRO.splitBattalions;
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
                 .CreateCommandBuffer(state.WorldUnmanaged);
             var prefabHolder = SystemAPI.GetSingleton<PrefabHolder>();

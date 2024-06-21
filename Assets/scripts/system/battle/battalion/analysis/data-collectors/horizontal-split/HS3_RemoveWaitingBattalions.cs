@@ -1,6 +1,5 @@
 ﻿using component._common.system_switchers;
-using system.battle.battalion.analysis.data_holder;
-using system.battle.battalion.analysis.data_holder.movement;
+using component.battle.battalion.data_holders;
 using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Entities;
@@ -20,8 +19,10 @@ namespace system.battle.battalion.analysis.horizontal_split
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var waitingForSoldiersBattalions = MovementDataHolder.waitingForSoldiersBattalions;
-            var splitBattalions = DataHolder.splitBattalions;
+            var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
+            var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
+            var waitingForSoldiersBattalions = movementDataHolder.ValueRO.waitingForSoldiersBattalions;
+            var splitBattalions = dataHolder.ValueRW.splitBattalions;
 
             foreach (var waitingForSoldiersBattalion in waitingForSoldiersBattalions)
             {

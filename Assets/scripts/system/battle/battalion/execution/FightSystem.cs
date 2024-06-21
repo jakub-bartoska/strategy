@@ -1,8 +1,8 @@
 ﻿using System;
 using component._common.system_switchers;
 using component.battle.battalion;
+using component.battle.battalion.data_holders;
 using component.battle.config;
-using system.battle.battalion.analysis.data_holder;
 using system.battle.enums;
 using system.battle.system_groups;
 using Unity.Burst;
@@ -23,6 +23,7 @@ namespace system.battle.battalion
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
             var debugConfig = SystemAPI.GetSingleton<DebugConfig>();
             var deltaTime = SystemAPI.Time.DeltaTime;
             //dmg delaed by 1 soldier per second (keep in mind that battalion can have 10 soldiers)
@@ -46,7 +47,7 @@ namespace system.battle.battalion
             //can contain multiple dmg since 1 battalion could be attacked by multiple enemies
             var dmgReceived = new NativeParallelMultiHashMap<long, float>(1000, Allocator.TempJob); //ok
 
-            foreach (var fightingPair in DataHolder.fightingPairs)
+            foreach (var fightingPair in dataHolder.ValueRO.fightingPairs)
             {
                 // battalion1 damages battalion2
                 var dmgToReceive = fightingPair.Item3 switch

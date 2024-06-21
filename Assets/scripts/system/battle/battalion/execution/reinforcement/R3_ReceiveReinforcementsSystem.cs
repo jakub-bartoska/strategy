@@ -1,7 +1,7 @@
 ﻿using System;
 using component._common.system_switchers;
 using component.battle.battalion;
-using system.battle.battalion.analysis.data_holder;
+using component.battle.battalion.data_holders;
 using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Collections;
@@ -22,7 +22,8 @@ namespace system.battle.battalion.execution.reinforcement
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var reinforcements = DataHolder.reinforcements;
+            var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
+            var reinforcements = dataHolder.ValueRO.reinforcements;
 
             new ReceiveReinforcementsJob
                 {

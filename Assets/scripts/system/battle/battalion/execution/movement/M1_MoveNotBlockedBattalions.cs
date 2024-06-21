@@ -1,6 +1,5 @@
 ﻿using component._common.system_switchers;
-using system.battle.battalion.analysis.data_holder;
-using system.battle.battalion.analysis.data_holder.movement;
+using component.battle.battalion.data_holders;
 using system.battle.battalion.row_change;
 using system.battle.enums;
 using system.battle.system_groups;
@@ -23,12 +22,15 @@ namespace system.battle.battalion.execution
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var blockers = MovementDataHolder.blockers;
+            var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
+            var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
+
+            var blockers = movementDataHolder.ValueRO.blockers;
 
             //battalionID -> direction to move
             var battalionsAbleToMove = new NativeList<(long, Direction)>(1000, Allocator.Temp);
-            var stoppedBattalions = getNotMovingBattalionIds();
-            var allBattalionIds = DataHolder.allBattalionIds;
+            var stoppedBattalions = getNotMovingBattalionIds(dataHolder.ValueRO, movementDataHolder.ValueRO);
+            var allBattalionIds = dataHolder.ValueRO.allBattalionIds;
 
             foreach (var battalionId in allBattalionIds)
             {
@@ -38,7 +40,7 @@ namespace system.battle.battalion.execution
                 }
 
                 var blockedForDirection = false;
-                var direction = MovementDataHolder.plannedMovementDirections[battalionId];
+                var direction = movementDataHolder.ValueRO.plannedMovementDirections[battalionId];
                 foreach (var valueTuple in blockers.GetValuesForKey(battalionId))
                 {
                     if (valueTuple.Item3 == direction)
@@ -54,7 +56,7 @@ namespace system.battle.battalion.execution
                 }
             }
 
-            var ableToMoveInDefaultDirection = BlockerUtils.unblockDirections(battalionsAbleToMove);
+            var ableToMoveInDefaultDirection = BlockerUtils.unblockDirections(battalionsAbleToMove, movementDataHolder.ValueRO);
             foreach (var valueTuple in battalionsAbleToMove)
             {
                 ableToMoveInDefaultDirection.Add(valueTuple.Item1, valueTuple.Item2);
@@ -62,19 +64,19 @@ namespace system.battle.battalion.execution
 
             foreach (var battalion in ableToMoveInDefaultDirection)
             {
-                MovementDataHolder.movingBattalions.Add(battalion.Key, battalion.Value);
+                movementDataHolder.ValueRW.movingBattalions.Add(battalion.Key, battalion.Value);
             }
         }
 
-        private NativeHashSet<long> getNotMovingBattalionIds()
+        private NativeHashSet<long> getNotMovingBattalionIds(DataHolder dataholde, MovementDataHolder movementDataHolder)
         {
             var result = new NativeHashSet<long>(1000, Allocator.Temp);
-            foreach (var inActionBattalion in DataHolder.battalionsPerformingAction)
+            foreach (var inActionBattalion in dataholde.battalionsPerformingAction)
             {
                 result.Add(inActionBattalion);
             }
 
-            foreach (var fightAndMoveBattalions in MovementDataHolder.inFightMovement.GetKeyArray(Allocator.Temp))
+            foreach (var fightAndMoveBattalions in movementDataHolder.inFightMovement.GetKeyArray(Allocator.Temp))
             {
                 result.Remove(fightAndMoveBattalions);
             }

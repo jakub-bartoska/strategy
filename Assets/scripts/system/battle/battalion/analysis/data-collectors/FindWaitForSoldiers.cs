@@ -1,7 +1,6 @@
 ﻿using component._common.system_switchers;
 using component.battle.battalion;
-using system.battle.battalion.analysis.data_holder;
-using system.battle.battalion.analysis.data_holder.movement;
+using component.battle.battalion.data_holders;
 using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Collections;
@@ -21,7 +20,9 @@ namespace system.battle.battalion.analysis
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var waitingForSoldiersBattalions = MovementDataHolder.waitingForSoldiersBattalions;
+            var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
+            var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
+            var waitingForSoldiersBattalions = movementDataHolder.ValueRW.waitingForSoldiersBattalions;
             new CollectBattleUnitPositionsJob
                 {
                     waitingForSoldiersBattalions = waitingForSoldiersBattalions
@@ -30,7 +31,7 @@ namespace system.battle.battalion.analysis
 
             foreach (var waitingForSoldiersBattalion in waitingForSoldiersBattalions)
             {
-                DataHolder.battalionsPerformingAction.Add(waitingForSoldiersBattalion);
+                dataHolder.ValueRW.battalionsPerformingAction.Add(waitingForSoldiersBattalion);
             }
         }
     }

@@ -1,7 +1,7 @@
 ﻿using component._common.system_switchers;
 using component.battle.battalion;
+using component.battle.battalion.data_holders;
 using component.battle.battalion.markers;
-using system.battle.battalion.analysis.data_holder.movement;
 using system.battle.battalion.analysis.flank;
 using system.battle.enums;
 using system.battle.system_groups;
@@ -24,7 +24,8 @@ namespace system.battle.battalion.analysis
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var battalionDefaultMovementDirection = MovementDataHolder.battalionDefaultMovementDirection;
+            var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
+            var battalionDefaultMovementDirection = movementDataHolder.ValueRW.battalionDefaultMovementDirection;
             new CollectBattalionDirections
                 {
                     battalionDirections = battalionDefaultMovementDirection

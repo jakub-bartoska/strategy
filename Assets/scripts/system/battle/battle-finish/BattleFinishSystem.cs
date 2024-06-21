@@ -153,7 +153,7 @@ namespace system.battle.battle_finish
         public Team loosingTeam;
         public PrefabHolder prefabHolder;
 
-        private void Execute(Entity entity, ref DynamicBuffer<ArmyCompany> companies, IdHolder idHolder, LocalTransform transform, ref TeamComponent team)
+        public void Execute(Entity entity, ref DynamicBuffer<ArmyCompany> companies, IdHolder idHolder, LocalTransform transform, ref TeamComponent team)
         {
             foreach (var (id, type) in fightingArmies)
             {

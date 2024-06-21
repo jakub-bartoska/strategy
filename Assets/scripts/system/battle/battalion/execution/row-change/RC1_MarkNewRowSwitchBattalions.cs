@@ -2,8 +2,8 @@
 using component._common.system_switchers;
 using component.authoring_pairs.PrefabHolder;
 using component.battle.battalion;
+using component.battle.battalion.data_holders;
 using component.battle.battalion.markers;
-using system.battle.battalion.analysis.data_holder;
 using system.battle.enums;
 using system.battle.system_groups;
 using system.battle.utils;
@@ -21,6 +21,8 @@ namespace system.battle.battalion.row_change
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
+            state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
+            state.RequireForUpdate<PrefabHolder>();
             state.RequireForUpdate<BattleMapStateMarker>();
         }
 
@@ -29,8 +31,9 @@ namespace system.battle.battalion.row_change
         {
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
                 .CreateCommandBuffer(state.WorldUnmanaged);
-            var battalionSwitchRowDirections = DataHolder.battalionSwitchRowDirections;
-            var battalionsPerformingAction = DataHolder.battalionsPerformingAction;
+            var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
+            var battalionSwitchRowDirections = dataHolder.ValueRO.battalionSwitchRowDirections;
+            var battalionsPerformingAction = dataHolder.ValueRO.battalionsPerformingAction;
             var prefabHolder = SystemAPI.GetSingleton<PrefabHolder>();
 
             //todo filter out not moving battalions

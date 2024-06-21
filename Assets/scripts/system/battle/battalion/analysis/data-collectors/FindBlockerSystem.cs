@@ -1,8 +1,7 @@
 ﻿using component;
 using component._common.system_switchers;
 using component.battle.battalion;
-using system.battle.battalion.analysis.data_holder;
-using system.battle.battalion.analysis.data_holder.movement;
+using component.battle.battalion.data_holders;
 using system.battle.battalion.analysis.utils;
 using system.battle.enums;
 using system.battle.system_groups;
@@ -26,9 +25,12 @@ namespace system.battle.battalion.analysis
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var positions = DataHolder.positions;
-            var blockers = MovementDataHolder.blockers;
-            var allRows = DataHolder.allRowIds;
+            var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
+            var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
+
+            var positions = dataHolder.ValueRO.positions;
+            var blockers = movementDataHolder.ValueRO.blockers;
+            var allRows = dataHolder.ValueRO.allRowIds;
 
             foreach (var rowId in allRows)
             {
@@ -38,7 +40,7 @@ namespace system.battle.battalion.analysis
                 {
                     if (rowId != 0)
                     {
-                        findDiagonalBlockers(me, rowId, blockers);
+                        findDiagonalBlockers(me, rowId, blockers, dataHolder.ValueRO);
                     }
 
                     //unit is the most left, there is noone to compare with
@@ -59,12 +61,16 @@ namespace system.battle.battalion.analysis
                 }
             }
 
-            createFollowers();
+            createFollowers(movementDataHolder);
         }
 
-        private void findDiagonalBlockers((long, float3, Team, float, BattleUnitTypeEnum) me, int rowId, NativeParallelMultiHashMap<long, (long, BattleUnitTypeEnum, Direction, Team)> blockers)
+        private void findDiagonalBlockers(
+            (long, float3, Team, float, BattleUnitTypeEnum) me,
+            int rowId,
+            NativeParallelMultiHashMap<long, (long, BattleUnitTypeEnum, Direction, Team)> blockers,
+            DataHolder dataHolder)
         {
-            var positions = DataHolder.positions;
+            var positions = dataHolder.positions;
             foreach (var upper in positions.GetValuesForKey(rowId - 1))
             {
                 var isTooFarDiagonal = BattleTransformUtils.isTooFar(me.Item2, upper.Item2, me.Item4, upper.Item4);
@@ -95,10 +101,10 @@ namespace system.battle.battalion.analysis
         }
 
 
-        private void createFollowers()
+        private void createFollowers(RefRW<MovementDataHolder> movementDataHolder)
         {
-            var blockers = MovementDataHolder.blockers;
-            var battalionFollowers = MovementDataHolder.battalionFollowers;
+            var blockers = movementDataHolder.ValueRO.blockers;
+            var battalionFollowers = movementDataHolder.ValueRW.battalionFollowers;
 
             foreach (var blocked in blockers)
             {

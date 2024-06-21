@@ -1,8 +1,8 @@
 ﻿using System;
 using component._common.system_switchers;
 using component.battle.battalion;
+using component.battle.battalion.data_holders;
 using component.battle.config;
-using system.battle.battalion.analysis.data_holder.movement;
 using system.battle.battalion.execution;
 using system.battle.enums;
 using system.battle.system_groups;
@@ -30,10 +30,11 @@ namespace system.battle.battalion
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
             var deltaTime = SystemAPI.Time.DeltaTime;
             var debugConfig = SystemAPI.GetSingleton<DebugConfig>();
-            var movingBattalions = MovementDataHolder.movingBattalions;
-            var battalionExactDistance = MovementDataHolder.battalionExactDistance;
+            var movingBattalions = movementDataHolder.ValueRO.movingBattalions;
+            var battalionExactDistance = movementDataHolder.ValueRO.battalionExactDistance;
 
             new MoveBattalionJob
                 {

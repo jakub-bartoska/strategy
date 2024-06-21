@@ -2,8 +2,7 @@
 using component;
 using component._common.system_switchers;
 using component.battle.battalion;
-using system.battle.battalion.analysis.data_holder;
-using system.battle.battalion.analysis.data_holder.movement;
+using component.battle.battalion.data_holders;
 using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Entities;
@@ -24,19 +23,22 @@ namespace system.battle.battalion.analysis.row_change
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var positions = DataHolder.positions;
-            var allRowIds = DataHolder.allRowIds;
-            var rowChanges = DataHolder.rowChanges;
-            var result = DataHolder.battalionSwitchRowDirections;
+            var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
+            var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
+
+            var positions = dataHolder.ValueRO.positions;
+            var allRowIds = dataHolder.ValueRO.allRowIds;
+            var rowChanges = dataHolder.ValueRO.rowChanges;
+            var result = dataHolder.ValueRW.battalionSwitchRowDirections;
 
             foreach (var rowId in allRowIds)
             {
                 var rowChangesPerTeam = rowChanges[rowId];
                 var team1Direction = rowChangesPerTeam.Item1.Item1;
-                var team1Position = getFlankingPositionForRow(rowChangesPerTeam.Item1.Item2, Team.TEAM1);
+                var team1Position = getFlankingPositionForRow(rowChangesPerTeam.Item1.Item2, Team.TEAM1, movementDataHolder.ValueRO);
 
                 var team2Direction = rowChangesPerTeam.Item2.Item1;
-                var team2Position = getFlankingPositionForRow(rowChangesPerTeam.Item2.Item2, Team.TEAM2);
+                var team2Position = getFlankingPositionForRow(rowChangesPerTeam.Item2.Item2, Team.TEAM2, movementDataHolder.ValueRO);
 
                 foreach (var battalionInfo in positions.GetValuesForKey(rowId))
                 {
@@ -66,9 +68,9 @@ namespace system.battle.battalion.analysis.row_change
             }
         }
 
-        private float3? getFlankingPositionForRow(int targetRow, Team team)
+        private float3? getFlankingPositionForRow(int targetRow, Team team, MovementDataHolder movementDataHolder)
         {
-            MovementDataHolder.flankPositions.TryGetValue(targetRow, out var teamFlanks);
+            movementDataHolder.flankPositions.TryGetValue(targetRow, out var teamFlanks);
             return team switch
             {
                 Team.TEAM1 => teamFlanks.Item1,

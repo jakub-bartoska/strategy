@@ -1,9 +1,9 @@
 ﻿using System;
 using component._common.system_switchers;
 using component.battle.battalion;
+using component.battle.battalion.data_holders;
 using component.battle.battalion.markers;
 using component.battle.config;
-using system.battle.battalion.analysis.data_holder;
 using system.battle.enums;
 using system.battle.system_groups;
 using system.battle.utils;
@@ -29,9 +29,10 @@ namespace system.battle.battalion.row_change
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
             var deltaTime = SystemAPI.Time.DeltaTime;
             var speed = SystemAPI.GetSingleton<DebugConfig>().speed;
-            var battalionsPerformingAction = DataHolder.battalionsPerformingAction;
+            var battalionsPerformingAction = dataHolder.ValueRO.battalionsPerformingAction;
 
             new MoveToNewLineJob
                 {

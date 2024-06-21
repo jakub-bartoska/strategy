@@ -1,7 +1,6 @@
 ﻿using System;
 using component.battle.battalion;
-using system.battle.battalion.analysis.data_holder;
-using system.battle.battalion.analysis.data_holder.movement;
+using component.battle.battalion.data_holders;
 using system.battle.enums;
 using system.battle.system_groups;
 using Unity.Burst;
@@ -22,12 +21,14 @@ namespace system.battle.battalion.execution.movement
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var flankingBattalions = DataHolder.flankingBattalions;
+            var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
+            var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
+            var flankingBattalions = dataHolder.ValueRO.flankingBattalions;
             foreach (var flankingBattalion in flankingBattalions)
             {
-                var oldDirection = MovementDataHolder.plannedMovementDirections[flankingBattalion];
+                var oldDirection = movementDataHolder.ValueRO.plannedMovementDirections[flankingBattalion];
                 var newDirection = getOppositeDirection(oldDirection);
-                MovementDataHolder.plannedMovementDirections[flankingBattalion] = newDirection;
+                movementDataHolder.ValueRW.plannedMovementDirections[flankingBattalion] = newDirection;
             }
         }
 

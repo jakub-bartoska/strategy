@@ -1,8 +1,7 @@
 ﻿using System;
 using component;
 using component._common.system_switchers;
-using system.battle.battalion.analysis.data_holder;
-using system.battle.battalion.analysis.data_holder.movement;
+using component.battle.battalion.data_holders;
 using system.battle.battalion.analysis.flank;
 using system.battle.enums;
 using system.battle.system_groups;
@@ -27,21 +26,23 @@ namespace system.battle.battalion.analysis.row_change
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
+            var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
             //rowId - flank direction (UP/DOWN), rowId to switch to
             var team1RowChanges = new NativeHashMap<int, (Direction, int)>(10, Allocator.Temp);
             var team2RowChanges = new NativeHashMap<int, (Direction, int)>(10, Allocator.Temp);
-            setNoRowChanges(team1RowChanges, Team.TEAM1);
-            setNoRowChanges(team2RowChanges, Team.TEAM2);
-            fillClosestRows(team1RowChanges);
-            fillClosestRows(team2RowChanges);
+            setNoRowChanges(team1RowChanges, Team.TEAM1, dataHolder.ValueRO, movementDataHolder.ValueRO);
+            setNoRowChanges(team2RowChanges, Team.TEAM2, dataHolder.ValueRO, movementDataHolder.ValueRO);
+            fillClosestRows(team1RowChanges, dataHolder.ValueRO);
+            fillClosestRows(team2RowChanges, dataHolder.ValueRO);
 
-            fillRowChangesIntoDataHolder(team1RowChanges, team2RowChanges);
+            fillRowChangesIntoDataHolder(team1RowChanges, team2RowChanges, dataHolder);
         }
 
-        private void fillRowChangesIntoDataHolder(NativeHashMap<int, (Direction, int)> team1, NativeHashMap<int, (Direction, int)> team2)
+        private void fillRowChangesIntoDataHolder(NativeHashMap<int, (Direction, int)> team1, NativeHashMap<int, (Direction, int)> team2, RefRW<DataHolder> dataHolder)
         {
-            var rowChanges = DataHolder.rowChanges;
-            var allRowIds = DataHolder.allRowIds;
+            var rowChanges = dataHolder.ValueRW.rowChanges;
+            var allRowIds = dataHolder.ValueRO.allRowIds;
             foreach (var rowId in allRowIds)
             {
                 var team1Direction = team1[rowId];
@@ -50,10 +51,10 @@ namespace system.battle.battalion.analysis.row_change
             }
         }
 
-        private void setNoRowChanges(NativeHashMap<int, (Direction, int)> tmpResult, Team team)
+        private void setNoRowChanges(NativeHashMap<int, (Direction, int)> tmpResult, Team team, DataHolder dataHolder, MovementDataHolder movementDataHolder)
         {
-            var flankPositions = MovementDataHolder.flankPositions;
-            var allRowIds = DataHolder.allRowIds;
+            var flankPositions = movementDataHolder.flankPositions;
+            var allRowIds = dataHolder.allRowIds;
 
             foreach (var rowId in allRowIds)
             {
@@ -75,9 +76,9 @@ namespace system.battle.battalion.analysis.row_change
             }
         }
 
-        private void fillClosestRows(NativeHashMap<int, (Direction, int)> tmpResult)
+        private void fillClosestRows(NativeHashMap<int, (Direction, int)> tmpResult, DataHolder dataHolder)
         {
-            var allRowIds = DataHolder.allRowIds;
+            var allRowIds = dataHolder.allRowIds;
             foreach (var rowId in allRowIds)
             {
                 if (tmpResult.ContainsKey(rowId))

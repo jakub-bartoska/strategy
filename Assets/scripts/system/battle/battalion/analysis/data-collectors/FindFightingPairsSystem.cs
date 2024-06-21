@@ -1,7 +1,7 @@
 ﻿using component;
 using component._common.system_switchers;
 using component.battle.battalion;
-using system.battle.battalion.analysis.data_holder;
+using component.battle.battalion.data_holders;
 using system.battle.battalion.analysis.utils;
 using system.battle.enums;
 using system.battle.system_groups;
@@ -24,8 +24,9 @@ namespace system.battle.battalion.analysis
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var positions = DataHolder.positions;
-            var allRows = DataHolder.allRowIds;
+            var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
+            var positions = dataHolder.ValueRO.positions;
+            var allRows = dataHolder.ValueRO.allRowIds;
 
             foreach (var rowId in allRows)
             {
@@ -34,7 +35,7 @@ namespace system.battle.battalion.analysis
                 {
                     if (rowId != 0)
                     {
-                        findDiagonalFightingPairs(me, rowId);
+                        findDiagonalFightingPairs(me, rowId, dataHolder);
                     }
 
                     //unit is the most left, there is noone to compare with
@@ -56,15 +57,15 @@ namespace system.battle.battalion.analysis
                     var isTooFar = BattleTransformUtils.isTooFar(me.Item2, leftUnit.Item2, me.Item4, leftUnit.Item4);
                     if (!isTooFar)
                     {
-                        addFightingPair(me.Item1, leftUnit.Item1, BattalionFightType.NORMAL);
+                        addFightingPair(me.Item1, leftUnit.Item1, BattalionFightType.NORMAL, dataHolder);
                     }
                 }
             }
         }
 
-        private void findDiagonalFightingPairs((long, float3, Team, float, BattleUnitTypeEnum) me, int rowId)
+        private void findDiagonalFightingPairs((long, float3, Team, float, BattleUnitTypeEnum) me, int rowId, RefRW<DataHolder> dataHolder)
         {
-            var positions = DataHolder.positions;
+            var positions = dataHolder.ValueRO.positions;
             foreach (var bellow in positions.GetValuesForKey(rowId - 1))
             {
                 var isTooFarDiagonal = BattleTransformUtils.isTooFar(me.Item2, bellow.Item2, me.Item4, bellow.Item4, 0.5f);
@@ -76,18 +77,18 @@ namespace system.battle.battalion.analysis
 
                 if (!isTooFarDiagonal)
                 {
-                    addFightingPair(me.Item1, bellow.Item1, BattalionFightType.VERTICAL);
+                    addFightingPair(me.Item1, bellow.Item1, BattalionFightType.VERTICAL, dataHolder);
                 }
             }
         }
 
-        private void addFightingPair(long battalionId1, long battalionId2, BattalionFightType fightType)
+        private void addFightingPair(long battalionId1, long battalionId2, BattalionFightType fightType, RefRW<DataHolder> dataHolder)
         {
-            DataHolder.fightingPairs.Add((battalionId1, battalionId2, fightType));
-            DataHolder.battalionsPerformingAction.Add(battalionId1);
-            DataHolder.battalionsPerformingAction.Add(battalionId2);
-            DataHolder.fightingBattalions.Add(battalionId1);
-            DataHolder.fightingBattalions.Add(battalionId2);
+            dataHolder.ValueRW.fightingPairs.Add((battalionId1, battalionId2, fightType));
+            dataHolder.ValueRW.battalionsPerformingAction.Add(battalionId1);
+            dataHolder.ValueRW.battalionsPerformingAction.Add(battalionId2);
+            dataHolder.ValueRW.fightingBattalions.Add(battalionId1);
+            dataHolder.ValueRW.fightingBattalions.Add(battalionId2);
         }
     }
 }

@@ -3,6 +3,7 @@ using component;
 using component._common.system_switchers;
 using component.authoring_pairs.PrefabHolder;
 using component.battle.battalion;
+using component.battle.battalion.data_holders;
 using component.battle.config;
 using component.config.authoring_pairs;
 using component.config.game_settings;
@@ -119,12 +120,55 @@ namespace system
                 nextBattalionId = battalionId
             };
 
+            var movementDataHolder = new MovementDataHolder
+            {
+                blockers = new(1000, Allocator.Persistent),
+                battalionFollowers = new(1000, Allocator.Persistent),
+                battalionDefaultMovementDirection = new(1000, Allocator.Persistent),
+                flankPositions = new(10, Allocator.Persistent),
+                inFightMovement = new(1000, Allocator.Persistent),
+                plannedMovementDirections = new(1000, Allocator.Persistent),
+                movingBattalions = new(1000, Allocator.Persistent),
+                battalionExactDistance = new(1000, Allocator.Persistent),
+                waitingForSoldiersBattalions = new(1000, Allocator.Persistent),
+            };
+
+            var allRowIds = new NativeList<int>(10, Allocator.Persistent);
+
+            if (allRowIds.IsEmpty)
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    allRowIds.Add(i);
+                }
+            }
+
+            var dataHolder = new DataHolder
+            {
+                allRowIds = allRowIds,
+                allBattalionIds = new(1000, Allocator.Persistent),
+                positions = new(1000, Allocator.Persistent),
+                battalionInfo = new(1000, Allocator.Persistent),
+                fightingPairs = new(1000, Allocator.Persistent),
+                fightingBattalions = new(1000, Allocator.Persistent),
+                battalionsPerformingAction = new(1000, Allocator.Persistent),
+                needReinforcements = new(1000, Allocator.Persistent),
+                reinforcements = new(1000, Allocator.Persistent),
+                flankingBattalions = new(1000, Allocator.Persistent),
+                rowChanges = new(10, Allocator.Persistent),
+                battalionSwitchRowDirections = new(1000, Allocator.Persistent),
+                blockedHorizontalSplits = new(1000, Allocator.Persistent),
+                splitBattalions = new(1000, Allocator.Persistent),
+            };
+
             var config = DebugConfigAuthoring.instance.collectData();
 
             ecb.AddComponent(singletonEntity, config);
             ecb.AddComponent(singletonEntity, battalionIdHolder);
             ecb.AddComponent(singletonEntity, new BattleSingletonEntityTag());
             ecb.AddComponent(singletonEntity, new BattleCleanupTag());
+            ecb.AddComponent(singletonEntity, movementDataHolder);
+            ecb.AddComponent(singletonEntity, dataHolder);
 
             randomPerThread.Dispose();
             ecb.Playback(state.EntityManager);

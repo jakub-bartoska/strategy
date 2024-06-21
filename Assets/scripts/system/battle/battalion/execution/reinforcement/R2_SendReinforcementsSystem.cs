@@ -1,8 +1,7 @@
 ﻿using component;
 using component._common.system_switchers;
 using component.battle.battalion;
-using system.battle.battalion.analysis.data_holder;
-using system.battle.battalion.analysis.data_holder.movement;
+using component.battle.battalion.data_holders;
 using system.battle.enums;
 using system.battle.system_groups;
 using Unity.Burst;
@@ -24,12 +23,15 @@ namespace system.battle.battalion.execution.reinforcement
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var blockers = MovementDataHolder.blockers;
-            var needReinforcements = DataHolder.needReinforcements;
-            var reinforcements = DataHolder.reinforcements;
-            var movingBattalions = MovementDataHolder.movingBattalions;
-            var plannedMovementDirections = MovementDataHolder.plannedMovementDirections;
-            var battalionsPerformingAction = DataHolder.battalionsPerformingAction;
+            var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
+            var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
+
+            var blockers = movementDataHolder.ValueRO.blockers;
+            var needReinforcements = dataHolder.ValueRO.needReinforcements;
+            var reinforcements = dataHolder.ValueRO.reinforcements;
+            var movingBattalions = movementDataHolder.ValueRO.movingBattalions;
+            var plannedMovementDirections = movementDataHolder.ValueRO.plannedMovementDirections;
+            var battalionsPerformingAction = dataHolder.ValueRO.battalionsPerformingAction;
 
             new UpdateReinforcementsJob
                 {

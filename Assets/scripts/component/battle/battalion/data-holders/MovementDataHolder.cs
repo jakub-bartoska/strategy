@@ -1,18 +1,17 @@
-﻿using component;
-using component.battle.battalion;
-using system.battle.enums;
+﻿using system.battle.enums;
 using Unity.Collections;
+using Unity.Entities;
 using Unity.Mathematics;
 
-namespace system.battle.battalion.analysis.data_holder.movement
+namespace component.battle.battalion.data_holders
 {
-    public class MovementDataHolder
+    public struct MovementDataHolder : IComponentData
     {
         /**
          * blocked battalionId - (blockerId, blockerType)
          * keep in mind that battalion id = shadow id from this battalion. So When shadow is blocked, it is added as battalion
          */
-        public static NativeParallelMultiHashMap<long, (long, BattleUnitTypeEnum, Direction, Team)> blockers = new(1000, Allocator.Persistent);
+        public NativeParallelMultiHashMap<long, (long, BattleUnitTypeEnum, Direction, Team)> blockers;
 
         /**
          * blocker battalion id - (battalion which is blocked, direction)
@@ -20,12 +19,12 @@ namespace system.battle.battalion.analysis.data_holder.movement
          * A -> B Right in blockers
          * B (A, Right) in this map
          */
-        public static NativeParallelMultiHashMap<long, (long, Direction)> battalionFollowers = new(1000, Allocator.Persistent);
+        public NativeParallelMultiHashMap<long, (long, Direction)> battalionFollowers;
 
         /**
          * battalionId - direction battalion should move in normal conditions
          */
-        public static NativeHashMap<long, Direction> battalionDefaultMovementDirection = new(1000, Allocator.Persistent);
+        public NativeHashMap<long, Direction> battalionDefaultMovementDirection;
 
         /**
          * rowId - (team1FlankPosition, team2FlankPosition)
@@ -34,7 +33,7 @@ namespace system.battle.battalion.analysis.data_holder.movement
          *
          * positions are null in case that row contains only other team units
          */
-        public static NativeHashMap<int, (float3?, float3?)> flankPositions = new(10, Allocator.Persistent);
+        public NativeHashMap<int, (float3?, float3?)> flankPositions;
 
         /**
          * battalionId - (direction, distance, mindDistanceEnemyId)
@@ -44,31 +43,31 @@ namespace system.battle.battalion.analysis.data_holder.movement
          * distance is always positive number (even when enemy is behind)
          * id of enemy which is causing direction change
          */
-        public static NativeHashMap<long, (Direction, float, long)> inFightMovement = new(1000, Allocator.Persistent);
+        public NativeHashMap<long, (Direction, float, long)> inFightMovement;
 
         /**
          * battalionId - direction
          * battalion planned directions, contains even battalions which are stopped.
          * useful for reinforcements
          */
-        public static NativeHashMap<long, Direction> plannedMovementDirections = new(1000, Allocator.Persistent);
+        public NativeHashMap<long, Direction> plannedMovementDirections;
 
         /**
          * battalionId - direction
          * contains only battalions which are moving
          */
-        public static NativeHashMap<long, Direction> movingBattalions = new(1000, Allocator.Persistent);
+        public NativeHashMap<long, Direction> movingBattalions;
 
         /**
          * battalionId - distance
          * contains only battalions which should move in exact distance
          */
-        public static NativeHashMap<long, float> battalionExactDistance = new(1000, Allocator.Persistent);
+        public NativeHashMap<long, float> battalionExactDistance;
 
         /**
          * battalionId
          * contains newly created battalions which were just created and are waiting till their soldiers arrive
          */
-        public static NativeHashSet<long> waitingForSoldiersBattalions = new(1000, Allocator.Persistent);
+        public NativeHashSet<long> waitingForSoldiersBattalions;
     }
 }

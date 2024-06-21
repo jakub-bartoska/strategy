@@ -1,7 +1,6 @@
 ﻿using System;
 using component._common.system_switchers;
-using system.battle.battalion.analysis.data_holder;
-using system.battle.battalion.analysis.data_holder.movement;
+using component.battle.battalion.data_holders;
 using system.battle.battalion.analysis.horizontal_split;
 using system.battle.enums;
 using system.battle.system_groups;
@@ -19,25 +18,29 @@ namespace system.battle.battalion.analysis.exact_position
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
+            state.RequireForUpdate<DataHolder>();
             state.RequireForUpdate<BattleMapStateMarker>();
+            state.RequireForUpdate<MovementDataHolder>();
         }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            var dataHolder = SystemAPI.GetSingleton<DataHolder>();
+            var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
             // can contain dupolicities (A -> B and B -> A)
             // battalion id -> all battalion IDS which are in diagonal fight with this battalion
             // if battalion has at least 1 normal fight, it is removed from this list
-            var onlyDiagonalFights = getOnlyDiagonalFights();
+            var onlyDiagonalFights = getOnlyDiagonalFights(dataHolder);
 
-            getMovementDirection(onlyDiagonalFights);
+            getMovementDirection(onlyDiagonalFights, dataHolder, movementDataHolder);
         }
 
-        private NativeParallelMultiHashMap<long, long> getOnlyDiagonalFights()
+        private NativeParallelMultiHashMap<long, long> getOnlyDiagonalFights(DataHolder dataHolder)
         {
             var result = new NativeParallelMultiHashMap<long, long>(1000, Allocator.Temp);
             var normalFights = new NativeHashSet<long>(1000, Allocator.Temp);
-            foreach (var fightingPair in DataHolder.fightingPairs)
+            foreach (var fightingPair in dataHolder.fightingPairs)
             {
                 switch (fightingPair.Item3)
                 {
@@ -62,9 +65,9 @@ namespace system.battle.battalion.analysis.exact_position
             return result;
         }
 
-        private void getMovementDirection(NativeParallelMultiHashMap<long, long> diagonalFights)
+        private void getMovementDirection(NativeParallelMultiHashMap<long, long> diagonalFights, DataHolder dataHolder, RefRW<MovementDataHolder> movementDataHolder)
         {
-            var battalionInfo = DataHolder.battalionInfo;
+            var battalionInfo = dataHolder.battalionInfo;
             var keys = diagonalFights.GetKeyArray(Allocator.Temp);
             foreach (var key in keys)
             {
@@ -114,7 +117,7 @@ namespace system.battle.battalion.analysis.exact_position
 
                 if (!conflict && direction != Direction.NONE)
                 {
-                    MovementDataHolder.inFightMovement.Add(key, (direction, minXDistance, minDistanceEnemyId));
+                    movementDataHolder.ValueRW.inFightMovement.Add(key, (direction, minXDistance, minDistanceEnemyId));
                 }
             }
         }

@@ -2,7 +2,7 @@
 using component;
 using component._common.system_switchers;
 using component.battle.battalion;
-using system.battle.battalion.analysis.data_holder;
+using component.battle.battalion.data_holders;
 using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Collections;
@@ -27,7 +27,8 @@ namespace system.battle.battalion.analysis
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var positions = DataHolder.positions;
+            var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
+            var positions = dataHolder.ValueRO.positions;
 
             var tmpUnsortedData = new NativeParallelMultiHashMap<int, (long, float3, Team, float, BattleUnitTypeEnum)>(1000, Allocator.TempJob);
             new CollectBattleUnitPositionsJob
@@ -37,7 +38,7 @@ namespace system.battle.battalion.analysis
                 .Complete();
 
             var sorter = new SortByPosition();
-            var allRows = DataHolder.allRowIds;
+            var allRows = dataHolder.ValueRO.allRowIds;
 
             foreach (var row in allRows)
             {
@@ -47,7 +48,7 @@ namespace system.battle.battalion.analysis
                     unsortedRowData.Add(value);
                     if (value.Item5 == BattleUnitTypeEnum.BATTALION)
                     {
-                        DataHolder.battalionInfo.Add(value.Item1, (value.Item2, value.Item3, value.Item4));
+                        dataHolder.ValueRW.battalionInfo.Add(value.Item1, (value.Item2, value.Item3, value.Item4));
                     }
                 }
 

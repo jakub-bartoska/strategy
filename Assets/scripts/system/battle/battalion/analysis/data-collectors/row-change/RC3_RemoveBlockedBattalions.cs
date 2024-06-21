@@ -1,7 +1,6 @@
 ﻿using component._common.system_switchers;
 using component.battle.battalion;
-using system.battle.battalion.analysis.data_holder;
-using system.battle.battalion.analysis.data_holder.movement;
+using component.battle.battalion.data_holders;
 using system.battle.enums;
 using system.battle.system_groups;
 using Unity.Burst;
@@ -23,8 +22,11 @@ namespace system.battle.battalion.analysis.row_change
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var battalionSwitchRowDirectionsCopy = getBattalionSwitchRowDirectionsCopy();
-            var blockers = MovementDataHolder.blockers;
+            var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
+            var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
+
+            var battalionSwitchRowDirectionsCopy = getBattalionSwitchRowDirectionsCopy(dataHolder.ValueRO);
+            var blockers = movementDataHolder.ValueRO.blockers;
 
             foreach (var battalionSwitchRowDirection in battalionSwitchRowDirectionsCopy)
             {
@@ -40,20 +42,20 @@ namespace system.battle.battalion.analysis.row_change
                         continue;
                     }
 
-                    DataHolder.battalionSwitchRowDirections.Remove(battalionSwitchRowDirection.Key);
+                    dataHolder.ValueRO.battalionSwitchRowDirections.Remove(battalionSwitchRowDirection.Key);
                 }
             }
 
-            var waitingForSoldiersBattalions = MovementDataHolder.waitingForSoldiersBattalions;
+            var waitingForSoldiersBattalions = movementDataHolder.ValueRO.waitingForSoldiersBattalions;
             foreach (var waitingForSoldiersBattalion in waitingForSoldiersBattalions)
             {
-                DataHolder.battalionSwitchRowDirections.Remove(waitingForSoldiersBattalion);
+                dataHolder.ValueRW.battalionSwitchRowDirections.Remove(waitingForSoldiersBattalion);
             }
         }
 
-        private NativeHashMap<long, Direction> getBattalionSwitchRowDirectionsCopy()
+        private NativeHashMap<long, Direction> getBattalionSwitchRowDirectionsCopy(DataHolder dataHolder)
         {
-            var battalionSwitchRowDirections = DataHolder.battalionSwitchRowDirections;
+            var battalionSwitchRowDirections = dataHolder.battalionSwitchRowDirections;
             var result = new NativeHashMap<long, Direction>(battalionSwitchRowDirections.Count, Allocator.Temp);
             foreach (var record in battalionSwitchRowDirections)
             {

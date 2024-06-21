@@ -1,6 +1,6 @@
 ﻿using component.battle.battalion;
+using component.battle.battalion.data_holders;
 using system.battle.battalion.analysis;
-using system.battle.battalion.analysis.data_holder.movement;
 using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Entities;
@@ -20,10 +20,11 @@ namespace system.battle.battalion.execution.movement
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var defaultDirections = MovementDataHolder.battalionDefaultMovementDirection;
+            var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
+            var defaultDirections = movementDataHolder.ValueRO.battalionDefaultMovementDirection;
             foreach (var defaultDirection in defaultDirections)
             {
-                MovementDataHolder.plannedMovementDirections.Add(defaultDirection.Key, defaultDirection.Value);
+                movementDataHolder.ValueRW.plannedMovementDirections.Add(defaultDirection.Key, defaultDirection.Value);
             }
         }
     }
