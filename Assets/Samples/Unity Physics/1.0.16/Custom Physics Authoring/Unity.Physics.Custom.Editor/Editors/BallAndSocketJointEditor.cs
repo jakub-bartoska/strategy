@@ -10,7 +10,7 @@ namespace Unity.Physics.Editor
     {
         protected virtual void OnSceneGUI()
         {
-            BallAndSocketJoint ballAndSocket = (BallAndSocketJoint) target;
+            var ballAndSocket = (BallAndSocketJoint) target;
 
             EditorGUI.BeginChangeCheck();
 

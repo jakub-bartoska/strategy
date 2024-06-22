@@ -10,12 +10,12 @@ using UnityEngine;
 namespace Unity.Physics.Authoring
 {
     // put static UnityObject buffers in separate utility class so other methods can Burst compile
-    static class PhysicsShapeExtensions_NonBursted
+    internal static class PhysicsShapeExtensions_NonBursted
     {
-        internal static readonly List<PhysicsBodyAuthoring> s_PhysicsBodiesBuffer = new List<PhysicsBodyAuthoring>(16);
-        internal static readonly List<PhysicsShapeAuthoring> s_ShapesBuffer = new List<PhysicsShapeAuthoring>(16);
-        internal static readonly List<Rigidbody> s_RigidbodiesBuffer = new List<Rigidbody>(16);
-        internal static readonly List<UnityEngine.Collider> s_CollidersBuffer = new List<UnityEngine.Collider>(16);
+        internal static readonly List<PhysicsBodyAuthoring> s_PhysicsBodiesBuffer = new(16);
+        internal static readonly List<PhysicsShapeAuthoring> s_ShapesBuffer = new(16);
+        internal static readonly List<Rigidbody> s_RigidbodiesBuffer = new(16);
+        internal static readonly List<UnityEngine.Collider> s_CollidersBuffer = new(16);
     }
 
     public static partial class PhysicsShapeExtensions
@@ -23,21 +23,23 @@ namespace Unity.Physics.Authoring
         // avoids drift in axes we're not actually changing
         public const float kMinimumChange = HashableShapeInputs.k_DefaultLinearPrecision;
 
-        const float k_HashFloatTolerance = 0.01f;
+        private const float k_HashFloatTolerance = 0.01f;
 
         // used for de-skewing basis vectors; default priority assumes primary axis is z, secondary axis is y
-        public static readonly int3 k_DefaultAxisPriority = new int3(2, 1, 0);
+        public static readonly int3 k_DefaultAxisPriority = new(2, 1, 0);
 
-        static readonly int[] k_NextAxis = {1, 2, 0};
-        static readonly int[] k_PrevAxis = {2, 0, 1};
+        private static readonly int[] k_NextAxis = {1, 2, 0};
+        private static readonly int[] k_PrevAxis = {2, 0, 1};
 
         // matrix to transform point from shape's local basis into world space
         public static float4x4 GetBasisToWorldMatrix(
             float4x4 localToWorld, float3 center, quaternion orientation, float3 size
-        ) =>
-            math.mul(localToWorld, float4x4.TRS(center, orientation, size));
+        )
+        {
+            return math.mul(localToWorld, float4x4.TRS(center, orientation, size));
+        }
 
-        static float4 DeskewSecondaryAxis(float4 primaryAxis, float4 secondaryAxis)
+        private static float4 DeskewSecondaryAxis(float4 primaryAxis, float4 secondaryAxis)
         {
             var n0 = math.normalizesafe(primaryAxis);
             var dot = math.dot(secondaryAxis, n0);
@@ -68,8 +70,9 @@ namespace Unity.Physics.Authoring
             return new int3(imax, imid, imin);
         }
 
-        [Conditional(CompilationSymbols.CollectionsChecksSymbol), Conditional(CompilationSymbols.DebugChecksSymbol)]
-        static void CheckBasisPriorityAndThrow(int3 basisPriority)
+        [Conditional(CompilationSymbols.CollectionsChecksSymbol)]
+        [Conditional(CompilationSymbols.DebugChecksSymbol)]
+        private static void CheckBasisPriorityAndThrow(int3 basisPriority)
         {
             if (
                 basisPriority.x == basisPriority.y
@@ -157,7 +160,6 @@ namespace Unity.Physics.Authoring
             shape.GetComponentsInParent(true, buffer);
             GameObject result = null;
             for (var i = buffer.Count - 1; i >= 0; --i)
-            {
                 if (
                     (buffer[i] as UnityEngine.Collider)?.enabled ??
                     (buffer[i] as MonoBehaviour)?.enabled ?? true
@@ -166,13 +168,15 @@ namespace Unity.Physics.Authoring
                     result = buffer[i].gameObject;
                     break;
                 }
-            }
 
             buffer.Clear();
             return result;
         }
 
-        public static GameObject GetPrimaryBody(this PhysicsShapeAuthoring shape) => GetPrimaryBody(shape.gameObject);
+        public static GameObject GetPrimaryBody(this PhysicsShapeAuthoring shape)
+        {
+            return GetPrimaryBody(shape.gameObject);
+        }
 
         public static GameObject GetPrimaryBody(GameObject shape)
         {
@@ -182,16 +186,14 @@ namespace Unity.Physics.Authoring
                 PhysicsShapeExtensions_NonBursted.s_RigidbodiesBuffer);
 
             if (pb != null)
-            {
                 return rb == null ? pb.gameObject :
                     pb.transform.IsChildOf(rb.transform) ? pb.gameObject : rb.gameObject;
-            }
 
             if (rb != null)
                 return rb.gameObject;
 
             // for implicit static shape, first see if it is part of static optimized hierarchy
-            ColliderExtensions.FindTopmostStaticEnabledAncestor(shape, out GameObject topStatic);
+            ColliderExtensions.FindTopmostStaticEnabledAncestor(shape, out var topStatic);
             if (topStatic != null)
                 return topStatic;
 
@@ -263,7 +265,7 @@ namespace Unity.Physics.Authoring
         public static void SetBakedCylinderSize(this PhysicsShapeAuthoring shape, float height, float radius,
             float bevelRadius)
         {
-            var cylinder = shape.GetCylinderProperties(out EulerAngles orientation);
+            var cylinder = shape.GetCylinderProperties(out var orientation);
             var center = cylinder.Center;
 
             var bakeToShape = BakeCylinderJobExtension.GetBakeToShape(shape, center, orientation);
@@ -396,10 +398,8 @@ namespace Unity.Physics.Authoring
                 return math.hash(points.GetUnsafePtr(), UnsafeUtility.SizeOf<float3>() * points.Length);
 
             for (int i = 0, count = points.Length; i < count; ++i)
-            {
                 if (math.cmax(math.abs(points[i] - hashedPoints[i])) > tolerance)
                     return math.hash(points.GetUnsafePtr(), UnsafeUtility.SizeOf<float3>() * points.Length);
-            }
 
             return math.hash(hashedPoints.GetUnsafePtr(), UnsafeUtility.SizeOf<float3>() * hashedPoints.Length);
         }

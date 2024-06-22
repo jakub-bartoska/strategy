@@ -8,7 +8,7 @@ namespace Unity.Physics.Authoring
         public float MaxDistance;
     }
 
-    class LimitedDistanceJointBaker : JointBaker<LimitedDistanceJoint>
+    internal class LimitedDistanceJointBaker : JointBaker<LimitedDistanceJoint>
     {
         public override void Bake(LimitedDistanceJoint authoring)
         {
@@ -20,7 +20,7 @@ namespace Unity.Physics.Authoring
 
             var constraintBodyPair = GetConstrainedBodyPair(authoring);
 
-            uint worldIndex = GetWorldIndexFromBaseJoint(authoring);
+            var worldIndex = GetWorldIndexFromBaseJoint(authoring);
             CreateJointEntity(worldIndex, constraintBodyPair, physicsJoint);
         }
     }

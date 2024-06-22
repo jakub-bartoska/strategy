@@ -6,16 +6,16 @@ using UnityEngine;
 
 namespace Unity.Physics.Editor
 {
-    class BeveledCylinderBoundsHandle : PrimitiveBoundsHandle
+    internal class BeveledCylinderBoundsHandle : PrimitiveBoundsHandle
     {
-        float m_BevelRadius = ConvexHullGenerationParameters.Default.BevelRadius;
-        Vector3[] m_BottomPoints = Array.Empty<Vector3>();
+        private float m_BevelRadius = ConvexHullGenerationParameters.Default.BevelRadius;
+        private Vector3[] m_BottomPoints = Array.Empty<Vector3>();
 
-        PhysicsBoundsHandleUtility.Corner[] m_Corners = Array.Empty<PhysicsBoundsHandleUtility.Corner>();
+        private PhysicsBoundsHandleUtility.Corner[] m_Corners = Array.Empty<PhysicsBoundsHandleUtility.Corner>();
 
-        bool m_IsDragging = false;
-        int m_SideCount;
-        Vector3[] m_TopPoints = Array.Empty<Vector3>();
+        private bool m_IsDragging;
+        private int m_SideCount;
+        private Vector3[] m_TopPoints = Array.Empty<Vector3>();
 
         public float bevelRadius
         {
@@ -75,11 +75,11 @@ namespace Unity.Physics.Editor
 
         public new void DrawHandle()
         {
-            int prevHotControl = GUIUtility.hotControl;
+            var prevHotControl = GUIUtility.hotControl;
             if (prevHotControl == 0)
                 m_IsDragging = false;
             base.DrawHandle();
-            int currHotcontrol = GUIUtility.hotControl;
+            var currHotcontrol = GUIUtility.hotControl;
             if (currHotcontrol != prevHotControl)
                 m_IsDragging = currHotcontrol != 0;
         }
@@ -90,7 +90,7 @@ namespace Unity.Physics.Editor
             {
                 var backfacedColor = PhysicsBoundsHandleUtility.GetStateColor(true);
                 var frontfacedColor = Handles.color;
-                bool isCameraInsideBox = false;
+                var isCameraInsideBox = false;
 
                 var radius = this.radius;
                 var bevelRadius = this.bevelRadius;
@@ -99,7 +99,7 @@ namespace Unity.Physics.Editor
                 var ctr = (float3) center;
                 var halfAngleStep = math.PI / m_SideCount;
                 var angleStep = 2f * halfAngleStep;
-                const float kHalfPI = (math.PI * 0.5f);
+                const float kHalfPI = math.PI * 0.5f;
 
                 var bottom = ctr + halfHeight + new float3 {z = bevelRadius};
                 var top = ctr - halfHeight - new float3 {z = bevelRadius};
@@ -125,10 +125,10 @@ namespace Unity.Physics.Editor
                 cameraForward = invMatrix.MultiplyVector(cameraForward);
                 var cameraOrtho = Camera.current != null && Camera.current.orthographic;
 
-                var noSides = (radius - bevelRadius) < PhysicsBoundsHandleUtility.kDistanceEpsilon;
+                var noSides = radius - bevelRadius < PhysicsBoundsHandleUtility.kDistanceEpsilon;
                 var up = new float3(0, 0, -1f);
 
-                var t = ((m_SideCount - 2) * angleStep);
+                var t = (m_SideCount - 2) * angleStep;
                 var xyAngle0 = new float3(math.cos(t), math.sin(t), 0f);
 
                 t = (m_SideCount - 1) * angleStep;
@@ -172,7 +172,7 @@ namespace Unity.Physics.Editor
                             Handles.DrawLine(bottom1 - upOffset, bottom2 - upOffset);
                         }
 
-                        var currSideMidPoint = ctr + ((top1 + bottom1 + top2 + bottom2) * 0.25f) + startOffset;
+                        var currSideMidPoint = ctr + (top1 + bottom1 + top2 + bottom2) * 0.25f + startOffset;
                         var currSideBackFaced = PhysicsBoundsHandleUtility.IsBackfaced(currSideMidPoint, up, sideways2,
                             axes, isCameraInsideBox);
 
@@ -196,24 +196,24 @@ namespace Unity.Physics.Editor
                         var top0 = ctr + offset0 - (halfHeight - new float3 {z = bevelRadius});
                         var bottom0 = ctr + offset0 + (halfHeight - new float3 {z = bevelRadius});
 
-                        var prevMidPoint = ctr + ((top0 + top1 + bottom0 + bottom1) * 0.25f) + startOffset;
+                        var prevMidPoint = ctr + (top0 + top1 + bottom0 + bottom1) * 0.25f + startOffset;
                         var prevSideBackFaced =
                             PhysicsBoundsHandleUtility.IsBackfaced(prevMidPoint, up, sideways1, axes,
                                 isCameraInsideBox);
 
-                        var currMidPoint = ctr + ((top1 + top2 + bottom1 + bottom2) * 0.25f) + startOffset;
+                        var currMidPoint = ctr + (top1 + top2 + bottom1 + bottom2) * 0.25f + startOffset;
                         var currSideBackFaced =
                             PhysicsBoundsHandleUtility.IsBackfaced(currMidPoint, up, sideways2, axes,
                                 isCameraInsideBox);
 
                         // Square side of bevelled cylinder
-                        Handles.color = (currSideBackFaced && prevSideBackFaced) ? backfacedColor : frontfacedColor;
+                        Handles.color = currSideBackFaced && prevSideBackFaced ? backfacedColor : frontfacedColor;
                         Handles.DrawLine(bottom1 + startOffset, top1 + startOffset);
 
-                        Handles.color = (currSideBackFaced && topBackFaced) ? backfacedColor : frontfacedColor;
+                        Handles.color = currSideBackFaced && topBackFaced ? backfacedColor : frontfacedColor;
                         Handles.DrawLine(top1 + startOffset, top2 + startOffset);
 
-                        Handles.color = (currSideBackFaced && bottomBackFaced) ? backfacedColor : frontfacedColor;
+                        Handles.color = currSideBackFaced && bottomBackFaced ? backfacedColor : frontfacedColor;
                         Handles.DrawLine(bottom2 + startOffset, bottom1 + startOffset);
                     }
 
@@ -261,7 +261,6 @@ namespace Unity.Physics.Editor
                         // Side horizon on vertical curved edge
                         if (m_Corners[up1].splitCount > 1 &&
                             m_Corners[dn1].splitCount > 1)
-                        {
                             if ((m_Corners[up1].splitAxis[0].y || m_Corners[up1].splitAxis[1].y) &&
                                 (m_Corners[dn1].splitAxis[0].y || m_Corners[dn1].splitAxis[1].y))
                             {
@@ -273,12 +272,10 @@ namespace Unity.Physics.Editor
                                     : m_Corners[dn1].points[1];
                                 Handles.DrawLine(point0, point1);
                             }
-                        }
 
                         // Top horizon on horizontal curved edge
                         if (m_Corners[up0].splitCount > 1 &&
                             m_Corners[up1].splitCount > 1)
-                        {
                             if ((m_Corners[up0].splitAxis[0].x || m_Corners[up0].splitAxis[1].x) &&
                                 (m_Corners[up1].splitAxis[0].z || m_Corners[up1].splitAxis[1].z))
                             {
@@ -290,12 +287,10 @@ namespace Unity.Physics.Editor
                                     : m_Corners[up1].points[1];
                                 Handles.DrawLine(point0, point1);
                             }
-                        }
 
                         // Bottom horizon on horizontal curved edge
                         if (m_Corners[dn0].splitCount > 1 &&
                             m_Corners[dn1].splitCount > 1)
-                        {
                             if ((m_Corners[dn0].splitAxis[0].z || m_Corners[dn0].splitAxis[1].z) &&
                                 (m_Corners[dn1].splitAxis[0].x || m_Corners[dn1].splitAxis[1].x))
                             {
@@ -307,7 +302,6 @@ namespace Unity.Physics.Editor
                                     : m_Corners[dn1].points[1];
                                 Handles.DrawLine(point0, point1);
                             }
-                        }
                     }
 
                     for (var i = 0; i < m_Corners.Length; ++i)
@@ -344,7 +338,6 @@ namespace Unity.Physics.Editor
 
             // ensure changed dimension cannot be made less than convex diameter
             if (upperBound[changedAxis] - lowerBound[changedAxis] < convexDiameter)
-            {
                 switch (handle)
                 {
                     case HandleDirection.PositiveX:
@@ -356,7 +349,6 @@ namespace Unity.Physics.Editor
                         lowerBound[changedAxis] = upperBound[changedAxis] - convexDiameter;
                         break;
                 }
-            }
 
             // ensure radius changes uniformly
             if (changedAxis != k_DirectionZ)

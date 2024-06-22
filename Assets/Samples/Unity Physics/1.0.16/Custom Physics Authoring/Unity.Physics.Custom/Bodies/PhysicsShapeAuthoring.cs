@@ -6,6 +6,7 @@ using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using Unity.Mathematics;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -26,39 +27,35 @@ namespace Unity.Physics.Authoring
     public sealed class PhysicsShapeAuthoring : MonoBehaviour, IInheritPhysicsMaterialProperties,
         ISerializationCallbackReceiver
     {
-        const string k_IconPath =
+        private const string k_IconPath =
             "Packages/com.unity.physics/Unity.Physics.Editor/Editor Default Resources/Icons/d_BoxCollider@64.png";
 
-        const int k_LatestVersion = 1;
+        private const int k_LatestVersion = 1;
 
-        static readonly int[] k_NextAxis = {1, 2, 0};
+        private static readonly int[] k_NextAxis = {1, 2, 0};
 
-        static readonly HashSet<int> s_BoneIDs = new HashSet<int>();
-        static readonly HashSet<Transform> s_BonesInHierarchy = new HashSet<Transform>();
-        static readonly List<Vector3> s_Vertices = new List<Vector3>(65535);
-        static readonly List<int> s_Indices = new List<int>(65535);
-        static UnityEngine.Mesh s_ReusableBakeMesh;
+        private static readonly HashSet<int> s_BoneIDs = new();
+        private static readonly HashSet<Transform> s_BonesInHierarchy = new();
+        private static readonly List<Vector3> s_Vertices = new(65535);
+        private static readonly List<int> s_Indices = new(65535);
+        private static UnityEngine.Mesh s_ReusableBakeMesh;
 
-        [SerializeField] ShapeType m_ShapeType = ShapeType.Box;
+        [SerializeField] private ShapeType m_ShapeType = ShapeType.Box;
 
-        [SerializeField] float3 m_PrimitiveCenter;
+        [SerializeField] private float3 m_PrimitiveCenter;
 
-        [SerializeField] float3 m_PrimitiveSize = new float3(1f, 1f, 1f);
+        [SerializeField] private float3 m_PrimitiveSize = new(1f, 1f, 1f);
 
-        [SerializeField] EulerAngles m_PrimitiveOrientation = EulerAngles.Default;
+        [SerializeField] private EulerAngles m_PrimitiveOrientation = EulerAngles.Default;
 
-        [SerializeField] [ExpandChildren] CylindricalProperties m_Capsule = new CylindricalProperties
-            {Height = 1f, Radius = 0.5f, Axis = 2};
+        [SerializeField] [ExpandChildren] private CylindricalProperties m_Capsule = new() {Height = 1f, Radius = 0.5f, Axis = 2};
 
-        [SerializeField] [ExpandChildren] CylindricalProperties m_Cylinder = new CylindricalProperties
-            {Height = 1f, Radius = 0.5f, Axis = 2};
+        [SerializeField] [ExpandChildren] private CylindricalProperties m_Cylinder = new() {Height = 1f, Radius = 0.5f, Axis = 2};
 
-        [SerializeField]
-        [Tooltip("How many sides the convex cylinder shape should have.")]
-        [Range(CylinderGeometry.MinSideCount, CylinderGeometry.MaxSideCount)]
-        int m_CylinderSideCount = 20;
+        [SerializeField] [Tooltip("How many sides the convex cylinder shape should have.")] [Range(CylinderGeometry.MinSideCount, CylinderGeometry.MaxSideCount)]
+        private int m_CylinderSideCount = 20;
 
-        [SerializeField] float m_SphereRadius = 0.5f;
+        [SerializeField] private float m_SphereRadius = 0.5f;
 
         [SerializeField]
         [Tooltip(
@@ -66,22 +63,21 @@ namespace Unity.Physics.Authoring
             "A value of 0 will include all points with any weight assigned to this shape's hierarchy."
         )]
         [Range(0f, 1f)]
-        float m_MinimumSkinnedVertexWeight = 0.1f;
+        private float m_MinimumSkinnedVertexWeight = 0.1f;
 
-        [SerializeField] [ExpandChildren] ConvexHullGenerationParameters m_ConvexHullGenerationParameters =
+        [SerializeField] [ExpandChildren] private ConvexHullGenerationParameters m_ConvexHullGenerationParameters =
             ConvexHullGenerationParameters.Default.ToAuthoring();
 
-        [SerializeField]
-        [Tooltip("If no custom mesh is specified, then one will be generated using this body's rendered meshes.")]
-        UnityEngine.Mesh m_CustomMesh;
+        [SerializeField] [Tooltip("If no custom mesh is specified, then one will be generated using this body's rendered meshes.")]
+        private UnityEngine.Mesh m_CustomMesh;
 
-        [SerializeField] bool m_ForceUnique;
+        [SerializeField] private bool m_ForceUnique;
 
-        [SerializeField] PhysicsMaterialProperties m_Material = new PhysicsMaterialProperties(true);
+        [SerializeField] private PhysicsMaterialProperties m_Material = new(true);
 
-        [SerializeField] int m_SerializedVersion = 0;
+        [SerializeField] private int m_SerializedVersion;
 
-        PhysicsShapeAuthoring()
+        private PhysicsShapeAuthoring()
         {
         }
 
@@ -104,27 +100,27 @@ namespace Unity.Physics.Authoring
             set => m_Material.Template = value;
         }
 
-        static UnityEngine.Mesh ReusableBakeMesh =>
+        private static UnityEngine.Mesh ReusableBakeMesh =>
             s_ReusableBakeMesh ??
             (s_ReusableBakeMesh = new UnityEngine.Mesh {hideFlags = HideFlags.HideAndDontSave});
 
         [Conditional("UNITY_EDITOR")]
-        void Reset()
+        private void Reset()
         {
 #if UNITY_EDITOR
             InitializeConvexHullGenerationParameters();
             FitToEnabledRenderMeshes(m_MinimumSkinnedVertexWeight);
             // TODO: also pick best primitive shape
-            UnityEditor.SceneView.RepaintAll();
+            SceneView.RepaintAll();
 #endif
         }
 
-        void OnEnable()
+        private void OnEnable()
         {
             // included so tick box appears in Editor
         }
 
-        void OnValidate()
+        private void OnValidate()
         {
             UpgradeVersionIfNecessary();
 
@@ -248,9 +244,15 @@ namespace Unity.Physics.Authoring
         {
         }
 
-        void ISerializationCallbackReceiver.OnAfterDeserialize() => UpgradeVersionIfNecessary();
+        void ISerializationCallbackReceiver.OnAfterDeserialize()
+        {
+            UpgradeVersionIfNecessary();
+        }
 
-        public BoxGeometry GetBoxProperties() => GetBoxProperties(out _);
+        public BoxGeometry GetBoxProperties()
+        {
+            return GetBoxProperties(out _);
+        }
 
         internal BoxGeometry GetBoxProperties(out EulerAngles orientation)
         {
@@ -264,7 +266,7 @@ namespace Unity.Physics.Authoring
             };
         }
 
-        void GetCylindricalProperties(
+        private void GetCylindricalProperties(
             CylindricalProperties props,
             out float3 center, out float height, out float radius, out EulerAngles orientation,
             bool rebuildOrientation
@@ -296,7 +298,10 @@ namespace Unity.Physics.Authoring
             };
         }
 
-        public CylinderGeometry GetCylinderProperties() => GetCylinderProperties(out _);
+        public CylinderGeometry GetCylinderProperties()
+        {
+            return GetCylinderProperties(out _);
+        }
 
         internal CylinderGeometry GetCylinderProperties(out EulerAngles orientation)
         {
@@ -362,8 +367,10 @@ namespace Unity.Physics.Authoring
             orientation.SetValue(math.mul(m_PrimitiveOrientation, offset));
         }
 
-        public void GetConvexHullProperties(NativeList<float3> pointCloud) =>
+        public void GetConvexHullProperties(NativeList<float3> pointCloud)
+        {
             GetConvexHullProperties(pointCloud, true, default, default, default, default);
+        }
 
         internal void GetConvexHullProperties(
             NativeList<float3> pointCloud, bool validate,
@@ -396,15 +403,11 @@ namespace Unity.Physics.Authoring
                 using (var scope = new GetActiveChildrenScope<MeshFilter>(this, transform))
                 {
                     foreach (var meshFilter in scope.Buffer)
-                    {
                         if (scope.IsChildActiveAndBelongsToShape(meshFilter, validate))
-                        {
                             AppendMeshPropertiesToNativeBuffers(
                                 meshFilter.transform.localToWorldMatrix, meshFilter.sharedMesh, pointCloud, default,
                                 validate, inputs, meshAssets
                             );
-                        }
-                    }
                 }
 
                 using (var skinnedPoints = new NativeList<float3>(8192, Allocator.Temp))
@@ -438,10 +441,8 @@ namespace Unity.Physics.Authoring
             using (var scope = new GetActiveChildrenScope<Transform>(shape, shape.transform))
             {
                 foreach (var bone in scope.Buffer)
-                {
                     if (scope.IsChildActiveAndBelongsToShape(bone))
                         s_BonesInHierarchy.Add(bone);
-                }
             }
 
             // find all skinned mesh renderers in which this shape's transform might be a bone
@@ -453,7 +454,7 @@ namespace Unity.Physics.Authoring
                     if (
                         !skin.enabled
                         || mesh == null
-                        || validate && !mesh.IsValidForConversion(shape.gameObject)
+                        || (validate && !mesh.IsValidForConversion(shape.gameObject))
                         || !scope.IsChildActiveAndBelongsToShape(skin)
                     )
                         continue;
@@ -462,10 +463,8 @@ namespace Unity.Physics.Authoring
                     s_BoneIDs.Clear();
                     var bones = skin.bones;
                     for (int i = 0, count = bones.Length; i < count; ++i)
-                    {
                         if (s_BonesInHierarchy.Contains(bones[i]))
                             s_BoneIDs.Add(i);
-                    }
 
                     if (s_BoneIDs.Count == 0)
                         continue;
@@ -523,8 +522,10 @@ namespace Unity.Physics.Authoring
             s_BonesInHierarchy.Clear();
         }
 
-        public void GetMeshProperties(NativeList<float3> vertices, NativeList<int3> triangles) =>
+        public void GetMeshProperties(NativeList<float3> vertices, NativeList<int3> triangles)
+        {
             GetMeshProperties(vertices, triangles, true, default);
+        }
 
         internal void GetMeshProperties(
             NativeList<float3> vertices, NativeList<int3> triangles, bool validate,
@@ -553,26 +554,22 @@ namespace Unity.Physics.Authoring
                 using (var scope = new GetActiveChildrenScope<MeshFilter>(this, transform))
                 {
                     foreach (var meshFilter in scope.Buffer)
-                    {
                         if (scope.IsChildActiveAndBelongsToShape(meshFilter, validate))
-                        {
                             AppendMeshPropertiesToNativeBuffers(
                                 meshFilter.transform.localToWorldMatrix, meshFilter.sharedMesh, vertices, triangles,
                                 validate, inputs, meshAssets
                             );
-                        }
-                    }
                 }
             }
         }
 
-        void AppendMeshPropertiesToNativeBuffers(
+        private void AppendMeshPropertiesToNativeBuffers(
             float4x4 localToWorld, UnityEngine.Mesh mesh, NativeList<float3> vertices, NativeList<int3> triangles,
             bool validate,
             NativeList<HashableShapeInputs> inputs, HashSet<UnityEngine.Mesh> meshAssets
         )
         {
-            if (mesh == null || validate && !mesh.IsValidForConversion(gameObject))
+            if (mesh == null || (validate && !mesh.IsValidForConversion(gameObject)))
                 return;
 
             var childToShape = math.mul(transform.worldToLocalMatrix, localToWorld);
@@ -588,7 +585,7 @@ namespace Unity.Physics.Authoring
             var offset = 0u;
 #if UNITY_EDITOR
             // TODO: when min spec is 2020.1, collect all meshes and their data via single Burst job rather than one at a time
-            using (var meshData = UnityEditor.MeshUtility.AcquireReadOnlyMeshData(mesh))
+            using (var meshData = MeshUtility.AcquireReadOnlyMeshData(mesh))
 #else
             using (var meshData = UnityEngine.Mesh.AcquireReadOnlyMeshData(mesh))
 #endif
@@ -605,7 +602,6 @@ namespace Unity.Physics.Authoring
                 }
 
                 if (triangles.IsCreated)
-                {
                     switch (meshData[0].indexFormat)
                     {
                         case IndexFormat.UInt16:
@@ -641,7 +637,6 @@ namespace Unity.Physics.Authoring
 
                             break;
                     }
-                }
             }
 
             if (inputs.IsCreated)
@@ -650,7 +645,7 @@ namespace Unity.Physics.Authoring
             meshAssets?.Add(mesh);
         }
 
-        void UpdateCapsuleAxis()
+        private void UpdateCapsuleAxis()
         {
             var cmax = math.cmax(m_PrimitiveSize);
             var cmin = math.cmin(m_PrimitiveSize);
@@ -659,9 +654,12 @@ namespace Unity.Physics.Authoring
             m_Capsule.Axis = m_PrimitiveSize.GetMaxAxis();
         }
 
-        void UpdateCylinderAxis() => m_Cylinder.Axis = m_PrimitiveSize.GetDeviantAxis();
+        private void UpdateCylinderAxis()
+        {
+            m_Cylinder.Axis = m_PrimitiveSize.GetDeviantAxis();
+        }
 
-        void Sync(ref CylindricalProperties props)
+        private void Sync(ref CylindricalProperties props)
         {
             props.Height = m_PrimitiveSize[props.Axis];
             props.Radius = 0.5f * math.max(
@@ -670,7 +668,7 @@ namespace Unity.Physics.Authoring
             );
         }
 
-        void SyncCapsuleProperties()
+        private void SyncCapsuleProperties()
         {
             if (m_ShapeType == ShapeType.Box || m_ShapeType == ShapeType.Plane)
                 UpdateCapsuleAxis();
@@ -679,7 +677,7 @@ namespace Unity.Physics.Authoring
             Sync(ref m_Capsule);
         }
 
-        void SyncCylinderProperties()
+        private void SyncCylinderProperties()
         {
             if (m_ShapeType == ShapeType.Box || m_ShapeType == ShapeType.Plane)
                 UpdateCylinderAxis();
@@ -688,7 +686,7 @@ namespace Unity.Physics.Authoring
             Sync(ref m_Cylinder);
         }
 
-        void SyncSphereProperties()
+        private void SyncSphereProperties()
         {
             m_SphereRadius = 0.5f * math.cmax(m_PrimitiveSize);
         }
@@ -822,31 +820,33 @@ namespace Unity.Physics.Authoring
         }
 
 #pragma warning disable 618
-        void UpgradeVersionIfNecessary()
+        private void UpgradeVersionIfNecessary()
         {
             if (m_SerializedVersion < k_LatestVersion)
-            {
                 // old data from version < 1 have been removed
                 if (m_SerializedVersion < 1)
                     m_SerializedVersion = 1;
-            }
         }
 
 #pragma warning restore 618
 
-        static void Validate(ref CylindricalProperties props)
+        private static void Validate(ref CylindricalProperties props)
         {
             props.Height = math.max(0f, props.Height);
             props.Radius = math.max(0f, props.Radius);
         }
 
         // matrix to transform point from shape space into world space
-        public float4x4 GetShapeToWorldMatrix() =>
-            new float4x4(Math.DecomposeRigidBodyTransform(transform.localToWorldMatrix));
+        public float4x4 GetShapeToWorldMatrix()
+        {
+            return new float4x4(Math.DecomposeRigidBodyTransform(transform.localToWorldMatrix));
+        }
 
         // matrix to transform point from object's local transform matrix into shape space
-        internal float4x4 GetLocalToShapeMatrix() =>
-            math.mul(math.inverse(GetShapeToWorldMatrix()), transform.localToWorldMatrix);
+        internal float4x4 GetLocalToShapeMatrix()
+        {
+            return math.mul(math.inverse(GetShapeToWorldMatrix()), transform.localToWorldMatrix);
+        }
 
         internal unsafe void BakePoints(NativeArray<float3> points)
         {
@@ -874,19 +874,21 @@ namespace Unity.Physics.Authoring
         }
 
         /// <summary>
-        /// Fit this shape to render geometry in its GameObject hierarchy. Children in the hierarchy will
-        /// influence the result if they have enabled MeshRenderer components or have vertices bound to
-        /// them on a SkinnedMeshRenderer. Children will only count as influences if this shape is the
-        /// first ancestor shape in their hierarchy. As such, you should add shape components to all
-        /// GameObjects that should have them before you call this method on any of them.
+        ///     Fit this shape to render geometry in its GameObject hierarchy. Children in the hierarchy will
+        ///     influence the result if they have enabled MeshRenderer components or have vertices bound to
+        ///     them on a SkinnedMeshRenderer. Children will only count as influences if this shape is the
+        ///     first ancestor shape in their hierarchy. As such, you should add shape components to all
+        ///     GameObjects that should have them before you call this method on any of them.
         /// </summary>
-        ///
-        /// <exception cref="UnimplementedShapeException"> Thrown when an Unimplemented Shape error
-        /// condition occurs. </exception>
-        ///
-        /// <param name="minimumSkinnedVertexWeight"> (Optional)
-        /// The minimum total weight that a vertex in a skinned mesh must have assigned to this object
-        /// and/or any of its influencing children. </param>
+        /// <exception cref="UnimplementedShapeException">
+        ///     Thrown when an Unimplemented Shape error
+        ///     condition occurs.
+        /// </exception>
+        /// <param name="minimumSkinnedVertexWeight">
+        ///     (Optional)
+        ///     The minimum total weight that a vertex in a skinned mesh must have assigned to this object
+        ///     and/or any of its influencing children.
+        /// </param>
         public void FitToEnabledRenderMeshes(float minimumSkinnedVertexWeight = 0f)
         {
             var shapeType = m_ShapeType;
@@ -958,7 +960,7 @@ namespace Unity.Physics.Authoring
         }
 
         [Serializable]
-        struct CylindricalProperties
+        private struct CylindricalProperties
         {
             public float Height;
             public float Radius;
@@ -967,13 +969,16 @@ namespace Unity.Physics.Authoring
         }
 
         [BurstCompile]
-        struct BakePointsJob : IJobParallelFor
+        private struct BakePointsJob : IJobParallelFor
         {
-            [Collections.ReadOnly] public NativeArray<float3> Points;
+            [ReadOnly] public NativeArray<float3> Points;
             public float4x4 LocalToShape;
             public NativeArray<float3> Output;
 
-            public void Execute(int index) => Output[index] = math.mul(LocalToShape, new float4(Points[index], 1f)).xyz;
+            public void Execute(int index)
+            {
+                Output[index] = math.mul(LocalToShape, new float4(Points[index], 1f)).xyz;
+            }
         }
     }
 }

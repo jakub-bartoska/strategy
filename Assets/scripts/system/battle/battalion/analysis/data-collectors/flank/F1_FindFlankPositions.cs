@@ -36,15 +36,15 @@ namespace system.battle.battalion.analysis.flank
                 float3? team2FlankPosition = null;
                 foreach (var battalionInfo in positions.GetValuesForKey(rowId))
                 {
-                    switch (battalionInfo.Item3)
+                    switch (battalionInfo.team)
                     {
                         case Team.TEAM1:
-                            team2FlankPosition = battalionInfo.Item2;
+                            team2FlankPosition = battalionInfo.position;
                             break;
                         case Team.TEAM2:
                             if (!team1FlankPosition.HasValue)
                             {
-                                team1FlankPosition = battalionInfo.Item2;
+                                team1FlankPosition = battalionInfo.position;
                             }
 
                             break;

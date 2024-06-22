@@ -27,16 +27,16 @@ namespace Unity.Physics.Authoring
         private float3 PerpendicularAxisLocal;
         private float3 PositionInConnectedEntity;
 
-        class LinearVelocityMotorBaker : JointBaker<LinearVelocityMotor>
+        private class LinearVelocityMotorBaker : JointBaker<LinearVelocityMotor>
         {
             public override void Bake(LinearVelocityMotor authoring)
             {
-                float3 axisInB = math.normalize(authoring.DirectionOfMovement);
+                var axisInB = math.normalize(authoring.DirectionOfMovement);
 
-                RigidTransform aFromB = math.mul(math.inverse(authoring.worldFromA), authoring.worldFromB);
-                float3 axisInA = math.mul(aFromB.rot, axisInB); //motor axis relative to bodyA
+                var aFromB = math.mul(math.inverse(authoring.worldFromA), authoring.worldFromB);
+                var axisInA = math.mul(aFromB.rot, axisInB); //motor axis relative to bodyA
 
-                RigidTransform bFromA = math.mul(math.inverse(authoring.worldFromB), authoring.worldFromA);
+                var bFromA = math.mul(math.inverse(authoring.worldFromB), authoring.worldFromA);
                 authoring.PositionInConnectedEntity =
                     math.transform(bFromA,
                         authoring
@@ -68,7 +68,7 @@ namespace Unity.Physics.Authoring
                 joint.SetImpulseEventThresholdAllConstraints(authoring.MaxImpulse);
                 var constraintBodyPair = GetConstrainedBodyPair(authoring);
 
-                uint worldIndex = GetWorldIndexFromBaseJoint(authoring);
+                var worldIndex = GetWorldIndexFromBaseJoint(authoring);
                 CreateJointEntity(worldIndex, constraintBodyPair, joint);
             }
         }

@@ -11,57 +11,55 @@ namespace Unity.Physics.Authoring
     [DisallowMultipleComponent]
     public sealed class PhysicsBodyAuthoring : MonoBehaviour
     {
-        const string k_IconPath =
+        private const string k_IconPath =
             "Packages/com.unity.physics/Unity.Physics.Editor/Editor Default Resources/Icons/d_Rigidbody@64.png";
 
-        const float k_MinimumMass = 0.001f;
+        private const float k_MinimumMass = 0.001f;
 
-        [SerializeField]
-        [Tooltip("Specifies whether the body should be fully physically simulated, moved directly, or fixed in place.")]
-        BodyMotionType m_MotionType;
+        [SerializeField] [Tooltip("Specifies whether the body should be fully physically simulated, moved directly, or fixed in place.")]
+        private BodyMotionType m_MotionType;
 
         [SerializeField]
         [Tooltip(
             "Specifies how this body's motion in its graphics representation should be smoothed when the rendering framerate is greater than the fixed step rate used by physics.")]
-        BodySmoothing m_Smoothing = BodySmoothing.None;
+        private BodySmoothing m_Smoothing = BodySmoothing.None;
 
-        [SerializeField] float m_Mass = 1.0f;
+        [SerializeField] private float m_Mass = 1.0f;
 
         [SerializeField] [Tooltip("This is applied to a body's linear velocity reducing it over time.")]
-        float m_LinearDamping = 0.01f;
+        private float m_LinearDamping = 0.01f;
 
         [SerializeField] [Tooltip("This is applied to a body's angular velocity reducing it over time.")]
-        float m_AngularDamping = 0.05f;
+        private float m_AngularDamping = 0.05f;
 
         [SerializeField] [Tooltip("The initial linear velocity of the body in world space")]
-        float3 m_InitialLinearVelocity = float3.zero;
+        private float3 m_InitialLinearVelocity = float3.zero;
 
         [SerializeField]
         [Tooltip(
             "This represents the initial rotation speed around each axis in the local motion space of the body i.e. around the center of mass")]
-        float3 m_InitialAngularVelocity = float3.zero;
+        private float3 m_InitialAngularVelocity = float3.zero;
 
         [SerializeField] [Tooltip("Scales the amount of gravity to apply to this body.")]
-        float m_GravityFactor = 1f;
+        private float m_GravityFactor = 1f;
 
         [SerializeField] [Tooltip("Default mass distribution is based on the shapes associated with this body.")]
-        bool m_OverrideDefaultMassDistribution;
+        private bool m_OverrideDefaultMassDistribution;
 
-        [SerializeField] float3 m_CenterOfMass;
+        [SerializeField] private float3 m_CenterOfMass;
 
-        [SerializeField] EulerAngles m_Orientation = EulerAngles.Default;
+        [SerializeField] private EulerAngles m_Orientation = EulerAngles.Default;
 
         [SerializeField]
         // Default value to solid unit sphere : https://en.wikipedia.org/wiki/List_of_moments_of_inertia
-        float3 m_InertiaTensor = new float3(2f / 5f);
+        private float3 m_InertiaTensor = new(2f / 5f);
 
-        [SerializeField]
-        [Tooltip("The index of the physics world this body belongs to. Default physics world has index 0.")]
-        uint m_WorldIndex = 0;
+        [SerializeField] [Tooltip("The index of the physics world this body belongs to. Default physics world has index 0.")]
+        private uint m_WorldIndex;
 
-        [SerializeField] CustomPhysicsBodyTags m_CustomTags = CustomPhysicsBodyTags.Nothing;
+        [SerializeField] private CustomPhysicsBodyTags m_CustomTags = CustomPhysicsBodyTags.Nothing;
 
-        PhysicsBodyAuthoring()
+        private PhysicsBodyAuthoring()
         {
         }
 
@@ -123,7 +121,7 @@ namespace Unity.Physics.Authoring
 
         public MassDistribution CustomMassDistribution
         {
-            get => new MassDistribution
+            get => new()
             {
                 Transform = new RigidTransform(m_Orientation, m_CenterOfMass),
                 InertiaTensor =
@@ -152,12 +150,12 @@ namespace Unity.Physics.Authoring
             set => m_CustomTags = value;
         }
 
-        void OnEnable()
+        private void OnEnable()
         {
             // included so tick box appears in Editor
         }
 
-        void OnValidate()
+        private void OnValidate()
         {
             m_Mass = math.max(k_MinimumMass, m_Mass);
             m_LinearDamping = math.max(m_LinearDamping, 0f);

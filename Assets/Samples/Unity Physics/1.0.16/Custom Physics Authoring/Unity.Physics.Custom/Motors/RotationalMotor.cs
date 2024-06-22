@@ -24,13 +24,13 @@ namespace Unity.Physics.Authoring
         private float3 PerpendicularAxisLocal;
         private float3 PositionInConnectedEntity;
 
-        class RotationalMotorBaker : JointBaker<RotationalMotor>
+        private class RotationalMotorBaker : JointBaker<RotationalMotor>
         {
             public override void Bake(RotationalMotor authoring)
             {
-                float3 axisInA = math.normalize(authoring.AxisOfRotation);
+                var axisInA = math.normalize(authoring.AxisOfRotation);
 
-                RigidTransform bFromA = math.mul(math.inverse(authoring.worldFromB), authoring.worldFromA);
+                var bFromA = math.mul(math.inverse(authoring.worldFromB), authoring.worldFromA);
                 authoring.PositionInConnectedEntity =
                     math.transform(bFromA,
                         authoring
@@ -63,7 +63,7 @@ namespace Unity.Physics.Authoring
                 joint.SetImpulseEventThresholdAllConstraints(authoring.MaxImpulse);
                 var constraintBodyPair = GetConstrainedBodyPair(authoring);
 
-                uint worldIndex = GetWorldIndexFromBaseJoint(authoring);
+                var worldIndex = GetWorldIndexFromBaseJoint(authoring);
                 CreateJointEntity(worldIndex, constraintBodyPair, joint);
             }
         }

@@ -17,14 +17,14 @@ namespace Unity.Physics.Authoring
             base.UpdateAuto();
             if (AutoSetConnected)
             {
-                RigidTransform bFromA = math.mul(math.inverse(worldFromB), worldFromA);
+                var bFromA = math.mul(math.inverse(worldFromB), worldFromA);
                 AxisInConnectedEntity = math.mul(bFromA.rot, AxisLocal);
                 PerpendicularAxisInConnectedEntity = math.mul(bFromA.rot, PerpendicularAxisLocal);
             }
         }
     }
 
-    class PrismaticJointBaker : JointBaker<PrismaticJoint>
+    internal class PrismaticJointBaker : JointBaker<PrismaticJoint>
     {
         public override void Bake(PrismaticJoint authoring)
         {
@@ -50,7 +50,7 @@ namespace Unity.Physics.Authoring
 
             var constraintBodyPair = GetConstrainedBodyPair(authoring);
 
-            uint worldIndex = GetWorldIndexFromBaseJoint(authoring);
+            var worldIndex = GetWorldIndexFromBaseJoint(authoring);
             CreateJointEntity(worldIndex, constraintBodyPair, physicsJoint);
         }
     }

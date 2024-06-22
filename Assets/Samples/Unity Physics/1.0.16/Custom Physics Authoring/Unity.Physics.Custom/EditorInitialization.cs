@@ -5,9 +5,9 @@ using UnityEditor;
 namespace Unity.Physics.Authoring
 {
     [InitializeOnLoad]
-    class EditorInitialization
+    internal class EditorInitialization
     {
-        static readonly string k_CustomDefine = "UNITY_PHYSICS_CUSTOM";
+        private static readonly string k_CustomDefine = "UNITY_PHYSICS_CUSTOM";
 
         static EditorInitialization()
         {

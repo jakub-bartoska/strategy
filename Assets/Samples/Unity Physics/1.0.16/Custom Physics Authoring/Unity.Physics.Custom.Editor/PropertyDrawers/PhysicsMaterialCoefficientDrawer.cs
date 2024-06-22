@@ -5,12 +5,17 @@ using UnityEngine;
 namespace Unity.Physics.Editor
 {
     [CustomPropertyDrawer(typeof(PhysicsMaterialCoefficient))]
-    class PhysicsMaterialCoefficientDrawer : BaseDrawer
+    internal class PhysicsMaterialCoefficientDrawer : BaseDrawer
     {
-        public override float GetPropertyHeight(SerializedProperty property, GUIContent label) =>
-            EditorGUIUtility.singleLineHeight;
+        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        {
+            return EditorGUIUtility.singleLineHeight;
+        }
 
-        protected override bool IsCompatible(SerializedProperty property) => true;
+        protected override bool IsCompatible(SerializedProperty property)
+        {
+            return true;
+        }
 
         protected override void DoGUI(Rect position, SerializedProperty property, GUIContent label)
         {
@@ -33,7 +38,7 @@ namespace Unity.Physics.Editor
             EditorGUI.EndProperty();
         }
 
-        static class Styles
+        private static class Styles
         {
             public const float PopupWidth = 100f;
         }

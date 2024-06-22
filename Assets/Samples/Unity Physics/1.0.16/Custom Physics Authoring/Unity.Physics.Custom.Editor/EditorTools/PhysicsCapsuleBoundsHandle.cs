@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace Unity.Physics.Editor
 {
-    class PhysicsCapsuleBoundsHandle : CapsuleBoundsHandle
+    internal class PhysicsCapsuleBoundsHandle : CapsuleBoundsHandle
     {
-        static PhysicsBoundsHandleUtility.Corner[] s_Corners = new PhysicsBoundsHandleUtility.Corner[8];
+        private static readonly PhysicsBoundsHandleUtility.Corner[] s_Corners = new PhysicsBoundsHandleUtility.Corner[8];
 
         protected override void DrawWireframe()
         {
@@ -29,8 +29,8 @@ namespace Unity.Physics.Editor
 
             var size = new float3(this.radius * 2f, this.radius * 2f, height);
             var radius = this.radius;
-            var origin = (float3) this.center;
-            var bounds = new Bounds(this.center, size);
+            var origin = (float3) center;
+            var bounds = new Bounds(center, size);
 
             // Since the geometry is transformed by Handles.matrix during rendering, we transform the camera position
             // by the inverse matrix so that the two-shaded wireframe will have the proper orientation.
@@ -38,8 +38,8 @@ namespace Unity.Physics.Editor
             var cameraCenter = (float3) invMatrix.MultiplyPoint(cameraPos);
             var cameraForward = (float3) invMatrix.MultiplyVector(cameraFwd);
 
-            bool isCameraInsideBox = Camera.current != null
-                                     && bounds.Contains(invMatrix.MultiplyPoint(cameraPos));
+            var isCameraInsideBox = Camera.current != null
+                                    && bounds.Contains(invMatrix.MultiplyPoint(cameraPos));
 
             PhysicsBoundsHandleUtility.DrawFace(origin, size * new float3(1f, 1f, 1f), radius, 0, axes,
                 isCameraInsideBox);
@@ -98,8 +98,8 @@ namespace Unity.Physics.Editor
             // Draw the horizon edges between the corners
             for (int upA = 3, upB = 0; upB < 4; upA = upB, upB++)
             {
-                int dnA = upA + 4;
-                int dnB = upB + 4;
+                var dnA = upA + 4;
+                var dnB = upB + 4;
 
                 if (s_Corners[upA].splitAxis[0].z && s_Corners[upB].splitAxis[1].x)
                     Handles.DrawLine(s_Corners[upA].points[0], s_Corners[upB].points[1]);

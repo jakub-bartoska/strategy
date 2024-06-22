@@ -42,26 +42,26 @@ namespace system.battle.battalion.analysis.row_change
 
                 foreach (var battalionInfo in positions.GetValuesForKey(rowId))
                 {
-                    if (battalionInfo.Item5 == BattleUnitTypeEnum.SHADOW)
+                    if (battalionInfo.unitType == BattleUnitTypeEnum.SHADOW)
                     {
                         continue;
                     }
 
-                    if (battalionInfo.Item3 == Team.TEAM1)
+                    if (battalionInfo.team == Team.TEAM1)
                     {
                         //battalion position + battalion width < flank position
-                        if (battalionInfo.Item2.x + battalionInfo.Item4 * 1.1f < team1Position.Value.x)
+                        if (battalionInfo.position.x + battalionInfo.width * 1.1f < team1Position.Value.x)
                         {
-                            result.Add(battalionInfo.Item1, team1Direction);
+                            result.Add(battalionInfo.battalionId, team1Direction);
                         }
                     }
 
-                    if (battalionInfo.Item3 == Team.TEAM2)
+                    if (battalionInfo.team == Team.TEAM2)
                     {
                         //battalion position - battalion width > flank position
-                        if (battalionInfo.Item2.x - battalionInfo.Item4 * 1.1f > team2Position.Value.x)
+                        if (battalionInfo.position.x - battalionInfo.width * 1.1f > team2Position.Value.x)
                         {
-                            result.Add(battalionInfo.Item1, team2Direction);
+                            result.Add(battalionInfo.battalionId, team2Direction);
                         }
                     }
                 }

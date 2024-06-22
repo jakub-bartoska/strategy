@@ -12,7 +12,7 @@ namespace Unity.Physics.Authoring
             base.UpdateAuto();
             if (AutoSetConnected)
             {
-                RigidTransform bFromA = math.mul(math.inverse(worldFromB), worldFromA);
+                var bFromA = math.mul(math.inverse(worldFromB), worldFromA);
                 OrientationInConnectedEntity = math.mul(bFromA.rot, OrientationLocal);
             }
 
@@ -23,7 +23,7 @@ namespace Unity.Physics.Authoring
         }
     }
 
-    class RigidJointBaker : JointBaker<RigidJoint>
+    internal class RigidJointBaker : JointBaker<RigidJoint>
     {
         public override void Bake(RigidJoint authoring)
         {
@@ -38,7 +38,7 @@ namespace Unity.Physics.Authoring
 
             var constraintBodyPair = GetConstrainedBodyPair(authoring);
 
-            uint worldIndex = GetWorldIndexFromBaseJoint(authoring);
+            var worldIndex = GetWorldIndexFromBaseJoint(authoring);
             CreateJointEntity(worldIndex, constraintBodyPair, physicsJoint);
         }
     }

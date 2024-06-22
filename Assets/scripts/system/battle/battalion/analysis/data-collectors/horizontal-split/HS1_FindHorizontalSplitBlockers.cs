@@ -1,6 +1,4 @@
-﻿using component;
-using component._common.system_switchers;
-using component.battle.battalion;
+﻿using component._common.system_switchers;
 using component.battle.battalion.data_holders;
 using system.battle.battalion.analysis.utils;
 using system.battle.battalion.execution.movement;
@@ -8,7 +6,6 @@ using system.battle.enums;
 using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Entities;
-using Unity.Mathematics;
 
 namespace system.battle.battalion.analysis.horizontal_split
 {
@@ -34,7 +31,7 @@ namespace system.battle.battalion.analysis.horizontal_split
 
             foreach (var rowId in allRows)
             {
-                (long, float3, Team, float, BattleUnitTypeEnum)? leftUnitOptional = null;
+                BattalionInfo? leftUnitOptional = null;
 
                 foreach (var me in positions.GetValuesForKey(rowId))
                 {
@@ -49,23 +46,19 @@ namespace system.battle.battalion.analysis.horizontal_split
                     leftUnitOptional = me;
 
                     //keep in mind that both battalions can have different size, so check has to be done for each battalion separatelly
-                    var canISplitLeft = BattleTransformUtils.isTooFarForSplit(me.Item2, leftUnit.Item2, me.Item4, leftUnit.Item4);
+                    var canISplitLeft = BattleTransformUtils.isTooFarForSplit(me.position, leftUnit.position, me.width, leftUnit.width);
                     if (!canISplitLeft)
                     {
-                        blockedHorizontalSplits.Add(me.Item1, Direction.LEFT);
+                        blockedHorizontalSplits.Add(me.battalionId, Direction.LEFT);
                     }
 
-                    var canLeftUnitSplitRight = BattleTransformUtils.isTooFarForSplit(leftUnit.Item2, me.Item2, leftUnit.Item4, me.Item4);
+                    var canLeftUnitSplitRight = BattleTransformUtils.isTooFarForSplit(leftUnit.position, me.position, leftUnit.width, me.width);
                     if (!canLeftUnitSplitRight)
                     {
-                        blockedHorizontalSplits.Add(leftUnit.Item1, Direction.RIGHT);
+                        blockedHorizontalSplits.Add(leftUnit.battalionId, Direction.RIGHT);
                     }
                 }
             }
         }
-    }
-
-    public class MD2_AdjustByBattleMovements
-    {
     }
 }

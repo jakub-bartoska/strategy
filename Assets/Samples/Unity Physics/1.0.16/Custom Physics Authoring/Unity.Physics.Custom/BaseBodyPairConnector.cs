@@ -1,4 +1,3 @@
-using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -24,7 +23,7 @@ namespace Unity.Physics.Authoring
         public Entity EntityB { get; set; }
 
 
-        void OnEnable()
+        private void OnEnable()
         {
             // included so tick box appears in Editor
         }

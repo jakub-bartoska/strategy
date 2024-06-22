@@ -38,8 +38,8 @@ namespace Unity.Physics.Authoring
         public bool Category29;
         public bool Category30;
         public bool Category31;
-        public static PhysicsCategoryTags Everything => new PhysicsCategoryTags {Value = unchecked((uint) ~0)};
-        public static PhysicsCategoryTags Nothing => new PhysicsCategoryTags {Value = 0};
+        public static PhysicsCategoryTags Everything => new() {Value = unchecked((uint) ~0)};
+        public static PhysicsCategoryTags Nothing => new() {Value = 0};
 
         internal bool this[int i]
         {
@@ -264,10 +264,19 @@ namespace Unity.Physics.Authoring
             }
         }
 
-        public bool Equals(PhysicsCategoryTags other) => Value == other.Value;
+        public bool Equals(PhysicsCategoryTags other)
+        {
+            return Value == other.Value;
+        }
 
-        public override bool Equals(object obj) => obj is PhysicsCategoryTags other && Equals(other);
+        public override bool Equals(object obj)
+        {
+            return obj is PhysicsCategoryTags other && Equals(other);
+        }
 
-        public override int GetHashCode() => unchecked((int) Value);
+        public override int GetHashCode()
+        {
+            return unchecked((int) Value);
+        }
     }
 }

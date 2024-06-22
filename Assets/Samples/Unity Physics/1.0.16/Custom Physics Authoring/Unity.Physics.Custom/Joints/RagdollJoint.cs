@@ -1,5 +1,4 @@
 using Unity.Collections;
-using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 using static Unity.Physics.Math;
@@ -8,14 +7,14 @@ namespace Unity.Physics.Authoring
 {
     public class RagdollJoint : BallAndSocketJoint
     {
-        const int k_LatestVersion = 1;
+        private const int k_LatestVersion = 1;
 
         // Editor only settings
         [HideInInspector] public bool EditAxes;
 
         [HideInInspector] public bool EditLimits;
 
-        [SerializeField] int m_Version;
+        [SerializeField] private int m_Version;
 
         public float3 TwistAxisLocal;
         public float3 TwistAxisInConnectedEntity;
@@ -27,7 +26,7 @@ namespace Unity.Physics.Authoring
         public float MinTwistAngle;
         public float MaxTwistAngle;
 
-        void OnValidate()
+        private void OnValidate()
         {
             UpgradeVersionIfNecessary();
 
@@ -67,14 +66,14 @@ namespace Unity.Physics.Authoring
             base.UpdateAuto();
             if (AutoSetConnected)
             {
-                RigidTransform bFromA = math.mul(math.inverse(worldFromB), worldFromA);
+                var bFromA = math.mul(math.inverse(worldFromB), worldFromA);
                 TwistAxisInConnectedEntity = math.mul(bFromA.rot, TwistAxisLocal);
                 PerpendicularAxisInConnectedEntity = math.mul(bFromA.rot, PerpendicularAxisLocal);
             }
         }
     }
 
-    class RagdollJointBaker : JointBaker<RagdollJoint>
+    internal class RagdollJointBaker : JointBaker<RagdollJoint>
     {
         public override void Bake(RagdollJoint authoring)
         {
@@ -105,8 +104,8 @@ namespace Unity.Physics.Authoring
 
             var constraintBodyPair = GetConstrainedBodyPair(authoring);
 
-            using NativeList<Entity> entities = new NativeList<Entity>(1, Allocator.TempJob);
-            uint worldIndex = GetWorldIndexFromBaseJoint(authoring);
+            using NativeList<Entity> entities = new(1, Allocator.TempJob);
+            var worldIndex = GetWorldIndexFromBaseJoint(authoring);
             CreateJointEntities(worldIndex,
                 constraintBodyPair,
                 new NativeArray<PhysicsJoint>(2, Allocator.Temp)

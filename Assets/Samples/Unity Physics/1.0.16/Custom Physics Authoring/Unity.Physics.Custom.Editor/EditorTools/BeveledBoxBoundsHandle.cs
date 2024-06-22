@@ -5,11 +5,11 @@ using UnityEngine;
 
 namespace Unity.Physics.Editor
 {
-    class BeveledBoxBoundsHandle : BoxBoundsHandle
+    internal class BeveledBoxBoundsHandle : BoxBoundsHandle
     {
-        static PhysicsBoundsHandleUtility.Corner[] s_Corners = new PhysicsBoundsHandleUtility.Corner[8];
-        float m_BevelRadius = ConvexHullGenerationParameters.Default.BevelRadius;
-        bool m_IsDragging = false;
+        private static readonly PhysicsBoundsHandleUtility.Corner[] s_Corners = new PhysicsBoundsHandleUtility.Corner[8];
+        private float m_BevelRadius = ConvexHullGenerationParameters.Default.BevelRadius;
+        private bool m_IsDragging;
 
         public float bevelRadius
         {
@@ -23,11 +23,11 @@ namespace Unity.Physics.Editor
 
         public new void DrawHandle()
         {
-            int prevHotControl = GUIUtility.hotControl;
+            var prevHotControl = GUIUtility.hotControl;
             if (prevHotControl == 0)
                 m_IsDragging = false;
             base.DrawHandle();
-            int currHotcontrol = GUIUtility.hotControl;
+            var currHotcontrol = GUIUtility.hotControl;
             if (currHotcontrol != prevHotControl)
                 m_IsDragging = currHotcontrol != 0;
         }
@@ -48,11 +48,11 @@ namespace Unity.Physics.Editor
                 cameraForward = Camera.current.transform.forward;
             }
 
-            var bounds = new Bounds(this.center, this.size);
-            bool isCameraInsideBox = Camera.current != null &&
-                                     bounds.Contains(Handles.inverseMatrix.MultiplyPoint(cameraPosition));
+            var bounds = new Bounds(center, this.size);
+            var isCameraInsideBox = Camera.current != null &&
+                                    bounds.Contains(Handles.inverseMatrix.MultiplyPoint(cameraPosition));
             var bevelRadius = this.bevelRadius;
-            var origin = (float3) this.center;
+            var origin = (float3) center;
             var size = (float3) this.size;
 
             PhysicsBoundsHandleUtility.DrawFace(origin, size * new float3(1f, 1f, 1f), bevelRadius, 0, axes,
@@ -106,14 +106,14 @@ namespace Unity.Physics.Editor
                 quaternion.LookRotation(-axisz, -axisy), cameraPosition, cameraForward, cameraOrtho, bevelRadius,
                 out s_Corners[7]);
 
-            for (int i = 0; i < s_Corners.Length; i++)
+            for (var i = 0; i < s_Corners.Length; i++)
                 PhysicsBoundsHandleUtility.DrawCorner(s_Corners[i], true);
 
             // Draw the horizon edges between the corners
             for (int upA = 3, upB = 0; upB < 4; upA = upB, upB++)
             {
-                int dnA = upA + 4;
-                int dnB = upB + 4;
+                var dnA = upA + 4;
+                var dnB = upB + 4;
 
                 if (s_Corners[upA].splitAxis[0].z && s_Corners[upB].splitAxis[1].x)
                     Handles.DrawLine(s_Corners[upA].points[0], s_Corners[upB].points[1]);

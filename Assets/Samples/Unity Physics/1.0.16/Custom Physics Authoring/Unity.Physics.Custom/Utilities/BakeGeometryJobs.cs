@@ -8,7 +8,7 @@ namespace Unity.Physics.Authoring
 {
     static partial class PhysicsShapeExtensions
     {
-        static void MakeZAxisPrimaryBasis(ref int3 basisPriority)
+        private static void MakeZAxisPrimaryBasis(ref int3 basisPriority)
         {
             if (basisPriority[1] == 2)
                 basisPriority = basisPriority.yxz;
@@ -32,7 +32,7 @@ namespace Unity.Physics.Authoring
                 ref EulerAngles orientation)
             {
                 float4x4 bakeToShape;
-                float4x4 rotationMatrix = float4x4.identity;
+                var rotationMatrix = float4x4.identity;
                 var basisPriority = k_DefaultAxisPriority;
                 var sheared = localToWorld.HasShear();
                 if (localToWorld.HasNonUniformScale() || sheared)
@@ -275,7 +275,7 @@ namespace Unity.Physics.Authoring
         #region Sphere
 
         [BurstCompile]
-        struct BakeSphereJob : IJob
+        private struct BakeSphereJob : IJob
         {
             public NativeArray<SphereGeometry> Sphere;
 
@@ -333,7 +333,7 @@ namespace Unity.Physics.Authoring
         #region Plane
 
         [BurstCompile]
-        struct BakePlaneJob : IJob
+        private struct BakePlaneJob : IJob
         {
             public NativeArray<float3x4> Vertices;
 

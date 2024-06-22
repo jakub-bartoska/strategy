@@ -5,19 +5,19 @@ using UnityEngine;
 
 namespace Unity.Physics.Editor
 {
-    static class SceneViewUtility
+    internal static class SceneViewUtility
     {
-        const string k_NotificationsPrefKey = "SceneView/Tools/Notifications";
-        const bool k_DefaultNotifications = true;
-        const string k_NotificationSpeedPrefKey = "SceneView/Tools/Notification Speed";
-        const float k_DefaultNotificationsSpeed = 20f;
+        private const string k_NotificationsPrefKey = "SceneView/Tools/Notifications";
+        private const bool k_DefaultNotifications = true;
+        private const string k_NotificationSpeedPrefKey = "SceneView/Tools/Notification Speed";
+        private const float k_DefaultNotificationsSpeed = 20f;
 
-        const float k_NotificationDuration = 1f;
-        const float k_NotificationFadeInTime = 0.04f;
-        const float k_NotificationFadeOutTime = 0.2f;
-        const float k_IndeterminateProgressCurveDuration = 2f;
+        private const float k_NotificationDuration = 1f;
+        private const float k_NotificationFadeInTime = 0.04f;
+        private const float k_NotificationFadeOutTime = 0.2f;
+        private const float k_IndeterminateProgressCurveDuration = 2f;
 
-        static readonly AnimationCurve k_NotificationFadeCurve = new AnimationCurve
+        private static readonly AnimationCurve k_NotificationFadeCurve = new()
         {
             keys = new[]
             {
@@ -34,7 +34,7 @@ namespace Unity.Physics.Editor
             preWrapMode = WrapMode.Clamp
         };
 
-        static readonly AnimationCurve k_IndeterminateProgressCurveLeftMargin = new AnimationCurve
+        private static readonly AnimationCurve k_IndeterminateProgressCurveLeftMargin = new()
         {
             keys = new[]
             {
@@ -47,7 +47,7 @@ namespace Unity.Physics.Editor
             preWrapMode = WrapMode.Loop
         };
 
-        static readonly AnimationCurve k_IndeterminateProgressCurveRightMargin = new AnimationCurve
+        private static readonly AnimationCurve k_IndeterminateProgressCurveRightMargin = new()
         {
             keys = new[]
             {
@@ -60,22 +60,28 @@ namespace Unity.Physics.Editor
             preWrapMode = WrapMode.Loop
         };
 
-        static string s_StatusMessage;
-        static DateTime s_StartTime;
-        static bool s_IsTemporary;
-        static Func<float> s_GetProgress;
+        private static string s_StatusMessage;
+        private static DateTime s_StartTime;
+        private static bool s_IsTemporary;
+        private static Func<float> s_GetProgress;
 
-        public static void DisplayProgressNotification(string message, Func<float> getProgress) =>
+        public static void DisplayProgressNotification(string message, Func<float> getProgress)
+        {
             // insert an extra line to make room for progress bar
             DisplayNotificationInSceneView(getProgress == null ? message : $"{message}\n", false, getProgress);
+        }
 
-        public static void DisplayPersistentNotification(string message) =>
+        public static void DisplayPersistentNotification(string message)
+        {
             DisplayNotificationInSceneView(message, false, null);
+        }
 
-        public static void DisplayTemporaryNotification(string message) =>
+        public static void DisplayTemporaryNotification(string message)
+        {
             DisplayNotificationInSceneView(message, true, null);
+        }
 
-        static void DisplayNotificationInSceneView(string message, bool temporary, Func<float> getProgress)
+        private static void DisplayNotificationInSceneView(string message, bool temporary, Func<float> getProgress)
         {
             s_StatusMessage = message ?? string.Empty;
             s_StartTime = DateTime.Now;
@@ -86,7 +92,7 @@ namespace Unity.Physics.Editor
             SceneView.RepaintAll();
         }
 
-        static void ToolNotificationCallback(SceneView obj)
+        private static void ToolNotificationCallback(SceneView obj)
         {
             if (Camera.current == null)
                 return;
@@ -156,28 +162,34 @@ namespace Unity.Physics.Editor
             SceneView.RepaintAll();
         }
 
-        public static void ClearNotificationInSceneView() => SceneView.duringSceneGui -= ToolNotificationCallback;
-
-        static class Styles
+        public static void ClearNotificationInSceneView()
         {
-            public static readonly GUIStyle ProgressBarTrack = new GUIStyle
+            SceneView.duringSceneGui -= ToolNotificationCallback;
+        }
+
+        private static class Styles
+        {
+            public static readonly GUIStyle ProgressBarTrack = new()
             {
                 fixedHeight = 4f,
                 normal = new GUIStyleState {background = Texture2D.whiteTexture}
             };
 
-            public static readonly GUIStyle ProgressBarIndicator = new GUIStyle
+            public static readonly GUIStyle ProgressBarIndicator = new()
             {
                 fixedHeight = 4f,
                 normal = new GUIStyleState {background = Texture2D.whiteTexture}
             };
 
-            public static readonly GUIStyle SceneViewStatusMessage = new GUIStyle("NotificationBackground")
+            public static readonly GUIStyle SceneViewStatusMessage = new("NotificationBackground")
             {
                 fontSize = EditorStyles.label.fontSize
             };
 
-            static Styles() => SceneViewStatusMessage.padding = SceneViewStatusMessage.border;
+            static Styles()
+            {
+                SceneViewStatusMessage.padding = SceneViewStatusMessage.border;
+            }
         }
     }
 }

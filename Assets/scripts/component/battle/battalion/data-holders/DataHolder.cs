@@ -18,23 +18,23 @@ namespace component.battle.battalion.data_holders
         public NativeList<int> allRowIds;
 
         /**
-         * row - (battalionId, position, team, width)
+         * row - (battalionId, position, team, width, unitType)
          * sorted by row from 0 to max
          * sorted within row from left to right
          */
-        public NativeParallelMultiHashMap<int, (long, float3, Team, float, BattleUnitTypeEnum)> positions;
+        public NativeParallelMultiHashMap<int, BattalionInfo> positions;
 
         /**
-         * battalionId - (position, team, width)
+         * battalionId - (battalionId, position, team, width, unitType)
          */
-        public NativeHashMap<long, (float3, Team, float)> battalionInfo;
+        public NativeHashMap<long, BattalionInfo> battalionInfo;
 
         /**
          * (battalionId, battalionId, BattalionFightType)
          * 2 battalions fighting each other + type of the fight
          * each fighting pair should be added only once
          */
-        public NativeList<(long, long, BattalionFightType)> fightingPairs;
+        public NativeList<FightingPair> fightingPairs;
 
         /**
          * battalion id
@@ -96,5 +96,21 @@ namespace component.battle.battalion.data_holders
          * direction is final, so 1 battalion can contain only 1 record
          */
         public NativeHashMap<long, Direction> splitBattalions;
+    }
+
+    public struct BattalionInfo
+    {
+        public long battalionId;
+        public float3 position;
+        public Team team;
+        public float width;
+        public BattleUnitTypeEnum unitType;
+    }
+
+    public struct FightingPair
+    {
+        public long battalionId1;
+        public long battalionId2;
+        public BattalionFightType fightType;
     }
 }

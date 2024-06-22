@@ -5,13 +5,13 @@ using UnityEngine;
 
 namespace Unity.Physics.Editor
 {
-    class PhysicsSphereBoundsHandle : SphereBoundsHandle
+    internal class PhysicsSphereBoundsHandle : SphereBoundsHandle
     {
         protected override void DrawWireframe()
         {
-            bool x = IsAxisEnabled(Axes.X);
-            bool y = IsAxisEnabled(Axes.Y);
-            bool z = IsAxisEnabled(Axes.Z);
+            var x = IsAxisEnabled(Axes.X);
+            var y = IsAxisEnabled(Axes.Y);
+            var z = IsAxisEnabled(Axes.Z);
 
             if (x && !y && !z)
                 Handles.DrawLine(Vector3.right * radius, Vector3.left * radius);
@@ -27,7 +27,7 @@ namespace Unity.Physics.Editor
                 var frontfacedColor = Handles.color;
                 var backfacedColor = Handles.color *
                                      new Color(1f, 1f, 1f, PhysicsBoundsHandleUtility.kBackfaceAlphaMultiplier);
-                var discVisible = new bool[]
+                var discVisible = new[]
                 {
                     y && z,
                     x && z,
@@ -52,8 +52,8 @@ namespace Unity.Physics.Editor
                 var sqrOffset =
                     isCameraOrthographic
                         ? 0
-                        : (sqrRadius * sqrRadius /
-                           sqrDistCameraToCenter); // squared distance from actual center to drawn disc center
+                        : sqrRadius * sqrRadius /
+                          sqrDistCameraToCenter; // squared distance from actual center to drawn disc center
                 var insideAmount = sqrOffset / sqrRadius;
                 if (insideAmount < 1)
                 {
@@ -76,7 +76,7 @@ namespace Unity.Physics.Editor
                         }
 
                         var planeNormal = cameraToCenter.normalized;
-                        for (int i = 0; i < 3; i++)
+                        for (var i = 0; i < 3; i++)
                         {
                             if (!discVisible[i])
                                 continue;
@@ -84,11 +84,11 @@ namespace Unity.Physics.Editor
                             var discOrientation = discOrientations[i];
 
                             var angleBetweenDiscAndNormal = math.acos(math.dot(discOrientation, planeNormal));
-                            angleBetweenDiscAndNormal = (math.PI * 0.5f) - math.min(angleBetweenDiscAndNormal,
+                            angleBetweenDiscAndNormal = math.PI * 0.5f - math.min(angleBetweenDiscAndNormal,
                                 math.PI - angleBetweenDiscAndNormal);
 
-                            float f = math.tan(angleBetweenDiscAndNormal);
-                            float g = math.sqrt(sqrOffset + f * f * sqrOffset) / radius;
+                            var f = math.tan(angleBetweenDiscAndNormal);
+                            var g = math.sqrt(sqrOffset + f * f * sqrOffset) / radius;
                             if (g < 1)
                             {
                                 var angleToHorizon = math.degrees(math.asin(g));
@@ -98,16 +98,23 @@ namespace Unity.Physics.Editor
                                 var horizonArcLength = (90 - angleToHorizon) * 2.0f;
 
                                 using (new Handles.DrawingScope(frontfacedColor))
+                                {
                                     Handles.DrawWireArc(center, discOrientation, vectorToPointOnHorizon,
                                         horizonArcLength, radius);
+                                }
+
                                 using (new Handles.DrawingScope(backfacedColor))
+                                {
                                     Handles.DrawWireArc(center, discOrientation, vectorToPointOnHorizon,
                                         horizonArcLength - 360, radius);
+                                }
                             }
                             else
                             {
                                 using (new Handles.DrawingScope(backfacedColor))
+                                {
                                     Handles.DrawWireDisc(center, discOrientation, radius);
+                                }
                             }
                         }
                     }
@@ -116,7 +123,7 @@ namespace Unity.Physics.Editor
                 {
                     using (new Handles.DrawingScope(backfacedColor))
                     {
-                        for (int i = 0; i < 3; i++)
+                        for (var i = 0; i < 3; i++)
                         {
                             var discOrientation = discOrientations[i];
                             Handles.DrawWireDisc(center, discOrientation, radius);

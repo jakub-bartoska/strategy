@@ -35,7 +35,7 @@ namespace system.battle.battalion.analysis.flank
                 flankPositions.TryGetValue(rowId, out var teamFlanks);
                 foreach (var battalionInfo in positions.GetValuesForKey(rowId))
                 {
-                    var flankPosition = battalionInfo.Item3 switch
+                    var flankPosition = battalionInfo.team switch
                     {
                         Team.TEAM1 => teamFlanks.Item1,
                         Team.TEAM2 => teamFlanks.Item2,
@@ -46,19 +46,19 @@ namespace system.battle.battalion.analysis.flank
                         continue;
                     }
 
-                    switch (battalionInfo.Item3)
+                    switch (battalionInfo.team)
                     {
                         case Team.TEAM1:
-                            if (battalionInfo.Item2.x < flankPosition.Value.x)
+                            if (battalionInfo.position.x < flankPosition.Value.x)
                             {
-                                flankingBattalions.Add(battalionInfo.Item1);
+                                flankingBattalions.Add(battalionInfo.battalionId);
                             }
 
                             break;
                         case Team.TEAM2:
-                            if (battalionInfo.Item2.x > flankPosition.Value.x)
+                            if (battalionInfo.position.x > flankPosition.Value.x)
                             {
-                                flankingBattalions.Add(battalionInfo.Item1);
+                                flankingBattalions.Add(battalionInfo.battalionId);
                             }
 
                             break;

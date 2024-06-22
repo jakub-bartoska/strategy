@@ -50,24 +50,24 @@ namespace system.battle.battalion
             foreach (var fightingPair in dataHolder.ValueRO.fightingPairs)
             {
                 // battalion1 damages battalion2
-                var dmgToReceive = fightingPair.Item3 switch
+                var dmgToReceive = fightingPair.fightType switch
                 {
                     //todo add soldier count
-                    BattalionFightType.NORMAL => dmgPerPerSoldierPerDeltaTime * soldierCountsPerBattalion[fightingPair.Item1],
+                    BattalionFightType.NORMAL => dmgPerPerSoldierPerDeltaTime * soldierCountsPerBattalion[fightingPair.battalionId1],
                     BattalionFightType.VERTICAL => dmgPerPerSoldierPerDeltaTime,
                     _ => throw new Exception("unknown fight type"),
                 };
-                dmgReceived.Add(fightingPair.Item2, dmgToReceive);
+                dmgReceived.Add(fightingPair.battalionId2, dmgToReceive);
 
                 // battalion2 damages battalion1
-                dmgToReceive = fightingPair.Item3 switch
+                dmgToReceive = fightingPair.fightType switch
                 {
                     //todo add soldier count
-                    BattalionFightType.NORMAL => dmgPerPerSoldierPerDeltaTime * soldierCountsPerBattalion[fightingPair.Item2],
+                    BattalionFightType.NORMAL => dmgPerPerSoldierPerDeltaTime * soldierCountsPerBattalion[fightingPair.battalionId2],
                     BattalionFightType.VERTICAL => dmgPerPerSoldierPerDeltaTime,
                     _ => throw new Exception("unknown fight type"),
                 };
-                dmgReceived.Add(fightingPair.Item1, dmgToReceive);
+                dmgReceived.Add(fightingPair.battalionId1, dmgToReceive);
             }
 
             new PerformBattalionFightJob

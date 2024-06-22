@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Unity.Physics.Editor
 {
-    abstract class BaseDrawer : PropertyDrawer
+    internal abstract class BaseDrawer : PropertyDrawer
     {
         protected abstract bool IsCompatible(SerializedProperty property);
 

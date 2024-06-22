@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Unity.Physics.Authoring
 {
-    interface IPhysicsMaterialProperties
+    internal interface IPhysicsMaterialProperties
     {
         CollisionResponsePolicy CollisionResponse { get; set; }
 
@@ -22,7 +22,7 @@ namespace Unity.Physics.Authoring
         CustomPhysicsMaterialTags CustomTags { get; set; }
     }
 
-    interface IInheritPhysicsMaterialProperties : IPhysicsMaterialProperties
+    internal interface IInheritPhysicsMaterialProperties : IPhysicsMaterialProperties
     {
         PhysicsMaterialTemplate Template { get; set; }
         bool OverrideCollisionResponse { get; set; }
@@ -42,11 +42,11 @@ namespace Unity.Physics.Authoring
         public Material.CombinePolicy CombineMode;
     }
 
-    abstract class OverridableValue<T> where T : struct
+    internal abstract class OverridableValue<T> where T : struct
     {
-        [SerializeField] bool m_Override;
+        [SerializeField] private bool m_Override;
 
-        [SerializeField] T m_Value;
+        [SerializeField] private T m_Value;
 
         public bool Override
         {
@@ -64,7 +64,10 @@ namespace Unity.Physics.Authoring
             }
         }
 
-        public void OnValidate() => OnValidate(ref m_Value);
+        public void OnValidate()
+        {
+            OnValidate(ref m_Value);
+        }
 
         protected virtual void OnValidate(ref T value)
         {
@@ -72,69 +75,71 @@ namespace Unity.Physics.Authoring
     }
 
     [Serializable]
-    class OverridableCollisionResponse : OverridableValue<CollisionResponsePolicy>
+    internal class OverridableCollisionResponse : OverridableValue<CollisionResponsePolicy>
     {
     }
 
     [Serializable]
-    class OverridableMaterialCoefficient : OverridableValue<PhysicsMaterialCoefficient>
+    internal class OverridableMaterialCoefficient : OverridableValue<PhysicsMaterialCoefficient>
     {
-        protected override void OnValidate(ref PhysicsMaterialCoefficient value) =>
+        protected override void OnValidate(ref PhysicsMaterialCoefficient value)
+        {
             value.Value = math.max(0f, value.Value);
+        }
     }
 
     [Serializable]
-    class OverridableCategoryTags : OverridableValue<PhysicsCategoryTags>
+    internal class OverridableCategoryTags : OverridableValue<PhysicsCategoryTags>
     {
     }
 
     [Serializable]
-    class OverridableCustomMaterialTags : OverridableValue<CustomPhysicsMaterialTags>
+    internal class OverridableCustomMaterialTags : OverridableValue<CustomPhysicsMaterialTags>
     {
     }
 
     [Serializable]
-    class PhysicsMaterialProperties : IInheritPhysicsMaterialProperties, ISerializationCallbackReceiver
+    internal class PhysicsMaterialProperties : IInheritPhysicsMaterialProperties, ISerializationCallbackReceiver
     {
-        const int k_LatestVersion = 1;
+        private const int k_LatestVersion = 1;
 
         internal static bool s_SuppressUpgradeWarnings;
 
-        [SerializeField, HideInInspector] bool m_SupportsTemplate;
+        [SerializeField] [HideInInspector] private bool m_SupportsTemplate;
 
         [SerializeField] [Tooltip("Assign a template to use its values.")]
-        PhysicsMaterialTemplate m_Template;
+        private PhysicsMaterialTemplate m_Template;
 
-        [SerializeField] OverridableCollisionResponse m_CollisionResponse = new OverridableCollisionResponse
+        [SerializeField] private OverridableCollisionResponse m_CollisionResponse = new()
         {
             Value = CollisionResponsePolicy.Collide,
             Override = false
         };
 
-        [SerializeField] OverridableMaterialCoefficient m_Friction = new OverridableMaterialCoefficient
+        [SerializeField] private OverridableMaterialCoefficient m_Friction = new()
         {
             Value = new PhysicsMaterialCoefficient {Value = 0.5f, CombineMode = Material.CombinePolicy.GeometricMean},
             Override = false
         };
 
-        [SerializeField] OverridableMaterialCoefficient m_Restitution = new OverridableMaterialCoefficient
+        [SerializeField] private OverridableMaterialCoefficient m_Restitution = new()
         {
             Value = new PhysicsMaterialCoefficient {Value = 0f, CombineMode = Material.CombinePolicy.Maximum},
             Override = false
         };
 
-        [SerializeField] OverridableCategoryTags m_BelongsToCategories =
-            new OverridableCategoryTags {Value = PhysicsCategoryTags.Everything, Override = false};
+        [SerializeField] private OverridableCategoryTags m_BelongsToCategories = new() {Value = PhysicsCategoryTags.Everything, Override = false};
 
-        [SerializeField] OverridableCategoryTags m_CollidesWithCategories =
-            new OverridableCategoryTags {Value = PhysicsCategoryTags.Everything, Override = false};
+        [SerializeField] private OverridableCategoryTags m_CollidesWithCategories = new() {Value = PhysicsCategoryTags.Everything, Override = false};
 
-        [SerializeField] OverridableCustomMaterialTags m_CustomMaterialTags =
-            new OverridableCustomMaterialTags {Value = default, Override = false};
+        [SerializeField] private OverridableCustomMaterialTags m_CustomMaterialTags = new() {Value = default, Override = false};
 
-        [SerializeField] int m_SerializedVersion = 0;
+        [SerializeField] private int m_SerializedVersion;
 
-        public PhysicsMaterialProperties(bool supportsTemplate) => m_SupportsTemplate = supportsTemplate;
+        public PhysicsMaterialProperties(bool supportsTemplate)
+        {
+            m_SupportsTemplate = supportsTemplate;
+        }
 
         public PhysicsMaterialTemplate Template
         {
@@ -218,10 +223,15 @@ namespace Unity.Physics.Authoring
         {
         }
 
-        void ISerializationCallbackReceiver.OnAfterDeserialize() => UpgradeVersionIfNecessary();
+        void ISerializationCallbackReceiver.OnAfterDeserialize()
+        {
+            UpgradeVersionIfNecessary();
+        }
 
-        static T Get<T>(OverridableValue<T> value, T? templateValue) where T : struct =>
-            value.Override || templateValue == null ? value.Value : templateValue.Value;
+        private static T Get<T>(OverridableValue<T> value, T? templateValue) where T : struct
+        {
+            return value.Override || templateValue == null ? value.Value : templateValue.Value;
+        }
 
         internal static void OnValidate(ref PhysicsMaterialProperties material, bool supportsTemplate)
         {
@@ -241,14 +251,12 @@ namespace Unity.Physics.Authoring
         }
 
 #pragma warning disable 618
-        void UpgradeVersionIfNecessary()
+        private void UpgradeVersionIfNecessary()
         {
             if (m_SerializedVersion < k_LatestVersion)
-            {
                 // old data from version < 1 have been removed
                 if (m_SerializedVersion < 1)
                     m_SerializedVersion = 1;
-            }
         }
 
 #pragma warning restore 618

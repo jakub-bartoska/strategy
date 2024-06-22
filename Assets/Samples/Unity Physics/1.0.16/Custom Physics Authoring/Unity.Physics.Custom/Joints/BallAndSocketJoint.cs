@@ -1,5 +1,4 @@
 using Unity.Collections;
-using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -26,7 +25,7 @@ namespace Unity.Physics.Authoring
         {
             if (AutoSetConnected)
             {
-                RigidTransform bFromA = math.mul(math.inverse(worldFromB), worldFromA);
+                var bFromA = math.mul(math.inverse(worldFromB), worldFromA);
                 PositionInConnectedEntity = math.transform(bFromA, PositionLocal);
             }
         }
@@ -62,10 +61,7 @@ namespace Unity.Physics.Authoring
             if (c)
             {
                 var physicsBody = GetComponent<PhysicsBodyAuthoring>(c);
-                if (physicsBody != null)
-                {
-                    worldIndex = physicsBody.WorldIndex;
-                }
+                if (physicsBody != null) worldIndex = physicsBody.WorldIndex;
             }
 
             return worldIndex;
@@ -75,16 +71,10 @@ namespace Unity.Physics.Authoring
         {
             var physicsBody = GetComponent<PhysicsBodyAuthoring>(authoring);
             uint worldIndex = physicsBody.WorldIndex;
-            if (authoring.ConnectedBody == null)
-            {
-                return worldIndex;
-            }
+            if (authoring.ConnectedBody == null) return worldIndex;
 
             var connectedBody = GetComponent<PhysicsBodyAuthoring>(authoring.ConnectedBody);
-            if (connectedBody != null)
-            {
-                Assertions.Assert.AreEqual(worldIndex, connectedBody.WorldIndex);
-            }
+            if (connectedBody != null) Assertions.Assert.AreEqual(worldIndex, connectedBody.WorldIndex);
 
             return worldIndex;
         }
@@ -116,7 +106,7 @@ namespace Unity.Physics.Authoring
 
                 if (GetComponent<ModifyJointLimitsAuthoring>() != null)
                 {
-                    AddComponent(jointEntity, new JointEntityBaking()
+                    AddComponent(jointEntity, new JointEntityBaking
                     {
                         Entity = entity
                     });
@@ -125,7 +115,6 @@ namespace Unity.Physics.Authoring
             }
 
             if (multipleJoints)
-            {
                 // set companion buffers for new joints
                 for (var i = 0; i < joints.Length; ++i)
                 {
@@ -137,11 +126,10 @@ namespace Unity.Physics.Authoring
                         companions.Add(new PhysicsJointCompanion {JointEntity = newJointEntities[j]});
                     }
                 }
-            }
         }
     }
 
-    class BallAndSocketJointBaker : JointBaker<BallAndSocketJoint>
+    internal class BallAndSocketJointBaker : JointBaker<BallAndSocketJoint>
     {
         public override void Bake(BallAndSocketJoint authoring)
         {
@@ -152,7 +140,7 @@ namespace Unity.Physics.Authoring
 
             var constraintBodyPair = GetConstrainedBodyPair(authoring);
 
-            uint worldIndex = GetWorldIndexFromBaseJoint(authoring);
+            var worldIndex = GetWorldIndexFromBaseJoint(authoring);
             CreateJointEntity(worldIndex, constraintBodyPair, physicsJoint);
         }
     }

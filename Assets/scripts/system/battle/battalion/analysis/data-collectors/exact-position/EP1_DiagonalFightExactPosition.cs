@@ -42,15 +42,15 @@ namespace system.battle.battalion.analysis.exact_position
             var normalFights = new NativeHashSet<long>(1000, Allocator.Temp);
             foreach (var fightingPair in dataHolder.fightingPairs)
             {
-                switch (fightingPair.Item3)
+                switch (fightingPair.fightType)
                 {
                     case BattalionFightType.NORMAL:
-                        normalFights.Add(fightingPair.Item1);
-                        normalFights.Add(fightingPair.Item2);
+                        normalFights.Add(fightingPair.battalionId1);
+                        normalFights.Add(fightingPair.battalionId2);
                         break;
                     case BattalionFightType.VERTICAL:
-                        result.Add(fightingPair.Item1, fightingPair.Item2);
-                        result.Add(fightingPair.Item2, fightingPair.Item1);
+                        result.Add(fightingPair.battalionId1, fightingPair.battalionId2);
+                        result.Add(fightingPair.battalionId2, fightingPair.battalionId1);
                         break;
                     default:
                         throw new Exception("Unknown fight type");
@@ -71,14 +71,14 @@ namespace system.battle.battalion.analysis.exact_position
             var keys = diagonalFights.GetKeyArray(Allocator.Temp);
             foreach (var key in keys)
             {
-                var myPosition = battalionInfo[key].Item1;
+                var myPosition = battalionInfo[key].position;
                 var direction = Direction.NONE;
                 var conflict = false;
                 var minXDistance = -1f;
                 var minDistanceEnemyId = -1L;
                 foreach (var enemyId in diagonalFights.GetValuesForKey(key))
                 {
-                    var enemyPosition = battalionInfo[enemyId].Item1;
+                    var enemyPosition = battalionInfo[enemyId].position;
                     var xDistance = myPosition.x - enemyPosition.x;
                     if (xDistance < 0)
                     {

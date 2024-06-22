@@ -6,15 +6,21 @@ namespace Unity.Physics.Authoring
         order = 508)]
     public sealed class PhysicsMaterialTemplate : ScriptableObject, IPhysicsMaterialProperties
     {
-        [SerializeField] PhysicsMaterialProperties m_Value = new PhysicsMaterialProperties(false);
+        [SerializeField] private PhysicsMaterialProperties m_Value = new(false);
 
-        PhysicsMaterialTemplate()
+        private PhysicsMaterialTemplate()
         {
         }
 
-        void Reset() => OnValidate();
+        private void Reset()
+        {
+            OnValidate();
+        }
 
-        void OnValidate() => PhysicsMaterialProperties.OnValidate(ref m_Value, false);
+        private void OnValidate()
+        {
+            PhysicsMaterialProperties.OnValidate(ref m_Value, false);
+        }
 
         public CollisionResponsePolicy CollisionResponse
         {

@@ -16,13 +16,13 @@ namespace Unity.Physics.Authoring
             base.UpdateAuto();
             if (AutoSetConnected)
             {
-                RigidTransform bFromA = math.mul(math.inverse(worldFromB), worldFromA);
+                var bFromA = math.mul(math.inverse(worldFromB), worldFromA);
                 HingeAxisInConnectedEntity = math.mul(bFromA.rot, HingeAxisLocal);
             }
         }
     }
 
-    class FreeHingeJointBaker : JointBaker<FreeHingeJoint>
+    internal class FreeHingeJointBaker : JointBaker<FreeHingeJoint>
     {
         public override void Bake(FreeHingeJoint authoring)
         {
@@ -49,7 +49,7 @@ namespace Unity.Physics.Authoring
 
             var constraintBodyPair = GetConstrainedBodyPair(authoring);
 
-            uint worldIndex = GetWorldIndexFromBaseJoint(authoring);
+            var worldIndex = GetWorldIndexFromBaseJoint(authoring);
             CreateJointEntity(worldIndex, constraintBodyPair, physicsJoint);
         }
     }

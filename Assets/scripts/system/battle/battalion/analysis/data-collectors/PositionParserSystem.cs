@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using component;
 using component._common.system_switchers;
 using component.battle.battalion;
 using component.battle.battalion.data_holders;
@@ -7,7 +6,6 @@ using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Mathematics;
 using Unity.Transforms;
 
 namespace system.battle.battalion.analysis
@@ -30,7 +28,7 @@ namespace system.battle.battalion.analysis
             var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
             var positions = dataHolder.ValueRO.positions;
 
-            var tmpUnsortedData = new NativeParallelMultiHashMap<int, (long, float3, Team, float, BattleUnitTypeEnum)>(1000, Allocator.TempJob);
+            var tmpUnsortedData = new NativeParallelMultiHashMap<int, BattalionInfo>(1000, Allocator.TempJob);
             new CollectBattleUnitPositionsJob
                 {
                     battalionPositions = tmpUnsortedData
@@ -42,13 +40,13 @@ namespace system.battle.battalion.analysis
 
             foreach (var row in allRows)
             {
-                var unsortedRowData = new NativeList<(long, float3, Team, float, BattleUnitTypeEnum)>(100, Allocator.Temp);
+                var unsortedRowData = new NativeList<BattalionInfo>(100, Allocator.Temp);
                 foreach (var value in tmpUnsortedData.GetValuesForKey(row))
                 {
                     unsortedRowData.Add(value);
-                    if (value.Item5 == BattleUnitTypeEnum.BATTALION)
+                    if (value.unitType == BattleUnitTypeEnum.BATTALION)
                     {
-                        dataHolder.ValueRW.battalionInfo.Add(value.Item1, (value.Item2, value.Item3, value.Item4));
+                        dataHolder.ValueRW.battalionInfo.Add(value.battalionId, value);
                     }
                 }
 
@@ -67,22 +65,29 @@ namespace system.battle.battalion.analysis
             tmpUnsortedData.Dispose();
         }
 
-        public class SortByPosition : IComparer<(long, float3, Team, float, BattleUnitTypeEnum)>
+        public class SortByPosition : IComparer<BattalionInfo>
         {
-            public int Compare((long, float3, Team, float, BattleUnitTypeEnum) e1, (long, float3, Team, float, BattleUnitTypeEnum) e2)
+            public int Compare(BattalionInfo e1, BattalionInfo e2)
             {
-                return e2.Item2.x.CompareTo(e1.Item2.x);
+                return e2.position.x.CompareTo(e1.position.x);
             }
         }
 
         [BurstCompile]
         public partial struct CollectBattleUnitPositionsJob : IJobEntity
         {
-            public NativeParallelMultiHashMap<int, (long, float3, Team, float, BattleUnitTypeEnum)> battalionPositions;
+            public NativeParallelMultiHashMap<int, BattalionInfo> battalionPositions;
 
             private void Execute(BattleUnitType battleUnitType, LocalTransform transform, Row row, BattalionTeam team, BattalionWidth width)
             {
-                battalionPositions.Add(row.value, (battleUnitType.id, transform.Position, team.value, width.value, battleUnitType.type));
+                battalionPositions.Add(row.value, new BattalionInfo
+                {
+                    battalionId = battleUnitType.id,
+                    position = transform.Position,
+                    team = team.value,
+                    width = width.value,
+                    unitType = battleUnitType.type
+                });
             }
         }
     }

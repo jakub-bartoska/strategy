@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics.GraphicsIntegration;
 using UnityEngine;
@@ -15,24 +14,21 @@ namespace Unity.Physics.Authoring
         public MassDistribution CustomMassDistribution;
     }
 
-    class PhysicsBodyAuthoringBaker : BasePhysicsBaker<PhysicsBodyAuthoring>
+    internal class PhysicsBodyAuthoringBaker : BasePhysicsBaker<PhysicsBodyAuthoring>
     {
-        internal List<UnityEngine.Collider> colliderComponents = new List<UnityEngine.Collider>();
-        internal List<PhysicsShapeAuthoring> physicsShapeComponents = new List<PhysicsShapeAuthoring>();
+        internal List<UnityEngine.Collider> colliderComponents = new();
+        internal List<PhysicsShapeAuthoring> physicsShapeComponents = new();
 
         public override void Bake(PhysicsBodyAuthoring authoring)
         {
             // Priority is to Legacy Components. Ignore if baked by Legacy.
-            if (GetComponent<Rigidbody>() || GetComponent<UnityEngine.Collider>())
-            {
-                return;
-            }
+            if (GetComponent<Rigidbody>() || GetComponent<UnityEngine.Collider>()) return;
 
             var entity = GetEntity(TransformUsageFlags.Dynamic);
             // To process later in the Baking System
             AddComponent(entity, new PhysicsBodyAuthoringData
             {
-                IsDynamic = (authoring.MotionType == BodyMotionType.Dynamic),
+                IsDynamic = authoring.MotionType == BodyMotionType.Dynamic,
                 Mass = authoring.Mass,
                 OverrideDefaultMassDistribution = authoring.OverrideDefaultMassDistribution,
                 CustomMassDistribution = authoring.CustomMassDistribution
@@ -56,11 +52,11 @@ namespace Unity.Physics.Authoring
             GetComponentsInChildren(physicsShapeComponents);
             if (colliderComponents.Count > 0 || physicsShapeComponents.Count > 0)
             {
-                AddComponent(entity, new PhysicsCompoundData()
+                AddComponent(entity, new PhysicsCompoundData
                 {
                     AssociateBlobToBody = false,
                     ConvertedBodyInstanceID = authoring.GetInstanceID(),
-                    Hash = default,
+                    Hash = default
                 });
                 AddComponent<PhysicsRootBaked>(entity);
                 AddComponent<PhysicsCollider>(entity);
@@ -92,12 +88,10 @@ namespace Unity.Physics.Authoring
                     Angular = authoring.AngularDamping
                 });
                 if (authoring.GravityFactor != 1)
-                {
                     AddComponent(entity, new PhysicsGravityFactor
                     {
                         Value = authoring.GravityFactor
                     });
-                }
             }
             else if (authoring.MotionType == BodyMotionType.Kinematic)
             {
@@ -111,13 +105,11 @@ namespace Unity.Physics.Authoring
             {
                 AddComponent(entity, new PhysicsGraphicalSmoothing());
                 if (authoring.Smoothing == BodySmoothing.Interpolation)
-                {
                     AddComponent(entity, new PhysicsGraphicalInterpolationBuffer
                     {
                         PreviousTransform = Math.DecomposeRigidBodyTransform(bodyTransform.localToWorldMatrix),
-                        PreviousVelocity = physicsVelocity,
+                        PreviousVelocity = physicsVelocity
                     });
-                }
             }
         }
     }
@@ -125,7 +117,7 @@ namespace Unity.Physics.Authoring
     [RequireMatchingQueriesForUpdate]
     [UpdateAfter(typeof(EndColliderBakingSystem))]
     [WorldSystemFilter(WorldSystemFilterFlags.BakingSystem)]
-    public partial class PhysicsBodyBakingSystem : SystemBase
+    public class PhysicsBodyBakingSystem : SystemBase
     {
         protected override void OnUpdate()
         {

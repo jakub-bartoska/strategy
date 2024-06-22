@@ -8,7 +8,6 @@ using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Mathematics;
 
 namespace system.battle.battalion.analysis
 {
@@ -34,7 +33,7 @@ namespace system.battle.battalion.analysis
 
             foreach (var rowId in allRows)
             {
-                (long, float3, Team, float, BattleUnitTypeEnum)? leftUnitOptional = null;
+                BattalionInfo? leftUnitOptional = null;
 
                 foreach (var me in positions.GetValuesForKey(rowId))
                 {
@@ -53,7 +52,7 @@ namespace system.battle.battalion.analysis
                     var leftUnit = leftUnitOptional.Value;
                     leftUnitOptional = me;
 
-                    var isTooFar = BattleTransformUtils.isTooFar(me.Item2, leftUnit.Item2, me.Item4, leftUnit.Item4);
+                    var isTooFar = BattleTransformUtils.isTooFar(me.position, leftUnit.position, me.width, leftUnit.width);
                     if (!isTooFar)
                     {
                         addBlocker(me, leftUnit, blockers);
@@ -65,7 +64,7 @@ namespace system.battle.battalion.analysis
         }
 
         private void findDiagonalBlockers(
-            (long, float3, Team, float, BattleUnitTypeEnum) me,
+            BattalionInfo me,
             int rowId,
             NativeParallelMultiHashMap<long, (long, BattleUnitTypeEnum, Direction, Team)> blockers,
             DataHolder dataHolder)
@@ -73,7 +72,7 @@ namespace system.battle.battalion.analysis
             var positions = dataHolder.positions;
             foreach (var upper in positions.GetValuesForKey(rowId - 1))
             {
-                var isTooFarDiagonal = BattleTransformUtils.isTooFar(me.Item2, upper.Item2, me.Item4, upper.Item4);
+                var isTooFarDiagonal = BattleTransformUtils.isTooFar(me.position, upper.position, me.width, upper.width);
 
                 if (!isTooFarDiagonal)
                 {
@@ -82,22 +81,22 @@ namespace system.battle.battalion.analysis
             }
         }
 
-        private void addBlocker((long, float3, Team, float, BattleUnitTypeEnum) right, (long, float3, Team, float, BattleUnitTypeEnum) left,
+        private void addBlocker(BattalionInfo right, BattalionInfo left,
             NativeParallelMultiHashMap<long, (long, BattleUnitTypeEnum, Direction, Team)> blockers)
         {
             //left to right
-            blockers.Add(left.Item1, (right.Item1, right.Item5, Direction.RIGHT, right.Item3));
+            blockers.Add(left.battalionId, (right.battalionId, right.unitType, Direction.RIGHT, right.team));
             //right to left
-            blockers.Add(right.Item1, (left.Item1, left.Item5, Direction.LEFT, left.Item3));
+            blockers.Add(right.battalionId, (left.battalionId, left.unitType, Direction.LEFT, left.team));
         }
 
-        private void addBlockerVertical((long, float3, Team, float, BattleUnitTypeEnum) bottom, (long, float3, Team, float, BattleUnitTypeEnum) upper,
+        private void addBlockerVertical(BattalionInfo bottom, BattalionInfo upper,
             NativeParallelMultiHashMap<long, (long, BattleUnitTypeEnum, Direction, Team)> blockers)
         {
             //upper to down
-            blockers.Add(upper.Item1, (bottom.Item1, bottom.Item5, Direction.DOWN, bottom.Item3));
+            blockers.Add(upper.battalionId, (bottom.battalionId, bottom.unitType, Direction.DOWN, bottom.team));
             //down to top
-            blockers.Add(bottom.Item1, (upper.Item1, upper.Item5, Direction.UP, upper.Item3));
+            blockers.Add(bottom.battalionId, (upper.battalionId, upper.unitType, Direction.UP, upper.team));
         }
 
 

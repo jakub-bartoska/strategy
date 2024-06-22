@@ -8,12 +8,12 @@ namespace Unity.Physics.Editor
 {
     [CustomEditor(typeof(PhysicsBodyAuthoring))]
     [CanEditMultipleObjects]
-    class PhysicsBodyAuthoringEditor : BaseEditor
+    internal class PhysicsBodyAuthoringEditor : BaseEditor
     {
-        MessageType m_Status;
-        List<string> m_StatusMessages = new List<string>(8);
+        private MessageType m_Status;
+        private readonly List<string> m_StatusMessages = new(8);
 
-        bool showAdvanced;
+        private bool showAdvanced;
 
         public override void OnInspectorGUI()
         {
@@ -29,7 +29,9 @@ namespace Unity.Physics.Editor
             var dynamic = m_MotionType.intValue == (int) BodyMotionType.Dynamic;
 
             if (dynamic)
+            {
                 EditorGUILayout.PropertyField(m_Mass, Content.MassLabel);
+            }
             else
             {
                 EditorGUI.BeginDisabledGroup(true);
@@ -52,10 +54,7 @@ namespace Unity.Physics.Editor
                 EditorGUILayout.PropertyField(m_InitialAngularVelocity, true);
             }
 
-            if (m_MotionType.intValue == (int) BodyMotionType.Dynamic)
-            {
-                EditorGUILayout.PropertyField(m_GravityFactor, true);
-            }
+            if (m_MotionType.intValue == (int) BodyMotionType.Dynamic) EditorGUILayout.PropertyField(m_GravityFactor, true);
 
             showAdvanced = EditorGUILayout.Foldout(showAdvanced, Content.AdvancedLabel);
             if (showAdvanced)
@@ -104,7 +103,7 @@ namespace Unity.Physics.Editor
             DisplayStatusMessages();
         }
 
-        void DisplayStatusMessages()
+        private void DisplayStatusMessages()
         {
             m_Status = MessageType.None;
             m_StatusMessages.Clear();
@@ -121,7 +120,7 @@ namespace Unity.Physics.Editor
                 EditorGUILayout.HelpBox(string.Join("\n\n", m_StatusMessages), m_Status);
         }
 
-        static class Content
+        private static class Content
         {
             public static readonly GUIContent MassLabel = EditorGUIUtility.TrTextContent("Mass");
 
@@ -143,20 +142,20 @@ namespace Unity.Physics.Editor
         }
 
 #pragma warning disable 649
-        [AutoPopulate] SerializedProperty m_MotionType;
-        [AutoPopulate] SerializedProperty m_Smoothing;
-        [AutoPopulate] SerializedProperty m_Mass;
-        [AutoPopulate] SerializedProperty m_GravityFactor;
-        [AutoPopulate] SerializedProperty m_LinearDamping;
-        [AutoPopulate] SerializedProperty m_AngularDamping;
-        [AutoPopulate] SerializedProperty m_InitialLinearVelocity;
-        [AutoPopulate] SerializedProperty m_InitialAngularVelocity;
-        [AutoPopulate] SerializedProperty m_OverrideDefaultMassDistribution;
-        [AutoPopulate] SerializedProperty m_CenterOfMass;
-        [AutoPopulate] SerializedProperty m_Orientation;
-        [AutoPopulate] SerializedProperty m_InertiaTensor;
-        [AutoPopulate] SerializedProperty m_WorldIndex;
-        [AutoPopulate] SerializedProperty m_CustomTags;
+        [AutoPopulate] private SerializedProperty m_MotionType;
+        [AutoPopulate] private SerializedProperty m_Smoothing;
+        [AutoPopulate] private SerializedProperty m_Mass;
+        [AutoPopulate] private SerializedProperty m_GravityFactor;
+        [AutoPopulate] private SerializedProperty m_LinearDamping;
+        [AutoPopulate] private SerializedProperty m_AngularDamping;
+        [AutoPopulate] private SerializedProperty m_InitialLinearVelocity;
+        [AutoPopulate] private SerializedProperty m_InitialAngularVelocity;
+        [AutoPopulate] private SerializedProperty m_OverrideDefaultMassDistribution;
+        [AutoPopulate] private SerializedProperty m_CenterOfMass;
+        [AutoPopulate] private SerializedProperty m_Orientation;
+        [AutoPopulate] private SerializedProperty m_InertiaTensor;
+        [AutoPopulate] private SerializedProperty m_WorldIndex;
+        [AutoPopulate] private SerializedProperty m_CustomTags;
 #pragma warning restore 649
     }
 }

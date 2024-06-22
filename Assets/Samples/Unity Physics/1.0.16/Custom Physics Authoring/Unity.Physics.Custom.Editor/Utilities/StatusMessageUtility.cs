@@ -6,9 +6,9 @@ using UnityEngine;
 
 namespace Unity.Physics.Editor
 {
-    static class StatusMessageUtility
+    internal static class StatusMessageUtility
     {
-        public static MessageType GetHierarchyStatusMessage(IReadOnlyList<UnityEngine.Object> targets,
+        public static MessageType GetHierarchyStatusMessage(IReadOnlyList<Object> targets,
             out string statusMessage)
         {
             statusMessage = string.Empty;
@@ -31,8 +31,8 @@ namespace Unity.Physics.Editor
                 if (
                     targetType == typeof(PhysicsBodyAuthoring)
                     || targetType == typeof(Rigidbody)
-                    || c.GetComponent<PhysicsBodyAuthoring>() == null
-                    && c.GetComponent<Rigidbody>() == null
+                    || (c.GetComponent<PhysicsBodyAuthoring>() == null
+                        && c.GetComponent<Rigidbody>() == null)
                 )
                     ++numChildTargets;
             }

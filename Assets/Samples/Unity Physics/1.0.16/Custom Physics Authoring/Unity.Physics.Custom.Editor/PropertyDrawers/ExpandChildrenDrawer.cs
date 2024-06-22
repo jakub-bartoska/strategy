@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Unity.Physics.Editor
 {
     [CustomPropertyDrawer(typeof(ExpandChildrenAttribute))]
-    class ExpandChildrenDrawer : PropertyDrawer
+    internal class ExpandChildrenDrawer : PropertyDrawer
     {
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {

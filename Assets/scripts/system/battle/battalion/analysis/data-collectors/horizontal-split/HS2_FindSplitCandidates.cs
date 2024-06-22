@@ -47,15 +47,15 @@ namespace system.battle.battalion.analysis.horizontal_split
 
             foreach (var fightingPair in fightingPairs)
             {
-                switch (fightingPair.Item3)
+                switch (fightingPair.fightType)
                 {
                     case BattalionFightType.NORMAL:
-                        normalFights.Add(fightingPair.Item1);
-                        normalFights.Add(fightingPair.Item2);
+                        normalFights.Add(fightingPair.battalionId1);
+                        normalFights.Add(fightingPair.battalionId2);
                         break;
                     case BattalionFightType.VERTICAL:
-                        verticalFights.Add(fightingPair.Item1);
-                        verticalFights.Add(fightingPair.Item2);
+                        verticalFights.Add(fightingPair.battalionId1);
+                        verticalFights.Add(fightingPair.battalionId2);
                         break;
                     default:
                         throw new Exception("Unknown fight type");

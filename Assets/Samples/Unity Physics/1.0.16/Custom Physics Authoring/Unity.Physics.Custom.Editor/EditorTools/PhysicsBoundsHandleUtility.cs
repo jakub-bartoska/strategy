@@ -5,16 +5,16 @@ using static UnityEditor.IMGUI.Controls.PrimitiveBoundsHandle;
 
 namespace Unity.Physics.Editor
 {
-    static class PhysicsBoundsHandleUtility
+    internal static class PhysicsBoundsHandleUtility
     {
         internal const float kBackfaceAlphaMultiplier = 0.2f;
-        const float kDegreeEpsilon = 0.001f;
+        private const float kDegreeEpsilon = 0.001f;
         public const float kDistanceEpsilon = 0.0001f;
 
-        static readonly Vector3[] s_FacePoints = new Vector3[8];
-        static readonly Vector3[] s_LinePoints = new Vector3[2];
+        private static readonly Vector3[] s_FacePoints = new Vector3[8];
+        private static readonly Vector3[] s_LinePoints = new Vector3[2];
 
-        static readonly int[] k_NextAxis = {1, 2, 0};
+        private static readonly int[] k_NextAxis = {1, 2, 0};
 
         public static bool IsBackfaced(float3 localPos, float3 localTangent, float3 localBinormal, Axes axes,
             bool isCameraInsideBox)
@@ -24,9 +24,9 @@ namespace Unity.Physics.Editor
                 return false;
 
             // use tangent and binormal to calculate normal in case handle matrix is skewed
-            float3 worldTangent = math.normalize(Handles.matrix.MultiplyVector(localTangent));
-            float3 worldBinormal = math.normalize(Handles.matrix.MultiplyVector(localBinormal));
-            float3 worldDir = math.normalize(math.cross(worldTangent, worldBinormal));
+            var worldTangent = math.normalize(Handles.matrix.MultiplyVector(localTangent));
+            var worldBinormal = math.normalize(Handles.matrix.MultiplyVector(localBinormal));
+            var worldDir = math.normalize(math.cross(worldTangent, worldBinormal));
 
             // adjust color if handle is back facing
             float cosV;
@@ -49,11 +49,11 @@ namespace Unity.Physics.Editor
 
         public static Color GetStateColor(bool isBackfaced)
         {
-            float alphaMultiplier = isBackfaced ? kBackfaceAlphaMultiplier : 1f;
+            var alphaMultiplier = isBackfaced ? kBackfaceAlphaMultiplier : 1f;
             return Handles.color * new Color(1f, 1f, 1f, alphaMultiplier);
         }
 
-        static void AdjustMidpointHandleColor(bool isBackfaced)
+        private static void AdjustMidpointHandleColor(bool isBackfaced)
         {
             Handles.color = GetStateColor(isBackfaced);
         }
@@ -65,9 +65,9 @@ namespace Unity.Physics.Editor
             // 1 = 1 2 0
             // 2 = 2 0 1
 
-            int a = normalAxis;
-            int b = k_NextAxis[a];
-            int c = k_NextAxis[b];
+            var a = normalAxis;
+            var b = k_NextAxis[a];
+            var c = k_NextAxis[b];
 
             cornerRadius = math.abs(cornerRadius);
             size *= 0.5f;
@@ -158,8 +158,8 @@ namespace Unity.Physics.Editor
             var sqrRadius = radius * radius;
             var sqrDistCameraToCenter = math.lengthsq(cameraToCenter);
             var sqrOffset =
-                (sqrRadius * sqrRadius /
-                 sqrDistCameraToCenter); // squared distance from actual center to drawn disc center
+                sqrRadius * sqrRadius /
+                sqrDistCameraToCenter; // squared distance from actual center to drawn disc center
 
             if (!cameraOrtho)
                 cameraForward = cameraToCenter;
@@ -196,42 +196,40 @@ namespace Unity.Physics.Editor
                 return;
 
             for (int n = 0, sign = -1; n < 2; n++, sign += 2)
+            for (var i = 0; i < 3; i++)
             {
-                for (int i = 0; i < 3; i++)
+                var axis1 = normals[i] * sign;
+                var axis2 = axes[(i + 1) % 3] * sign;
+                var axis3 = axes[(i + 2) % 3] * sign;
+
+                var Q = Vector3.Angle(cameraForward, axis1);
+                var f = math.tan(math.radians(90 - math.min(Q, 180 - Q)));
+                var g = sqrOffset + f * f * sqrOffset;
+                if (g >= sqrRadius)
+                    continue;
+
+                var e = math.degrees(math.asin(math.sqrt(g) / radius));
+                var vectorToPointOnHorizon =
+                    Quaternion.AngleAxis(e, axis1) * math.normalize(math.cross(axis1, cameraForward));
+
+                vectorToPointOnHorizon = math.normalize(Vector3.ProjectOnPlane(vectorToPointOnHorizon, axis1));
+
+                var intersectionDirection = vectorToPointOnHorizon;
+                var angle1 = Vector3.SignedAngle(axis2, intersectionDirection, axis1);
+                var angle2 = Vector3.SignedAngle(axis3, intersectionDirection, axis1);
+
+                if (angle1 <= 0 || angle2 >= 0)
+                    continue;
+
+                var point = corner.position + (float3) (intersectionDirection * radius);
+
+                if (corner.splitCount < 2)
                 {
-                    var axis1 = normals[i] * sign;
-                    var axis2 = axes[(i + 1) % 3] * sign;
-                    var axis3 = axes[(i + 2) % 3] * sign;
+                    corner.splitAxis[corner.splitCount][i] = true;
+                    corner.intersections[corner.splitCount] = intersectionDirection;
+                    corner.points[corner.splitCount] = point;
 
-                    var Q = Vector3.Angle(cameraForward, axis1);
-                    var f = math.tan(math.radians(90 - math.min(Q, 180 - Q)));
-                    var g = sqrOffset + f * f * sqrOffset;
-                    if (g >= sqrRadius)
-                        continue;
-
-                    var e = math.degrees(math.asin(math.sqrt(g) / radius));
-                    var vectorToPointOnHorizon =
-                        Quaternion.AngleAxis(e, axis1) * math.normalize(math.cross(axis1, cameraForward));
-
-                    vectorToPointOnHorizon = math.normalize(Vector3.ProjectOnPlane(vectorToPointOnHorizon, axis1));
-
-                    var intersectionDirection = vectorToPointOnHorizon;
-                    var angle1 = Vector3.SignedAngle(axis2, intersectionDirection, axis1);
-                    var angle2 = Vector3.SignedAngle(axis3, intersectionDirection, axis1);
-
-                    if (angle1 <= 0 || angle2 >= 0)
-                        continue;
-
-                    var point = corner.position + (float3) (intersectionDirection * radius);
-
-                    if (corner.splitCount < 2)
-                    {
-                        corner.splitAxis[corner.splitCount][i] = true;
-                        corner.intersections[corner.splitCount] = intersectionDirection;
-                        corner.points[corner.splitCount] = point;
-
-                        corner.splitCount++;
-                    }
+                    corner.splitCount++;
                 }
             }
 
@@ -264,7 +262,7 @@ namespace Unity.Physics.Editor
             {
                 var angleLength = Vector3.SignedAngle(Vector3.ProjectOnPlane(intersections[0], corner.cameraForward),
                     Vector3.ProjectOnPlane(intersections[1], corner.cameraForward), corner.cameraForward);
-                bool reversePolarity = angleLength < 0;
+                var reversePolarity = angleLength < 0;
                 if (reversePolarity)
                     Handles.DrawWireArc(origin, corner.cameraForward, corner.points[1] - origin, -angleLength, radius);
                 else
@@ -285,21 +283,20 @@ namespace Unity.Physics.Editor
                 var color2 = reversePolarity ? backfacedColor : color;
 
                 for (int A = 1, B = 2, C = 0; C < 3; A = B, B = C, C++)
-                {
                     if (corner.splitAxis[0][C] == corner.splitAxis[1][C])
                     {
                         if (!axesBackfaced[A])
                         {
                             angleLength = Vector3.Angle(intersections[0], axes[A]);
-                            axesBackfaced[A] = (angleLength < kDegreeEpsilon ||
-                                                angleLength > corner.angle[C] - kDegreeEpsilon);
+                            axesBackfaced[A] = angleLength < kDegreeEpsilon ||
+                                               angleLength > corner.angle[C] - kDegreeEpsilon;
                         }
 
                         if (!axesBackfaced[B])
                         {
                             angleLength = Vector3.Angle(intersections[1], axes[A]);
-                            axesBackfaced[B] = (angleLength < kDegreeEpsilon ||
-                                                angleLength > corner.angle[C] - kDegreeEpsilon);
+                            axesBackfaced[B] = angleLength < kDegreeEpsilon ||
+                                               angleLength > corner.angle[C] - kDegreeEpsilon;
                         }
                     }
                     else if (corner.splitAxis[0][C])
@@ -331,7 +328,6 @@ namespace Unity.Physics.Editor
 
                         axesBackfaced[B] = true;
                     }
-                }
 
                 // check for singularity
                 if (math.all(axesBackfaced))
@@ -344,7 +340,7 @@ namespace Unity.Physics.Editor
 
                     if (corner.splitAxis[0][C] == corner.splitAxis[1][C])
                     {
-                        Handles.color = (axesBackfaced[B] && axesBackfaced[A]) ? color1 : color2;
+                        Handles.color = axesBackfaced[B] && axesBackfaced[A] ? color1 : color2;
                         Handles.DrawWireArc(origin, normals[C], axes[A], corner.angle[A], radius);
                     }
                 }

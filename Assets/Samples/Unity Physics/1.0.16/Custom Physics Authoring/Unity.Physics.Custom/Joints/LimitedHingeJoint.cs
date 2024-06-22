@@ -19,14 +19,14 @@ namespace Unity.Physics.Authoring
             base.UpdateAuto();
             if (AutoSetConnected)
             {
-                RigidTransform bFromA = math.mul(math.inverse(worldFromB), worldFromA);
+                var bFromA = math.mul(math.inverse(worldFromB), worldFromA);
                 HingeAxisInConnectedEntity = math.mul(bFromA.rot, HingeAxisLocal);
                 PerpendicularAxisInConnectedEntity = math.mul(bFromA.rot, PerpendicularAxisLocal);
             }
         }
     }
 
-    class LimitedHingeJointBaker : JointBaker<LimitedHingeJoint>
+    internal class LimitedHingeJointBaker : JointBaker<LimitedHingeJoint>
     {
         public override void Bake(LimitedHingeJoint authoring)
         {
@@ -52,7 +52,7 @@ namespace Unity.Physics.Authoring
 
             var constraintBodyPair = GetConstrainedBodyPair(authoring);
 
-            uint worldIndex = GetWorldIndexFromBaseJoint(authoring);
+            var worldIndex = GetWorldIndexFromBaseJoint(authoring);
             CreateJointEntity(worldIndex, constraintBodyPair, physicsJoint);
         }
     }

@@ -1,13 +1,10 @@
-﻿using component;
-using component._common.system_switchers;
-using component.battle.battalion;
+﻿using component._common.system_switchers;
 using component.battle.battalion.data_holders;
 using system.battle.battalion.analysis.utils;
 using system.battle.enums;
 using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Entities;
-using Unity.Mathematics;
 
 namespace system.battle.battalion.analysis
 {
@@ -30,7 +27,7 @@ namespace system.battle.battalion.analysis
 
             foreach (var rowId in allRows)
             {
-                (long, float3, Team, float, BattleUnitTypeEnum)? leftUnitOptional = null;
+                BattalionInfo? leftUnitOptional = null;
                 foreach (var me in positions.GetValuesForKey(rowId))
                 {
                     if (rowId != 0)
@@ -49,42 +46,47 @@ namespace system.battle.battalion.analysis
                     leftUnitOptional = me;
 
                     //ignore same team
-                    if (me.Item3 == leftUnit.Item3)
+                    if (me.team == leftUnit.team)
                     {
                         continue;
                     }
 
-                    var isTooFar = BattleTransformUtils.isTooFar(me.Item2, leftUnit.Item2, me.Item4, leftUnit.Item4);
+                    var isTooFar = BattleTransformUtils.isTooFar(me.position, leftUnit.position, me.width, leftUnit.width);
                     if (!isTooFar)
                     {
-                        addFightingPair(me.Item1, leftUnit.Item1, BattalionFightType.NORMAL, dataHolder);
+                        addFightingPair(me.battalionId, leftUnit.battalionId, BattalionFightType.NORMAL, dataHolder);
                     }
                 }
             }
         }
 
-        private void findDiagonalFightingPairs((long, float3, Team, float, BattleUnitTypeEnum) me, int rowId, RefRW<DataHolder> dataHolder)
+        private void findDiagonalFightingPairs(BattalionInfo me, int rowId, RefRW<DataHolder> dataHolder)
         {
             var positions = dataHolder.ValueRO.positions;
             foreach (var bellow in positions.GetValuesForKey(rowId - 1))
             {
-                var isTooFarDiagonal = BattleTransformUtils.isTooFar(me.Item2, bellow.Item2, me.Item4, bellow.Item4, 0.5f);
+                var isTooFarDiagonal = BattleTransformUtils.isTooFar(me.position, bellow.position, me.width, bellow.width, 0.5f);
                 //skip same team
-                if (me.Item3 == bellow.Item3)
+                if (me.team == bellow.team)
                 {
                     continue;
                 }
 
                 if (!isTooFarDiagonal)
                 {
-                    addFightingPair(me.Item1, bellow.Item1, BattalionFightType.VERTICAL, dataHolder);
+                    addFightingPair(me.battalionId, bellow.battalionId, BattalionFightType.VERTICAL, dataHolder);
                 }
             }
         }
 
         private void addFightingPair(long battalionId1, long battalionId2, BattalionFightType fightType, RefRW<DataHolder> dataHolder)
         {
-            dataHolder.ValueRW.fightingPairs.Add((battalionId1, battalionId2, fightType));
+            dataHolder.ValueRW.fightingPairs.Add(new FightingPair
+            {
+                battalionId1 = battalionId1,
+                battalionId2 = battalionId2,
+                fightType = fightType
+            });
             dataHolder.ValueRW.battalionsPerformingAction.Add(battalionId1);
             dataHolder.ValueRW.battalionsPerformingAction.Add(battalionId2);
             dataHolder.ValueRW.fightingBattalions.Add(battalionId1);

@@ -7,9 +7,9 @@ using UnityEngine;
 namespace Unity.Physics.Editor
 {
     [InitializeOnLoad]
-    static class EditorGUIControls
+    internal static class EditorGUIControls
     {
-        static readonly MethodInfo k_SoftSlider = typeof(EditorGUI).GetMethod(
+        private static readonly MethodInfo k_SoftSlider = typeof(EditorGUI).GetMethod(
             "Slider",
             BindingFlags.Static | BindingFlags.NonPublic,
             null,
@@ -26,7 +26,7 @@ namespace Unity.Physics.Editor
             Array.Empty<ParameterModifier>()
         );
 
-        static readonly object[] k_SoftSliderArgs = new object[7];
+        private static readonly object[] k_SoftSliderArgs = new object[7];
 
         static EditorGUIControls()
         {
@@ -80,7 +80,7 @@ namespace Unity.Physics.Editor
             }
         }
 
-        static class Styles
+        private static class Styles
         {
             public static readonly string CompatibilityWarning = L10n.Tr("Not compatible with {0}.");
         }

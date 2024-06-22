@@ -11,19 +11,17 @@ namespace Unity.Physics.Editor
     [CustomEditor(typeof(RagdollJoint))]
     public class RagdollJointEditor : UnityEditor.Editor
     {
-        private EditorUtilities.AxisEditor m_AxisEditor = new EditorUtilities.AxisEditor();
-        private JointAngularLimitHandle m_LimitHandle = new JointAngularLimitHandle();
+        private readonly EditorUtilities.AxisEditor m_AxisEditor = new();
+        private readonly JointAngularLimitHandle m_LimitHandle = new();
 
         protected virtual void OnSceneGUI()
         {
-            RagdollJoint ragdoll = (RagdollJoint) target;
+            var ragdoll = (RagdollJoint) target;
 
-            bool drawCones = false;
+            var drawCones = false;
             if (ragdoll.EditPivots)
-            {
                 EditorUtilities.EditPivot(ragdoll.worldFromA, ragdoll.worldFromB, ragdoll.AutoSetConnected,
                     ref ragdoll.PositionLocal, ref ragdoll.PositionInConnectedEntity, ragdoll);
-            }
 
             if (ragdoll.EditAxes)
             {
@@ -35,20 +33,18 @@ namespace Unity.Physics.Editor
             }
 
             if (ragdoll.EditLimits)
-            {
                 EditorUtilities.EditLimits(ragdoll.worldFromA, ragdoll.worldFromB, ragdoll.PositionLocal,
                     ragdoll.TwistAxisLocal, ragdoll.TwistAxisInConnectedEntity,
                     ragdoll.PerpendicularAxisLocal, ragdoll.PerpendicularAxisInConnectedEntity,
                     ref ragdoll.MinTwistAngle, ref ragdoll.MaxTwistAngle, m_LimitHandle, ragdoll);
-            }
 
             if (drawCones)
             {
-                float3 pivotB = math.transform(ragdoll.worldFromB, ragdoll.PositionInConnectedEntity);
-                float3 axisB = math.rotate(ragdoll.worldFromB, ragdoll.TwistAxisInConnectedEntity);
+                var pivotB = math.transform(ragdoll.worldFromB, ragdoll.PositionInConnectedEntity);
+                var axisB = math.rotate(ragdoll.worldFromB, ragdoll.TwistAxisInConnectedEntity);
                 DrawCone(pivotB, axisB, math.radians(ragdoll.MaxConeAngle), Color.yellow);
 
-                float3 perpendicularB = math.rotate(ragdoll.worldFromB, ragdoll.PerpendicularAxisInConnectedEntity);
+                var perpendicularB = math.rotate(ragdoll.worldFromB, ragdoll.PerpendicularAxisInConnectedEntity);
                 DrawCone(pivotB, perpendicularB, math.radians(ragdoll.MinPerpendicularAngle + 90f), Color.red);
                 DrawCone(pivotB, perpendicularB, math.radians(ragdoll.MaxPerpendicularAngle + 90f), Color.red);
             }
@@ -56,7 +52,7 @@ namespace Unity.Physics.Editor
 
         public override void OnInspectorGUI()
         {
-            RagdollJoint ragdoll = (RagdollJoint) target;
+            var ragdoll = (RagdollJoint) target;
 
             EditorGUI.BeginChangeCheck();
 
@@ -75,10 +71,7 @@ namespace Unity.Physics.Editor
 
             DrawDefaultInspector();
 
-            if (EditorGUI.EndChangeCheck())
-            {
-                SceneView.RepaintAll();
-            }
+            if (EditorGUI.EndChangeCheck()) SceneView.RepaintAll();
         }
 
         private static void DrawCone(float3 point, float3 axis, float angle, Color color)
@@ -87,7 +80,7 @@ namespace Unity.Physics.Editor
             Handles.color = color;
 
             float3 dir;
-            float scale = Math.NormalizeWithLength(axis, out dir);
+            var scale = Math.NormalizeWithLength(axis, out dir);
 
             float3 arm;
             {
@@ -97,10 +90,10 @@ namespace Unity.Physics.Editor
             }
 
             const int res = 16;
-            quaternion q = quaternion.AxisAngle(dir, 2.0f * (float) math.PI / res);
-            for (int i = 0; i < res; i++)
+            var q = quaternion.AxisAngle(dir, 2.0f * math.PI / res);
+            for (var i = 0; i < res; i++)
             {
-                float3 nextArm = math.mul(q, arm);
+                var nextArm = math.mul(q, arm);
                 Handles.DrawLine(point, point + arm);
                 Handles.DrawLine(point + arm, point + nextArm);
                 arm = nextArm;

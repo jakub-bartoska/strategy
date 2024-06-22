@@ -4,11 +4,9 @@ using System.Linq;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
-using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Physics.Authoring;
-using Unity.Physics.Extensions;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -17,42 +15,39 @@ namespace Unity.Physics.Editor
 {
     [CustomEditor(typeof(PhysicsShapeAuthoring))]
     [CanEditMultipleObjects]
-    class PhysicsShapeAuthoringEditor : BaseEditor
+    internal class PhysicsShapeAuthoringEditor : BaseEditor
     {
-        static readonly BeveledBoxBoundsHandle s_Box = new BeveledBoxBoundsHandle();
+        private static readonly BeveledBoxBoundsHandle s_Box = new();
 
-        static readonly PhysicsCapsuleBoundsHandle s_Capsule =
-            new PhysicsCapsuleBoundsHandle {heightAxis = CapsuleBoundsHandle.HeightAxis.Z};
+        private static readonly PhysicsCapsuleBoundsHandle s_Capsule = new() {heightAxis = CapsuleBoundsHandle.HeightAxis.Z};
 
-        static readonly BeveledCylinderBoundsHandle s_Cylinder = new BeveledCylinderBoundsHandle();
-        static readonly PhysicsSphereBoundsHandle s_Sphere = new PhysicsSphereBoundsHandle();
+        private static readonly BeveledCylinderBoundsHandle s_Cylinder = new();
+        private static readonly PhysicsSphereBoundsHandle s_Sphere = new();
 
-        static readonly BoxBoundsHandle s_Plane =
-            new BoxBoundsHandle {axes = PrimitiveBoundsHandle.Axes.X | PrimitiveBoundsHandle.Axes.Z};
+        private static readonly BoxBoundsHandle s_Plane = new() {axes = PrimitiveBoundsHandle.Axes.X | PrimitiveBoundsHandle.Axes.Z};
 
-        static readonly Color k_ShapeHandleColor = new Color32(145, 244, 139, 210);
+        private static readonly Color k_ShapeHandleColor = new Color32(145, 244, 139, 210);
 
-        static readonly Color k_ShapeHandleColorDisabled = new Color32(84, 200, 77, 140);
+        private static readonly Color k_ShapeHandleColorDisabled = new Color32(84, 200, 77, 140);
 
         // keep track of when the user is dragging some control to prevent continually rebuilding preview geometry
-        [NonSerialized] int m_DraggingControlID;
+        [NonSerialized] private int m_DraggingControlID;
 
-        [NonSerialized] FitToRenderMeshesDropDown m_DropDown;
+        [NonSerialized] private FitToRenderMeshesDropDown m_DropDown;
 
-        GeometryState m_GeometryState;
+        private GeometryState m_GeometryState;
 
-        MessageType m_GeometryStatus;
-        List<string> m_GeometryStatusMessages = new List<string>();
-        List<MatrixState> m_MatrixStates = new List<MatrixState>();
-        MessageType m_MatrixStatus;
-        int m_NumImplicitStatic;
+        private MessageType m_GeometryStatus;
+        private readonly List<string> m_GeometryStatusMessages = new();
+        private readonly List<MatrixState> m_MatrixStates = new();
+        private MessageType m_MatrixStatus;
+        private int m_NumImplicitStatic;
 
-        Dictionary<PhysicsShapeAuthoring, PreviewMeshData> m_PreviewData =
-            new Dictionary<PhysicsShapeAuthoring, PreviewMeshData>();
+        private readonly Dictionary<PhysicsShapeAuthoring, PreviewMeshData> m_PreviewData = new();
 
-        HashSet<string> m_ShapeSuggestions = new HashSet<string>();
-        MessageType m_Status;
-        List<string> m_StatusMessages = new List<string>(8);
+        private readonly HashSet<string> m_ShapeSuggestions = new();
+        private MessageType m_Status;
+        private readonly List<string> m_StatusMessages = new(8);
 
         protected override void OnEnable()
         {
@@ -69,7 +64,7 @@ namespace Unity.Physics.Editor
             Undo.undoRedoPerformed += Repaint;
         }
 
-        void OnDisable()
+        private void OnDisable()
         {
             Undo.undoRedoPerformed -= Repaint;
 
@@ -94,7 +89,7 @@ namespace Unity.Physics.Editor
             var shape = target as PhysicsShapeAuthoring;
 
             var shapeMatrix = shape.GetShapeToWorldMatrix();
-            Bounds bounds = new Bounds();
+            var bounds = new Bounds();
             switch (shape.ShapeType)
             {
                 case ShapeType.Box:
@@ -139,7 +134,7 @@ namespace Unity.Physics.Editor
             return TransformBounds(bounds, shapeMatrix);
         }
 
-        void OnSceneGUI()
+        private void OnSceneGUI()
         {
             var hotControl = GUIUtility.hotControl;
             switch (Event.current.GetTypeForControl(hotControl))
@@ -169,7 +164,9 @@ namespace Unity.Physics.Editor
                     {
                         using (new Handles.DrawingScope(math.mul(Handles.matrix,
                                    float4x4.TRS(boxGeometry.Center, boxGeometry.Orientation, 1f))))
+                        {
                             s_Box.DrawHandle();
+                        }
                     }
                         if (EditorGUI.EndChangeCheck())
                         {
@@ -187,7 +184,9 @@ namespace Unity.Physics.Editor
                     {
                         using (new Handles.DrawingScope(math.mul(Handles.matrix,
                                    float4x4.TRS(capsuleGeometry.Center, capsuleGeometry.Orientation, 1f))))
+                        {
                             s_Capsule.DrawHandle();
+                        }
                     }
                         if (EditorGUI.EndChangeCheck())
                         {
@@ -197,14 +196,16 @@ namespace Unity.Physics.Editor
 
                         break;
                     case ShapeType.Sphere:
-                        var sphereGeometry = shape.GetBakedSphereProperties(out EulerAngles orientation);
+                        var sphereGeometry = shape.GetBakedSphereProperties(out var orientation);
                         s_Sphere.center = float3.zero;
                         s_Sphere.radius = sphereGeometry.Radius;
                         EditorGUI.BeginChangeCheck();
                     {
                         using (new Handles.DrawingScope(math.mul(Handles.matrix,
                                    float4x4.TRS(sphereGeometry.Center, orientation, 1f))))
+                        {
                             s_Sphere.DrawHandle();
+                        }
                     }
                         if (EditorGUI.EndChangeCheck())
                         {
@@ -224,7 +225,9 @@ namespace Unity.Physics.Editor
                     {
                         using (new Handles.DrawingScope(math.mul(Handles.matrix,
                                    float4x4.TRS(cylinderGeometry.Center, cylinderGeometry.Orientation, 1f))))
+                        {
                             s_Cylinder.DrawHandle();
+                        }
                     }
                         if (EditorGUI.EndChangeCheck())
                         {
@@ -241,7 +244,10 @@ namespace Unity.Physics.Editor
                     {
                         var m = math.mul(shape.transform.localToWorldMatrix, float4x4.TRS(center, orientation, 1f));
                         using (new Handles.DrawingScope(m))
+                        {
                             s_Plane.DrawHandle();
+                        }
+
                         var right = math.mul(m, new float4 {x = 1f}).xyz;
                         var forward = math.mul(m, new float4 {z = 1f}).xyz;
                         var normal = math.cross(math.normalizesafe(forward), math.normalizesafe(right))
@@ -249,7 +255,9 @@ namespace Unity.Physics.Editor
                                          0.5f);
 
                         using (new Handles.DrawingScope(float4x4.identity))
+                        {
                             Handles.DrawLine(m.c3.xyz, m.c3.xyz + normal);
+                        }
                     }
                         if (EditorGUI.EndChangeCheck())
                         {
@@ -279,7 +287,7 @@ namespace Unity.Physics.Editor
             }
         }
 
-        PreviewMeshData GetPreviewData(PhysicsShapeAuthoring shape)
+        private PreviewMeshData GetPreviewData(PhysicsShapeAuthoring shape)
         {
             if (shape.ShapeType != ShapeType.ConvexHull && shape.ShapeType != ShapeType.Mesh)
                 return null;
@@ -297,7 +305,7 @@ namespace Unity.Physics.Editor
             return preview;
         }
 
-        void UpdateGeometryState()
+        private void UpdateGeometryState()
         {
             m_GeometryState = GeometryState.Okay;
             var skinnedPoints = new NativeList<float3>(8192, Allocator.Temp);
@@ -307,7 +315,7 @@ namespace Unity.Physics.Editor
                 using (var so = new SerializedObject(shape))
                 {
                     var customMesh =
-                        so.FindProperty(m_CustomMesh.propertyPath).objectReferenceValue as UnityEngine.Mesh;
+                        so.FindProperty(m_CustomMesh.propertyPath).objectReferenceValue as Mesh;
                     if (customMesh != null)
                     {
                         m_GeometryState |= GetGeometryState(customMesh, shape.gameObject);
@@ -320,10 +328,8 @@ namespace Unity.Physics.Editor
                 using (var scope = new GetActiveChildrenScope<MeshFilter>(shape, shape.transform))
                 {
                     foreach (var meshFilter in scope.Buffer)
-                    {
-                        if (scope.IsChildActiveAndBelongsToShape(meshFilter, filterOutInvalid: false))
+                        if (scope.IsChildActiveAndBelongsToShape(meshFilter, false))
                             geometryState |= GetGeometryState(meshFilter.sharedMesh, shape.gameObject);
-                    }
                 }
 
                 if (shape.ShapeType == ShapeType.Mesh)
@@ -341,7 +347,7 @@ namespace Unity.Physics.Editor
             skinnedPoints.Dispose();
         }
 
-        static GeometryState GetGeometryState(UnityEngine.Mesh mesh, GameObject host)
+        private static GeometryState GetGeometryState(Mesh mesh, GameObject host)
         {
             if (mesh == null)
                 return GeometryState.NoGeometry;
@@ -376,7 +382,9 @@ namespace Unity.Physics.Editor
             ++EditorGUI.indentLevel;
 
             if (m_ShapeType.hasMultipleDifferentValues)
+            {
                 EditorGUILayout.HelpBox(Styles.MultipleShapeTypesLabel, MessageType.None);
+            }
             else
             {
                 switch ((ShapeType) m_ShapeType.intValue)
@@ -434,7 +442,7 @@ namespace Unity.Physics.Editor
                 serializedObject.ApplyModifiedProperties();
         }
 
-        void RecommendedConvexValuesButton()
+        private void RecommendedConvexValuesButton()
         {
             EditorGUI.BeginDisabledGroup(
                 (m_GeometryState & GeometryState.NoGeometry) == GeometryState.NoGeometry ||
@@ -457,7 +465,7 @@ namespace Unity.Physics.Editor
             EditorGUI.EndDisabledGroup();
         }
 
-        void UpdateStatusMessages()
+        private void UpdateStatusMessages()
         {
             m_Status = MessageType.None;
             m_StatusMessages.Clear();
@@ -476,7 +484,9 @@ namespace Unity.Physics.Editor
                         var max = math.cmax(box.Size);
                         var min = math.cmin(box.Size);
                         if (min < k_Epsilon)
+                        {
                             m_ShapeSuggestions.Add(Styles.BoxPlaneSuggestion);
+                        }
                         else if (math.abs(box.BevelRadius - min * 0.5f) < k_Epsilon)
                         {
                             if (math.abs(max - min) < k_Epsilon)
@@ -495,11 +505,9 @@ namespace Unity.Physics.Editor
                     case ShapeType.Cylinder:
                         var cylinder = shape.GetBakedCylinderProperties();
                         if (math.abs(cylinder.BevelRadius - cylinder.Radius) < k_Epsilon)
-                        {
                             m_ShapeSuggestions.Add(math.abs(cylinder.Height - 2f * cylinder.Radius) < k_Epsilon
                                 ? Styles.CylinderSphereSuggestion
                                 : Styles.CylinderCapsuleSuggestion);
-                        }
 
                         break;
                 }
@@ -551,7 +559,7 @@ namespace Unity.Physics.Editor
             }
         }
 
-        void DisplayShapeSelector()
+        private void DisplayShapeSelector()
         {
             EditorGUI.BeginChangeCheck();
             EditorGUILayout.PropertyField(m_ShapeType);
@@ -592,7 +600,7 @@ namespace Unity.Physics.Editor
             GUIUtility.ExitGUI();
         }
 
-        void AutomaticPrimitiveControls()
+        private void AutomaticPrimitiveControls()
         {
             EditorGUI.BeginDisabledGroup(
                 (m_GeometryState & GeometryState.NoGeometry) == GeometryState.NoGeometry ||
@@ -611,7 +619,7 @@ namespace Unity.Physics.Editor
             EditorGUI.EndDisabledGroup();
         }
 
-        void DisplayBoxControls()
+        private void DisplayBoxControls()
         {
             EditorGUILayout.PropertyField(m_PrimitiveSize, Styles.SizeLabel, true);
 
@@ -621,7 +629,7 @@ namespace Unity.Physics.Editor
             EditorGUILayout.PropertyField(m_BevelRadius);
         }
 
-        void DisplayCapsuleControls()
+        private void DisplayCapsuleControls()
         {
             EditorGUI.BeginChangeCheck();
             EditorGUILayout.PropertyField(m_Capsule);
@@ -639,7 +647,7 @@ namespace Unity.Physics.Editor
             EditorGUILayout.PropertyField(m_PrimitiveOrientation, Styles.OrientationLabel, true);
         }
 
-        void DisplaySphereControls()
+        private void DisplaySphereControls()
         {
             EditorGUI.BeginChangeCheck();
             EditorGUILayout.PropertyField(m_SphereRadius, Styles.RadiusLabel);
@@ -657,7 +665,7 @@ namespace Unity.Physics.Editor
             EditorGUILayout.PropertyField(m_PrimitiveOrientation, Styles.OrientationLabel, true);
         }
 
-        void DisplayCylinderControls()
+        private void DisplayCylinderControls()
         {
             EditorGUI.BeginChangeCheck();
             EditorGUILayout.PropertyField(m_Cylinder);
@@ -679,7 +687,7 @@ namespace Unity.Physics.Editor
             EditorGUILayout.PropertyField(m_BevelRadius);
         }
 
-        void DisplayPlaneControls()
+        private void DisplayPlaneControls()
         {
             EditorGUILayout.PropertyField(m_PrimitiveSize, Styles.SizeLabel, true);
 
@@ -687,7 +695,7 @@ namespace Unity.Physics.Editor
             EditorGUILayout.PropertyField(m_PrimitiveOrientation, Styles.OrientationLabel, true);
         }
 
-        void DisplayMeshControls()
+        private void DisplayMeshControls()
         {
             EditorGUI.BeginChangeCheck();
             EditorGUILayout.PropertyField(m_CustomMesh);
@@ -701,12 +709,12 @@ namespace Unity.Physics.Editor
                 EditorGUILayout.HelpBox(string.Join("\n\n", m_GeometryStatusMessages), m_GeometryStatus);
         }
 
-        static Bounds TransformBounds(Bounds localBounds, float4x4 matrix)
+        private static Bounds TransformBounds(Bounds localBounds, float4x4 matrix)
         {
             var center = new float4(localBounds.center, 1);
-            Bounds bounds = new Bounds(math.mul(matrix, center).xyz, Vector3.zero);
+            var bounds = new Bounds(math.mul(matrix, center).xyz, Vector3.zero);
             var extent = new float4(localBounds.extents, 0);
-            for (int i = 0; i < 8; ++i)
+            for (var i = 0; i < 8; ++i)
             {
                 extent.x = (i & 1) == 0 ? -extent.x : extent.x;
                 extent.y = (i & 2) == 0 ? -extent.y : extent.y;
@@ -718,10 +726,10 @@ namespace Unity.Physics.Editor
             return bounds;
         }
 
-        static class Styles
+        private static class Styles
         {
-            const string k_Plural = "One or more selected objects";
-            const string k_Singular = "This object";
+            private const string k_Plural = "One or more selected objects";
+            private const string k_Singular = "This object";
 
             public static readonly string GenericUndoMessage = L10n.Tr("Change Shape");
 
@@ -731,17 +739,17 @@ namespace Unity.Physics.Editor
             public static readonly string PreviewGenerationNotification =
                 L10n.Tr("Generating collision geometry preview...");
 
-            static readonly GUIContent k_FitToRenderMeshesLabel =
+            private static readonly GUIContent k_FitToRenderMeshesLabel =
                 EditorGUIUtility.TrTextContent("Fit to Enabled Render Meshes");
 
-            static readonly GUIContent k_FitToRenderMeshesWarningLabelSg = new GUIContent(
+            private static readonly GUIContent k_FitToRenderMeshesWarningLabelSg = new(
                 k_FitToRenderMeshesLabel.text,
                 EditorGUIUtility.Load("console.warnicon") as Texture,
                 L10n.Tr(
                     $"{k_Singular} has non-uniform scale. Trying to fit the shape to render meshes might produce unexpected results.")
             );
 
-            static readonly GUIContent k_FitToRenderMeshesWarningLabelPl = new GUIContent(
+            private static readonly GUIContent k_FitToRenderMeshesWarningLabelPl = new(
                 k_FitToRenderMeshesLabel.text,
                 EditorGUIUtility.Load("console.warnicon") as Texture,
                 L10n.Tr(
@@ -772,13 +780,13 @@ namespace Unity.Physics.Editor
                 "Set recommended values for convex hull generation parameters based on either render meshes or custom mesh."
             );
 
-            static readonly string[] k_NoGeometryWarning =
+            private static readonly string[] k_NoGeometryWarning =
             {
                 L10n.Tr($"{k_Singular} has no enabled render meshes in its hierarchy and no custom mesh assigned."),
                 L10n.Tr($"{k_Plural} has no enabled render meshes in their hierarchies and no custom mesh assigned.")
             };
 
-            static readonly string[] k_NonReadableGeometryWarning =
+            private static readonly string[] k_NonReadableGeometryWarning =
             {
                 L10n.Tr(
                     $"{k_Singular} has a non-readable mesh in its hierarchy. Move it into a sub-scene or assign a custom mesh with Read/Write enabled in its import settings if it needs to be converted at run-time."),
@@ -786,7 +794,7 @@ namespace Unity.Physics.Editor
                     $"{k_Plural} has a non-readable mesh in its hierarchy. Move it into a sub-scene or assign a custom mesh with Read/Write enabled in its import settings if it needs to be converted at run-time.")
             };
 
-            static readonly string[] k_MeshWithSkinnedPointsWarning =
+            private static readonly string[] k_MeshWithSkinnedPointsWarning =
             {
                 L10n.Tr(
                     $"{k_Singular} is a mesh based on its render geometry, but its render geometry includes skinned points. These points will be excluded from the automatically generated shape."),
@@ -794,7 +802,7 @@ namespace Unity.Physics.Editor
                     $"{k_Plural} is a mesh based on its render geometry, but its render geometry includes skinned points. These points will be excluded from the automatically generated shape.")
             };
 
-            static readonly string[] k_StaticColliderStatusMessage =
+            private static readonly string[] k_StaticColliderStatusMessage =
             {
                 L10n.Tr(
                     $"{k_Singular} will be considered static. Add a {ObjectNames.NicifyVariableName(typeof(PhysicsBodyAuthoring).Name)} component if you will move it at run-time."),
@@ -825,32 +833,40 @@ namespace Unity.Physics.Editor
                 L10n.Tr(
                     $"Target {ShapeType.Cylinder} has a large convex radius and its diameter is equal to its height. Consider using a {ShapeType.Sphere} instead.");
 
-            public static readonly GUIStyle Button =
-                new GUIStyle(EditorStyles.miniButton) {padding = new RectOffset()};
+            public static readonly GUIStyle Button = new(EditorStyles.miniButton) {padding = new RectOffset()};
 
-            public static readonly GUIStyle ButtonDropDown =
-                new GUIStyle(EditorStyles.popup) {alignment = TextAnchor.MiddleCenter};
+            public static readonly GUIStyle ButtonDropDown = new(EditorStyles.popup) {alignment = TextAnchor.MiddleCenter};
 
-            public static GUIContent GetFitToRenderMeshesLabel(int numTargets, MessageType status) =>
-                status >= MessageType.Warning
+            public static GUIContent GetFitToRenderMeshesLabel(int numTargets, MessageType status)
+            {
+                return status >= MessageType.Warning
                     ? numTargets == 1 ? k_FitToRenderMeshesWarningLabelSg : k_FitToRenderMeshesWarningLabelPl
                     : k_FitToRenderMeshesLabel;
+            }
 
-            public static string GetNoGeometryWarning(int numTargets) =>
-                numTargets == 1 ? k_NoGeometryWarning[0] : k_NoGeometryWarning[1];
+            public static string GetNoGeometryWarning(int numTargets)
+            {
+                return numTargets == 1 ? k_NoGeometryWarning[0] : k_NoGeometryWarning[1];
+            }
 
-            public static string GetNonReadableGeometryWarning(int numTargets) =>
-                numTargets == 1 ? k_NonReadableGeometryWarning[0] : k_NonReadableGeometryWarning[1];
+            public static string GetNonReadableGeometryWarning(int numTargets)
+            {
+                return numTargets == 1 ? k_NonReadableGeometryWarning[0] : k_NonReadableGeometryWarning[1];
+            }
 
-            public static string GetMeshWithSkinnedPointsWarning(int numTargets) =>
-                numTargets == 1 ? k_MeshWithSkinnedPointsWarning[0] : k_MeshWithSkinnedPointsWarning[1];
+            public static string GetMeshWithSkinnedPointsWarning(int numTargets)
+            {
+                return numTargets == 1 ? k_MeshWithSkinnedPointsWarning[0] : k_MeshWithSkinnedPointsWarning[1];
+            }
 
-            public static string GetStaticColliderStatusMessage(int numTargets) =>
-                numTargets == 1 ? k_StaticColliderStatusMessage[0] : k_StaticColliderStatusMessage[1];
+            public static string GetStaticColliderStatusMessage(int numTargets)
+            {
+                return numTargets == 1 ? k_StaticColliderStatusMessage[0] : k_StaticColliderStatusMessage[1];
+            }
         }
 
         [Flags]
-        enum GeometryState
+        private enum GeometryState
         {
             Okay = 0,
             NoGeometry = 1 << 0,
@@ -858,25 +874,24 @@ namespace Unity.Physics.Editor
             MeshWithSkinnedPoints = 1 << 2
         }
 
-        class PreviewMeshData : IDisposable
+        private class PreviewMeshData : IDisposable
         {
-            static readonly List<Vector3> s_ReusableEdges = new List<Vector3>(1024);
+            private static readonly List<Vector3> s_ReusableEdges = new(1024);
 
-            public Aabb Bounds = new Aabb();
+            public Aabb Bounds;
 
             public Vector3[] Edges = Array.Empty<Vector3>();
 
-            bool m_Disposed;
-            ConvexHullGenerationParameters m_HashedConvexParameters;
-            NativeArray<float3> m_HashedPoints = new NativeArray<float3>(0, Allocator.Persistent);
+            private bool m_Disposed;
+            private ConvexHullGenerationParameters m_HashedConvexParameters;
+            private NativeArray<float3> m_HashedPoints = new(0, Allocator.Persistent);
 
-            uint m_InputHash;
+            private uint m_InputHash;
 
             // multiple preview jobs might be running if user assigned a different mesh before previous job completed
-            JobHandle m_MostRecentlyScheduledJob;
+            private JobHandle m_MostRecentlyScheduledJob;
 
-            Dictionary<JobHandle, NativeArray<BlobAssetReference<Collider>>> m_PreviewJobsOutput =
-                new Dictionary<JobHandle, NativeArray<BlobAssetReference<Collider>>>();
+            private readonly Dictionary<JobHandle, NativeArray<BlobAssetReference<Collider>>> m_PreviewJobsOutput = new();
 
             public void Dispose()
             {
@@ -884,7 +899,7 @@ namespace Unity.Physics.Editor
                 m_HashedPoints.Dispose();
             }
 
-            unsafe uint GetInputHash(
+            private unsafe uint GetInputHash(
                 PhysicsShapeAuthoring shape,
                 NativeList<float3> currentPoints,
                 NativeArray<float3> hashedPoints,
@@ -954,7 +969,7 @@ namespace Unity.Physics.Editor
                 if (m_PreviewJobsOutput.Count == 1)
                 {
                     CheckPreviewJobsForCompletion();
-                    if (m_MostRecentlyScheduledJob.Equals(default(JobHandle)))
+                    if (m_MostRecentlyScheduledJob.Equals(default))
                         return;
                     EditorApplication.update += CheckPreviewJobsForCompletion;
                     EditorApplication.delayCall += () =>
@@ -966,7 +981,7 @@ namespace Unity.Physics.Editor
                 }
             }
 
-            JobHandle ScheduleConvexHullPreview(PhysicsShapeAuthoring shape,
+            private JobHandle ScheduleConvexHullPreview(PhysicsShapeAuthoring shape,
                 NativeArray<BlobAssetReference<Collider>> output)
             {
                 var pointCloud = new NativeList<float3>(65535, Allocator.Temp);
@@ -990,7 +1005,7 @@ namespace Unity.Physics.Editor
                 }.Schedule();
             }
 
-            JobHandle ScheduleMeshPreview(PhysicsShapeAuthoring shape, NativeArray<BlobAssetReference<Collider>> output)
+            private JobHandle ScheduleMeshPreview(PhysicsShapeAuthoring shape, NativeArray<BlobAssetReference<Collider>> output)
             {
                 var points = new NativeList<float3>(1024, Allocator.Temp);
                 var triangles = new NativeList<int3>(1024, Allocator.Temp);
@@ -1018,7 +1033,7 @@ namespace Unity.Physics.Editor
                 }.Schedule();
             }
 
-            unsafe void CheckPreviewJobsForCompletion()
+            private void CheckPreviewJobsForCompletion()
             {
                 var repaintSceneViews = false;
 
@@ -1085,35 +1100,40 @@ namespace Unity.Physics.Editor
             }
 
             [BurstCompile]
-            struct CreateTempHullJob : IJob
+            private struct CreateTempHullJob : IJob
             {
                 public ConvexHullGenerationParameters GenerationParameters;
                 [ReadOnly] [DeallocateOnJobCompletion] public NativeArray<float3> Points;
                 public NativeArray<BlobAssetReference<Collider>> Output;
 
-                public void Execute() =>
+                public void Execute()
+                {
                     Output[0] = ConvexCollider.Create(Points, GenerationParameters, CollisionFilter.Default);
+                }
             }
 
             [BurstCompile]
-            struct CreateTempMeshJob : IJob
+            private struct CreateTempMeshJob : IJob
             {
                 [ReadOnly] [DeallocateOnJobCompletion] public NativeArray<float3> Points;
                 [ReadOnly] [DeallocateOnJobCompletion] public NativeArray<int3> Triangles;
                 public NativeArray<BlobAssetReference<Collider>> Output;
 
-                public void Execute() => Output[0] = MeshCollider.Create(Points, Triangles);
+                public void Execute()
+                {
+                    Output[0] = MeshCollider.Create(Points, Triangles);
+                }
             }
         }
 
-        class FitToRenderMeshesDropDown : EditorWindow
+        private class FitToRenderMeshesDropDown : EditorWindow
         {
-            bool m_ApplyChanges;
-            bool m_ClosedWithoutUndo;
-            SerializedProperty m_MinimumSkinnedVertexWeight;
-            int m_UndoGroup;
+            private bool m_ApplyChanges;
+            private bool m_ClosedWithoutUndo;
+            private SerializedProperty m_MinimumSkinnedVertexWeight;
+            private int m_UndoGroup;
 
-            void OnDestroy()
+            private void OnDestroy()
             {
                 if (m_ApplyChanges)
                     ApplyChanges();
@@ -1121,7 +1141,7 @@ namespace Unity.Physics.Editor
                     Undo.RevertAllDownToGroup(m_UndoGroup);
             }
 
-            void OnGUI()
+            private void OnGUI()
             {
                 var labelWidth = EditorGUIUtility.labelWidth;
                 EditorGUIUtility.labelWidth = Styles.LabelWidth;
@@ -1151,11 +1171,9 @@ namespace Unity.Physics.Editor
                 buttonRect = Application.platform == RuntimePlatform.OSXEditor ? buttonLeft : buttonRight;
                 if (
                     GUI.Button(buttonRect, Content.CancelLabel, Styles.Button)
-                    || Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape
+                    || (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Escape)
                 )
-                {
                     close = true;
-                }
 
                 buttonRect = Application.platform == RuntimePlatform.OSXEditor ? buttonRight : buttonLeft;
                 if (GUI.Button(buttonRect, Content.ApplyLabel, Styles.Button))
@@ -1167,7 +1185,7 @@ namespace Unity.Physics.Editor
                 if (close)
                 {
                     Close();
-                    EditorGUIUtility.ExitGUI();
+                    GUIUtility.ExitGUI();
                 }
             }
 
@@ -1188,12 +1206,11 @@ namespace Unity.Physics.Editor
                 return window;
             }
 
-            void ApplyChanges()
+            private void ApplyChanges()
             {
                 m_MinimumSkinnedVertexWeight.serializedObject.ApplyModifiedProperties();
                 Undo.RecordObjects(m_MinimumSkinnedVertexWeight.serializedObject.targetObjects, titleContent.text);
                 foreach (PhysicsShapeAuthoring shape in m_MinimumSkinnedVertexWeight.serializedObject.targetObjects)
-                {
                     using (var so = new SerializedObject(shape))
                     {
                         shape.FitToEnabledRenderMeshes(
@@ -1201,7 +1218,6 @@ namespace Unity.Physics.Editor
                         );
                         EditorUtility.SetDirty(shape);
                     }
-                }
 
                 m_MinimumSkinnedVertexWeight.serializedObject.Update();
             }
@@ -1212,14 +1228,14 @@ namespace Unity.Physics.Editor
                 Close();
             }
 
-            static class Styles
+            private static class Styles
             {
                 public const float WindowWidth = 400f;
                 public const float LabelWidth = 200f;
                 public static GUIStyle Button => PhysicsShapeAuthoringEditor.Styles.Button;
             }
 
-            static class Content
+            private static class Content
             {
                 public static readonly string ApplyLabel = L10n.Tr("Apply");
                 public static readonly string CancelLabel = L10n.Tr("Cancel");
@@ -1227,23 +1243,23 @@ namespace Unity.Physics.Editor
         }
 
 #pragma warning disable 649
-        [AutoPopulate] SerializedProperty m_ShapeType;
-        [AutoPopulate] SerializedProperty m_PrimitiveCenter;
-        [AutoPopulate] SerializedProperty m_PrimitiveSize;
-        [AutoPopulate] SerializedProperty m_PrimitiveOrientation;
-        [AutoPopulate] SerializedProperty m_Capsule;
-        [AutoPopulate] SerializedProperty m_Cylinder;
-        [AutoPopulate] SerializedProperty m_CylinderSideCount;
-        [AutoPopulate] SerializedProperty m_SphereRadius;
-        [AutoPopulate] SerializedProperty m_ConvexHullGenerationParameters;
+        [AutoPopulate] private SerializedProperty m_ShapeType;
+        [AutoPopulate] private SerializedProperty m_PrimitiveCenter;
+        [AutoPopulate] private SerializedProperty m_PrimitiveSize;
+        [AutoPopulate] private SerializedProperty m_PrimitiveOrientation;
+        [AutoPopulate] private SerializedProperty m_Capsule;
+        [AutoPopulate] private SerializedProperty m_Cylinder;
+        [AutoPopulate] private SerializedProperty m_CylinderSideCount;
+        [AutoPopulate] private SerializedProperty m_SphereRadius;
+        [AutoPopulate] private SerializedProperty m_ConvexHullGenerationParameters;
 
         [AutoPopulate(PropertyPath = "m_ConvexHullGenerationParameters.m_BevelRadius")]
-        SerializedProperty m_BevelRadius;
+        private SerializedProperty m_BevelRadius;
 
-        [AutoPopulate] SerializedProperty m_MinimumSkinnedVertexWeight;
-        [AutoPopulate] SerializedProperty m_CustomMesh;
-        [AutoPopulate] SerializedProperty m_Material;
-        [AutoPopulate] SerializedProperty m_ForceUnique;
+        [AutoPopulate] private SerializedProperty m_MinimumSkinnedVertexWeight;
+        [AutoPopulate] private SerializedProperty m_CustomMesh;
+        [AutoPopulate] private SerializedProperty m_Material;
+        [AutoPopulate] private SerializedProperty m_ForceUnique;
 #pragma warning restore 649
     }
 }

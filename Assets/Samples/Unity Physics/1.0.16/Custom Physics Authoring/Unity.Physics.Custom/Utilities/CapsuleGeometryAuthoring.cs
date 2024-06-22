@@ -5,25 +5,25 @@ using UnityEngine;
 namespace Unity.Physics.Authoring
 {
     /// <summary>
-    /// A structure for storing authoring data for a capsule shape. In contrast to the
-    /// CapsuleGeometry struct in the run-time, this structure permits storing stable orientation
-    /// values, as well as height values that can be retained when the source data are defined with
-    /// respect to a non-uniformly scaled object.
+    ///     A structure for storing authoring data for a capsule shape. In contrast to the
+    ///     CapsuleGeometry struct in the run-time, this structure permits storing stable orientation
+    ///     values, as well as height values that can be retained when the source data are defined with
+    ///     respect to a non-uniformly scaled object.
     /// </summary>
     [Serializable]
     public struct CapsuleGeometryAuthoring : IEquatable<CapsuleGeometryAuthoring>
     {
-        [SerializeField] EulerAngles m_OrientationEuler;
+        [SerializeField] private EulerAngles m_OrientationEuler;
 
-        [SerializeField] float3 m_Center;
+        [SerializeField] private float3 m_Center;
 
-        [SerializeField] float m_Height;
+        [SerializeField] private float m_Height;
 
-        [SerializeField] float m_Radius;
+        [SerializeField] private float m_Radius;
 
         /// <summary>
-        /// The local orientation of the capsule. It is aligned with the forward axis (z) when it is
-        /// identity.
+        ///     The local orientation of the capsule. It is aligned with the forward axis (z) when it is
+        ///     identity.
         /// </summary>
         public quaternion Orientation
         {
@@ -45,8 +45,8 @@ namespace Unity.Physics.Authoring
         }
 
         /// <summary>
-        /// The height of the capsule. It may store any value, but will ultimately always be converted
-        /// into a value that is at least twice the radius.
+        ///     The height of the capsule. It may store any value, but will ultimately always be converted
+        ///     into a value that is at least twice the radius.
         /// </summary>
         public float Height
         {
@@ -55,7 +55,6 @@ namespace Unity.Physics.Authoring
         }
 
         /// <summary>   The radius of the capsule. </summary>
-        ///
         /// <value> The radius. </value>
         public float Radius
         {
@@ -86,7 +85,7 @@ namespace Unity.Physics.Authoring
     public static class CapsuleGeometryAuthoringExtensions
     {
         /// <summary>
-        /// Construct a CapsuleGeometryAuthoring instance from a run-time CapsuleGeometry instance.
+        ///     Construct a CapsuleGeometryAuthoring instance from a run-time CapsuleGeometry instance.
         /// </summary>
         public static CapsuleGeometryAuthoring ToAuthoring(this CapsuleGeometry input)
         {
@@ -102,7 +101,7 @@ namespace Unity.Physics.Authoring
         }
 
         /// <summary>
-        /// Construct a run-time CapsuleGeometry instance from a CapsuleGeometryAuthoring instance.
+        ///     Construct a run-time CapsuleGeometry instance from a CapsuleGeometryAuthoring instance.
         /// </summary>
         public static CapsuleGeometry ToRuntime(this CapsuleGeometryAuthoring input)
         {
