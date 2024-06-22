@@ -52,7 +52,6 @@ namespace system.battle.battalion
                 // battalion1 damages battalion2
                 var dmgToReceive = fightingPair.fightType switch
                 {
-                    //todo add soldier count
                     BattalionFightType.NORMAL => dmgPerPerSoldierPerDeltaTime * soldierCountsPerBattalion[fightingPair.battalionId1],
                     BattalionFightType.VERTICAL => dmgPerPerSoldierPerDeltaTime,
                     _ => throw new Exception("unknown fight type"),
@@ -62,7 +61,6 @@ namespace system.battle.battalion
                 // battalion2 damages battalion1
                 dmgToReceive = fightingPair.fightType switch
                 {
-                    //todo add soldier count
                     BattalionFightType.NORMAL => dmgPerPerSoldierPerDeltaTime * soldierCountsPerBattalion[fightingPair.battalionId2],
                     BattalionFightType.VERTICAL => dmgPerPerSoldierPerDeltaTime,
                     _ => throw new Exception("unknown fight type"),

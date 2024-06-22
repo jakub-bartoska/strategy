@@ -36,7 +36,6 @@ namespace system.battle.battalion.row_change
             var battalionsPerformingAction = dataHolder.ValueRO.battalionsPerformingAction;
             var prefabHolder = SystemAPI.GetSingleton<PrefabHolder>();
 
-            //todo filter out not moving battalions
             new MarkRowSwitchJob
                 {
                     battalionSwitchRowDirections = battalionSwitchRowDirections,
