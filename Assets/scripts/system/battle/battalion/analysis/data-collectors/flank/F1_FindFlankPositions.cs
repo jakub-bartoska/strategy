@@ -55,7 +55,11 @@ namespace system.battle.battalion.analysis.flank
 
                 if (team1FlankPosition.HasValue || team2FlankPosition.HasValue)
                 {
-                    flankPositions.Add(rowId, (team1FlankPosition, team2FlankPosition));
+                    flankPositions.Add(rowId, new FlankPositions
+                    {
+                        team1 = team1FlankPosition,
+                        team2 = team2FlankPosition
+                    });
                 }
             }
         }

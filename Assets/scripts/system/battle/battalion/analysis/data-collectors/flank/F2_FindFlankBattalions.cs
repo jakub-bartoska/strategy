@@ -37,8 +37,8 @@ namespace system.battle.battalion.analysis.flank
                 {
                     var flankPosition = battalionInfo.team switch
                     {
-                        Team.TEAM1 => teamFlanks.Item1,
-                        Team.TEAM2 => teamFlanks.Item2,
+                        Team.TEAM1 => teamFlanks.team1,
+                        Team.TEAM2 => teamFlanks.team2,
                         _ => throw new Exception("unknown team"),
                     };
                     if (!flankPosition.HasValue)

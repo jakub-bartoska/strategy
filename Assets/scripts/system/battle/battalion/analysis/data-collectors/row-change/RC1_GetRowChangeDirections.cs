@@ -47,7 +47,19 @@ namespace system.battle.battalion.analysis.row_change
             {
                 var team1Direction = team1[rowId];
                 var team2Direction = team2[rowId];
-                rowChanges.Add(rowId, ((team1Direction.Item1, team1Direction.Item2), (team2Direction.Item1, team2Direction.Item2)));
+                rowChanges.Add(rowId, new RowChange
+                {
+                    team1 = new TeamRowChange
+                    {
+                        direction = team1Direction.Item1,
+                        closestEnemyRow = team1Direction.Item2
+                    },
+                    team2 = new TeamRowChange
+                    {
+                        direction = team2Direction.Item1,
+                        closestEnemyRow = team2Direction.Item2
+                    }
+                });
             }
         }
 
@@ -63,8 +75,8 @@ namespace system.battle.battalion.analysis.row_change
                 {
                     switchRow = team switch
                     {
-                        Team.TEAM1 => flankPositionsPerTeam.Item1,
-                        Team.TEAM2 => flankPositionsPerTeam.Item2,
+                        Team.TEAM1 => flankPositionsPerTeam.team1,
+                        Team.TEAM2 => flankPositionsPerTeam.team2,
                         _ => throw new Exception("unknown team")
                     };
                 }

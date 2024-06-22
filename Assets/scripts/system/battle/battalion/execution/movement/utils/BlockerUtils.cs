@@ -27,15 +27,15 @@ namespace system.battle.battalion.execution
             {
                 foreach (var follower in followers.GetValuesForKey(battalionId))
                 {
-                    if (follower.Item2 != direction)
+                    if (follower.direction != direction)
                     {
                         continue;
                     }
 
-                    if (!isBlockedByAnotherBattalion(result, follower.Item1, follower.Item2, movementDataHolder))
+                    if (!isBlockedByAnotherBattalion(result, follower.blockedBattalionId, follower.direction, movementDataHolder))
                     {
-                        result.Add(follower.Item1, follower.Item2);
-                        unblockFollowers(result, follower.Item1, follower.Item2, movementDataHolder);
+                        result.Add(follower.blockedBattalionId, follower.direction);
+                        unblockFollowers(result, follower.blockedBattalionId, follower.direction, movementDataHolder);
                     }
                 }
             }
@@ -45,12 +45,12 @@ namespace system.battle.battalion.execution
         {
             foreach (var blocked in movementDataHolder.blockers.GetValuesForKey(battalionId))
             {
-                if (blocked.Item3 != direction)
+                if (blocked.blockingDirection != direction)
                 {
                     continue;
                 }
 
-                if (!result.ContainsKey(blocked.Item1))
+                if (!result.ContainsKey(blocked.blockerId))
                 {
                     return true;
                 }

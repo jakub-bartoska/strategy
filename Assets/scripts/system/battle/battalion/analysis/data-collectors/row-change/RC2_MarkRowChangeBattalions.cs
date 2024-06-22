@@ -34,11 +34,11 @@ namespace system.battle.battalion.analysis.row_change
             foreach (var rowId in allRowIds)
             {
                 var rowChangesPerTeam = rowChanges[rowId];
-                var team1Direction = rowChangesPerTeam.Item1.Item1;
-                var team1Position = getFlankingPositionForRow(rowChangesPerTeam.Item1.Item2, Team.TEAM1, movementDataHolder.ValueRO);
+                var team1Direction = rowChangesPerTeam.team1.direction;
+                var team1Position = getFlankingPositionForRow(rowChangesPerTeam.team1.closestEnemyRow, Team.TEAM1, movementDataHolder.ValueRO);
 
-                var team2Direction = rowChangesPerTeam.Item2.Item1;
-                var team2Position = getFlankingPositionForRow(rowChangesPerTeam.Item2.Item2, Team.TEAM2, movementDataHolder.ValueRO);
+                var team2Direction = rowChangesPerTeam.team2.direction;
+                var team2Position = getFlankingPositionForRow(rowChangesPerTeam.team2.closestEnemyRow, Team.TEAM2, movementDataHolder.ValueRO);
 
                 foreach (var battalionInfo in positions.GetValuesForKey(rowId))
                 {
@@ -73,8 +73,8 @@ namespace system.battle.battalion.analysis.row_change
             movementDataHolder.flankPositions.TryGetValue(targetRow, out var teamFlanks);
             return team switch
             {
-                Team.TEAM1 => teamFlanks.Item1,
-                Team.TEAM2 => teamFlanks.Item2,
+                Team.TEAM1 => teamFlanks.team1,
+                Team.TEAM2 => teamFlanks.team2,
                 _ => throw new Exception("unknown team"),
             };
         }

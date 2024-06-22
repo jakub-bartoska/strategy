@@ -32,29 +32,29 @@ namespace system.battle.battalion.analysis.exact_position
 
             foreach (var kvPair in inFightMovement)
             {
-                if (kvPair.Value.Item2 > finalSpeed)
+                if (kvPair.Value.distance > finalSpeed)
                 {
                     continue;
                 }
 
-                if (inFightMovement.TryGetValue(kvPair.Value.Item3, out var closestenemy))
+                if (inFightMovement.TryGetValue(kvPair.Value.mindDistanceEnemyId, out var closestenemy))
                 {
-                    if (closestenemy.Item3 == kvPair.Key)
+                    if (closestenemy.mindDistanceEnemyId == kvPair.Key)
                     {
-                        if (kvPair.Key < kvPair.Value.Item3)
+                        if (kvPair.Key < kvPair.Value.mindDistanceEnemyId)
                         {
-                            battalionsToUpdate.TryAdd(kvPair.Key, kvPair.Value.Item3);
+                            battalionsToUpdate.TryAdd(kvPair.Key, kvPair.Value.mindDistanceEnemyId);
                         }
                         else
                         {
-                            battalionsToUpdate.TryAdd(kvPair.Value.Item3, kvPair.Key);
+                            battalionsToUpdate.TryAdd(kvPair.Value.mindDistanceEnemyId, kvPair.Key);
                         }
 
                         continue;
                     }
                 }
 
-                movementDataHolder.ValueRW.battalionExactDistance.Add(kvPair.Key, kvPair.Value.Item2);
+                movementDataHolder.ValueRW.battalionExactDistance.Add(kvPair.Key, kvPair.Value.distance);
             }
 
             foreach (var kvPair in battalionsToUpdate)
@@ -67,7 +67,7 @@ namespace system.battle.battalion.analysis.exact_position
         private void updateBattalionInFightMovementByHalf(long battalionId, RefRW<MovementDataHolder> movementDataHolder)
         {
             var currentValue = movementDataHolder.ValueRO.inFightMovement[battalionId];
-            var newDistance = currentValue.Item2 / 2;
+            var newDistance = currentValue.distance / 2;
             movementDataHolder.ValueRW.battalionExactDistance.Add(battalionId, newDistance);
         }
     }

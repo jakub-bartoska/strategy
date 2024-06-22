@@ -11,7 +11,7 @@ namespace component.battle.battalion.data_holders
          * blocked battalionId - (blockerId, blockerType)
          * keep in mind that battalion id = shadow id from this battalion. So When shadow is blocked, it is added as battalion
          */
-        public NativeParallelMultiHashMap<long, (long, BattleUnitTypeEnum, Direction, Team)> blockers;
+        public NativeParallelMultiHashMap<long, BattalionBlocker> blockers;
 
         /**
          * blocker battalion id - (battalion which is blocked, direction)
@@ -19,7 +19,7 @@ namespace component.battle.battalion.data_holders
          * A -> B Right in blockers
          * B (A, Right) in this map
          */
-        public NativeParallelMultiHashMap<long, (long, Direction)> battalionFollowers;
+        public NativeParallelMultiHashMap<long, BattalionFollower> battalionFollowers;
 
         /**
          * battalionId - direction battalion should move in normal conditions
@@ -33,7 +33,7 @@ namespace component.battle.battalion.data_holders
          *
          * positions are null in case that row contains only other team units
          */
-        public NativeHashMap<int, (float3?, float3?)> flankPositions;
+        public NativeHashMap<int, FlankPositions> flankPositions;
 
         /**
          * battalionId - (direction, distance, mindDistanceEnemyId)
@@ -43,7 +43,7 @@ namespace component.battle.battalion.data_holders
          * distance is always positive number (even when enemy is behind)
          * id of enemy which is causing direction change
          */
-        public NativeHashMap<long, (Direction, float, long)> inFightMovement;
+        public NativeHashMap<long, ExactPositionMovement> inFightMovement;
 
         /**
          * battalionId - direction
@@ -69,5 +69,32 @@ namespace component.battle.battalion.data_holders
          * contains newly created battalions which were just created and are waiting till their soldiers arrive
          */
         public NativeHashSet<long> waitingForSoldiersBattalions;
+    }
+
+    public struct BattalionBlocker
+    {
+        public long blockerId;
+        public BattleUnitTypeEnum blockerType;
+        public Direction blockingDirection;
+        public Team team;
+    }
+
+    public struct BattalionFollower
+    {
+        public long blockedBattalionId;
+        public Direction direction;
+    }
+
+    public struct FlankPositions
+    {
+        public float3? team1;
+        public float3? team2;
+    }
+
+    public struct ExactPositionMovement
+    {
+        public Direction direction;
+        public float distance;
+        public long mindDistanceEnemyId;
     }
 }

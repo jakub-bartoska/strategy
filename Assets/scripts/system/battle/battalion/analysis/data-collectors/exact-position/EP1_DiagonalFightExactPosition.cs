@@ -117,7 +117,12 @@ namespace system.battle.battalion.analysis.exact_position
 
                 if (!conflict && direction != Direction.NONE)
                 {
-                    movementDataHolder.ValueRW.inFightMovement.Add(key, (direction, minXDistance, minDistanceEnemyId));
+                    movementDataHolder.ValueRW.inFightMovement.Add(key, new ExactPositionMovement
+                    {
+                        direction = direction,
+                        mindDistanceEnemyId = minDistanceEnemyId,
+                        distance = minXDistance
+                    });
                 }
             }
         }

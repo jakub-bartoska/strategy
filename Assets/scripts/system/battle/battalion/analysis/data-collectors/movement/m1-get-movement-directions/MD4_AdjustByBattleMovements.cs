@@ -25,7 +25,7 @@ namespace system.battle.battalion.execution.movement
             var inFightMovement = movementDataHolder.ValueRO.inFightMovement;
             foreach (var battalionDirectionDistance in inFightMovement)
             {
-                var newDirection = battalionDirectionDistance.Value.Item1;
+                var newDirection = battalionDirectionDistance.Value.direction;
                 movementDataHolder.ValueRW.plannedMovementDirections[battalionDirectionDistance.Key] = newDirection;
             }
         }

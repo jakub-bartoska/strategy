@@ -43,7 +43,7 @@ namespace system.battle.battalion.execution
                 var direction = movementDataHolder.ValueRO.plannedMovementDirections[battalionId];
                 foreach (var valueTuple in blockers.GetValuesForKey(battalionId))
                 {
-                    if (valueTuple.Item3 == direction)
+                    if (valueTuple.blockingDirection == direction)
                     {
                         blockedForDirection = true;
                         break;

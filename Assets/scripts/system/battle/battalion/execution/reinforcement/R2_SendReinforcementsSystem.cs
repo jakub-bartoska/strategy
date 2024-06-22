@@ -1,5 +1,4 @@
-﻿using component;
-using component._common.system_switchers;
+﻿using component._common.system_switchers;
 using component.battle.battalion;
 using component.battle.battalion.data_holders;
 using system.battle.enums;
@@ -49,7 +48,7 @@ namespace system.battle.battalion.execution.reinforcement
         public partial struct UpdateReinforcementsJob : IJobEntity
         {
             public NativeParallelMultiHashMap<long, int> needReinforcements;
-            public NativeParallelMultiHashMap<long, (long, BattleUnitTypeEnum, Direction, Team)> blockers;
+            public NativeParallelMultiHashMap<long, BattalionBlocker> blockers;
             public NativeParallelMultiHashMap<long, BattalionSoldiers> reinforcements;
             public NativeHashMap<long, Direction> movingBattalions;
             public NativeHashMap<long, Direction> plannedMovementDirections;
@@ -74,30 +73,30 @@ namespace system.battle.battalion.execution.reinforcement
                 foreach (var blocker in blockers.GetValuesForKey(battalionMarker.id))
                 {
                     //can reinforce only same team
-                    if (team.value != blocker.Item4)
+                    if (team.value != blocker.team)
                     {
                         continue;
                     }
 
                     //cannot reinforce shadow
-                    if (blocker.Item2 == BattleUnitTypeEnum.SHADOW)
+                    if (blocker.blockerType == BattleUnitTypeEnum.SHADOW)
                     {
                         continue;
                     }
 
                     //can reinforce only in my default direction of move
-                    if (blocker.Item3 != plannedMovementDirections[battalionMarker.id])
+                    if (blocker.blockingDirection != plannedMovementDirections[battalionMarker.id])
                     {
                         continue;
                     }
 
-                    if (!needReinforcements.ContainsKey(blocker.Item1))
+                    if (!needReinforcements.ContainsKey(blocker.blockerId))
                     {
                         continue;
                     }
 
                     //send reinforcement                    
-                    prepareReinforcements(blocker.Item1, ref soldiers);
+                    prepareReinforcements(blocker.blockerId, ref soldiers);
                 }
             }
 

@@ -1,6 +1,4 @@
-﻿using component;
-using component._common.system_switchers;
-using component.battle.battalion;
+﻿using component._common.system_switchers;
 using component.battle.battalion.data_holders;
 using system.battle.battalion.analysis.utils;
 using system.battle.enums;
@@ -66,7 +64,7 @@ namespace system.battle.battalion.analysis
         private void findDiagonalBlockers(
             BattalionInfo me,
             int rowId,
-            NativeParallelMultiHashMap<long, (long, BattleUnitTypeEnum, Direction, Team)> blockers,
+            NativeParallelMultiHashMap<long, BattalionBlocker> blockers,
             DataHolder dataHolder)
         {
             var positions = dataHolder.positions;
@@ -82,21 +80,45 @@ namespace system.battle.battalion.analysis
         }
 
         private void addBlocker(BattalionInfo right, BattalionInfo left,
-            NativeParallelMultiHashMap<long, (long, BattleUnitTypeEnum, Direction, Team)> blockers)
+            NativeParallelMultiHashMap<long, BattalionBlocker> blockers)
         {
             //left to right
-            blockers.Add(left.battalionId, (right.battalionId, right.unitType, Direction.RIGHT, right.team));
+            blockers.Add(left.battalionId, new BattalionBlocker
+            {
+                blockerId = right.battalionId,
+                blockingDirection = Direction.RIGHT,
+                blockerType = right.unitType,
+                team = right.team
+            });
             //right to left
-            blockers.Add(right.battalionId, (left.battalionId, left.unitType, Direction.LEFT, left.team));
+            blockers.Add(right.battalionId, new BattalionBlocker
+            {
+                blockerId = left.battalionId,
+                blockingDirection = Direction.LEFT,
+                blockerType = left.unitType,
+                team = left.team
+            });
         }
 
         private void addBlockerVertical(BattalionInfo bottom, BattalionInfo upper,
-            NativeParallelMultiHashMap<long, (long, BattleUnitTypeEnum, Direction, Team)> blockers)
+            NativeParallelMultiHashMap<long, BattalionBlocker> blockers)
         {
             //upper to down
-            blockers.Add(upper.battalionId, (bottom.battalionId, bottom.unitType, Direction.DOWN, bottom.team));
+            blockers.Add(upper.battalionId, new BattalionBlocker
+            {
+                blockerId = bottom.battalionId,
+                blockingDirection = Direction.DOWN,
+                blockerType = bottom.unitType,
+                team = bottom.team
+            });
             //down to top
-            blockers.Add(bottom.battalionId, (upper.battalionId, upper.unitType, Direction.UP, upper.team));
+            blockers.Add(bottom.battalionId, new BattalionBlocker
+            {
+                blockerId = upper.battalionId,
+                blockingDirection = Direction.UP,
+                blockerType = upper.unitType,
+                team = upper.team
+            });
         }
 
 
@@ -107,7 +129,11 @@ namespace system.battle.battalion.analysis
 
             foreach (var blocked in blockers)
             {
-                battalionFollowers.Add(blocked.Value.Item1, (blocked.Key, blocked.Value.Item3));
+                battalionFollowers.Add(blocked.Value.blockerId, new BattalionFollower
+                {
+                    blockedBattalionId = blocked.Key,
+                    direction = blocked.Value.blockingDirection
+                });
             }
         }
     }

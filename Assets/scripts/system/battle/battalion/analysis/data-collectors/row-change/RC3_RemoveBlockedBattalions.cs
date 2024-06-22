@@ -30,14 +30,14 @@ namespace system.battle.battalion.analysis.row_change
 
             foreach (var battalionSwitchRowDirection in battalionSwitchRowDirectionsCopy)
             {
-                foreach (var (id, type, direction, team) in blockers.GetValuesForKey(battalionSwitchRowDirection.Key))
+                foreach (var blocker in blockers.GetValuesForKey(battalionSwitchRowDirection.Key))
                 {
-                    if (type == BattleUnitTypeEnum.SHADOW)
+                    if (blocker.blockerType == BattleUnitTypeEnum.SHADOW)
                     {
                         continue;
                     }
 
-                    if (direction != battalionSwitchRowDirection.Value)
+                    if (blocker.blockingDirection != battalionSwitchRowDirection.Value)
                     {
                         continue;
                     }
