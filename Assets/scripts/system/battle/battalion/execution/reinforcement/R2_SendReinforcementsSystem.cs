@@ -49,7 +49,7 @@ namespace system.battle.battalion.execution.reinforcement
         {
             public NativeParallelMultiHashMap<long, int> needReinforcements;
             public NativeParallelMultiHashMap<long, BattalionBlocker> blockers;
-            public NativeParallelMultiHashMap<long, BattalionSoldiers> reinforcements;
+            public NativeParallelMultiHashMap<long, Reinforcements> reinforcements;
             public NativeHashMap<long, Direction> movingBattalions;
             public NativeHashMap<long, Direction> plannedMovementDirections;
             public NativeHashSet<long> battalionsPerformingAction;
@@ -69,7 +69,7 @@ namespace system.battle.battalion.execution.reinforcement
                     return;
                 }
 
-                //follower format: blockerId, shadow/battalion ,direction
+                //blocker format: blockerId, shadow/battalion ,direction
                 foreach (var blocker in blockers.GetValuesForKey(battalionMarker.id))
                 {
                     //can reinforce only same team
@@ -84,7 +84,7 @@ namespace system.battle.battalion.execution.reinforcement
                         continue;
                     }
 
-                    //can reinforce only in my default direction of move
+                    //can reinforce only in my current direction of move
                     if (blocker.blockingDirection != plannedMovementDirections[battalionMarker.id])
                     {
                         continue;
@@ -96,12 +96,13 @@ namespace system.battle.battalion.execution.reinforcement
                     }
 
                     //send reinforcement                    
-                    prepareReinforcements(blocker.blockerId, ref soldiers);
+                    prepareReinforcements(blocker.blockerId, ref soldiers, battalionMarker.id);
                 }
             }
 
-            private void prepareReinforcements(long needHelpBattalionId, ref DynamicBuffer<BattalionSoldiers> soldiers)
+            private void prepareReinforcements(long needHelpBattalionId, ref DynamicBuffer<BattalionSoldiers> soldiers, long myBattalionId)
             {
+                //all indexes missing in target battalion
                 var indexesToSend = new NativeList<int>(Allocator.Temp);
                 foreach (var index in needReinforcements.GetValuesForKey(needHelpBattalionId))
                 {
@@ -110,6 +111,7 @@ namespace system.battle.battalion.execution.reinforcement
 
                 indexesToSend.Sort();
 
+                //soldier position - (soldier, index in soldiers array)
                 var soldiersMap = new NativeHashMap<int, (BattalionSoldiers, int)>(soldiers.Length, Allocator.Temp);
 
                 foreach (var index in indexesToSend)
@@ -122,13 +124,17 @@ namespace system.battle.battalion.execution.reinforcement
 
                     for (var i = 0; i < 10; i++)
                     {
-                        if (reinforcementsUpdated(soldiersMap, index + i, ref soldiers, needHelpBattalionId)) break;
-                        if (reinforcementsUpdated(soldiersMap, index - i, ref soldiers, needHelpBattalionId)) break;
+                        if (reinforcementsUpdated(soldiersMap, index + i, ref soldiers, needHelpBattalionId, myBattalionId)) break;
+                        if (reinforcementsUpdated(soldiersMap, index - i, ref soldiers, needHelpBattalionId, myBattalionId)) break;
                     }
                 }
             }
 
-            private bool reinforcementsUpdated(NativeHashMap<int, (BattalionSoldiers, int)> soldiersMap, int index, ref DynamicBuffer<BattalionSoldiers> soldiers, long needHelpBattalionId)
+            private bool reinforcementsUpdated(NativeHashMap<int, (BattalionSoldiers, int)> soldiersMap,
+                int index,
+                ref DynamicBuffer<BattalionSoldiers> soldiers,
+                long needHelpBattalionId,
+                long myBattalionId)
             {
                 if (soldiersMap.ContainsKey(index))
                 {
@@ -140,7 +146,12 @@ namespace system.battle.battalion.execution.reinforcement
                         entity = soldier.Item1.entity
                     };
                     soldiers.RemoveAt(soldier.Item2);
-                    reinforcements.Add(needHelpBattalionId, newSoldier);
+                    reinforcements.Add(needHelpBattalionId, new Reinforcements
+                    {
+                        reinforcement = newSoldier,
+                        originalBattalionId = myBattalionId,
+                        originalPosition = soldier.Item1.positionWithinBattalion
+                    });
                     return true;
                 }
 

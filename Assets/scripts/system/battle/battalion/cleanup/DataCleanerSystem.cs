@@ -34,6 +34,7 @@ namespace system.battle.battalion.analysis
             dataHolder.ValueRW.splitBattalions.Clear();
             dataHolder.ValueRW.fightingBattalions.Clear();
             dataHolder.ValueRW.battalionInfo.Clear();
+            dataHolder.ValueRW.declinedReinforcements.Clear();
 
             movementDataHolder.ValueRW.flankPositions.Clear();
             movementDataHolder.ValueRW.inFightMovement.Clear();

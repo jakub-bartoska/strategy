@@ -57,11 +57,17 @@ namespace component.battle.battalion.data_holders
         public NativeParallelMultiHashMap<long, int> needReinforcements;
 
         /**
-         * battalion which should receive reinforcements - reinforcement soldier
+         * battalion which should receive reinforcements - reinforcement soldier, original battalion id, original position
          * list contains soldiers which are moving from old battalion to new one (new one is key in this map)
          * 1 battalion can receive multiple reinforcements
          */
-        public NativeParallelMultiHashMap<long, BattalionSoldiers> reinforcements;
+        public NativeParallelMultiHashMap<long, Reinforcements> reinforcements;
+
+        /**
+         * battalionID - battalion solder and his position
+         * key is original owner of reinforcements. If new battalion can not receive this reinforcement, it needs to be returned. This is purpose of this map.
+         */
+        public NativeParallelMultiHashMap<long, Reinforcements> declinedReinforcements;
 
         /**
          * battalion id
@@ -124,5 +130,12 @@ namespace component.battle.battalion.data_holders
     {
         public Direction direction;
         public int closestEnemyRow;
+    }
+
+    public struct Reinforcements
+    {
+        public BattalionSoldiers reinforcement;
+        public long originalBattalionId;
+        public int originalPosition;
     }
 }

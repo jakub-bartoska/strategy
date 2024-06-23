@@ -35,7 +35,7 @@ namespace system.battle.battalion.execution.reinforcement
         [BurstCompile]
         public partial struct ReceiveReinforcementsJob : IJobEntity
         {
-            public NativeParallelMultiHashMap<long, BattalionSoldiers> reinforcements;
+            public NativeParallelMultiHashMap<long, Reinforcements> reinforcements;
 
             private void Execute(BattalionMarker battalionMarker, ref DynamicBuffer<BattalionSoldiers> soldiers, ref BattalionHealth health)
             {
@@ -51,7 +51,7 @@ namespace system.battle.battalion.execution.reinforcement
                 {
                     //if reinforcement have index within battalion E.G. 1, and battalion have already soldier on position 1, reinforcement has to go to different position within battalion
                     //if index within battalion is free, soldier is unchanged
-                    var updatedSoldier = updatePositionWithinBattalion(existingPositions, soldier);
+                    var updatedSoldier = updatePositionWithinBattalion(ref existingPositions, soldier);
 
                     healthIncrease += 10;
 
@@ -61,25 +61,25 @@ namespace system.battle.battalion.execution.reinforcement
                 health.value += healthIncrease;
             }
 
-            private BattalionSoldiers updatePositionWithinBattalion(NativeHashSet<int> existingPositions, BattalionSoldiers soldier)
+            private BattalionSoldiers updatePositionWithinBattalion(ref NativeHashSet<int> existingPositions, Reinforcements reinforcement)
             {
-                if (!existingPositions.Contains(soldier.positionWithinBattalion))
+                if (!existingPositions.Contains(reinforcement.reinforcement.positionWithinBattalion))
                 {
-                    return soldier;
+                    return reinforcement.reinforcement;
                 }
 
-                var emptyIndex = getFirstEmptyPosition(existingPositions);
+                var emptyIndex = getFirstEmptyPosition(ref existingPositions);
                 existingPositions.Add(emptyIndex);
-                soldier.positionWithinBattalion = emptyIndex;
+                reinforcement.reinforcement.positionWithinBattalion = emptyIndex;
                 return new BattalionSoldiers
                 {
                     positionWithinBattalion = emptyIndex,
-                    entity = soldier.entity,
-                    soldierId = soldier.soldierId
+                    entity = reinforcement.reinforcement.entity,
+                    soldierId = reinforcement.reinforcement.soldierId
                 };
             }
 
-            private int getFirstEmptyPosition(NativeHashSet<int> existingPositions)
+            private int getFirstEmptyPosition(ref NativeHashSet<int> existingPositions)
             {
                 for (int i = 0; i < 10; i++)
                 {

@@ -154,6 +154,7 @@ namespace system
                 battalionsPerformingAction = new(1000, Allocator.Persistent),
                 needReinforcements = new(1000, Allocator.Persistent),
                 reinforcements = new(1000, Allocator.Persistent),
+                declinedReinforcements = new(1000, Allocator.Persistent),
                 flankingBattalions = new(1000, Allocator.Persistent),
                 rowChanges = new(10, Allocator.Persistent),
                 battalionSwitchRowDirections = new(1000, Allocator.Persistent),

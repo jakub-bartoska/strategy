@@ -68,7 +68,7 @@ namespace system.battle.battalion.analysis.exact_position
         private void getMovementDirection(NativeParallelMultiHashMap<long, long> diagonalFights, DataHolder dataHolder, RefRW<MovementDataHolder> movementDataHolder)
         {
             var battalionInfo = dataHolder.battalionInfo;
-            var keys = diagonalFights.GetKeyArray(Allocator.Temp);
+            var keys = getKeySet(battalionInfo);
             foreach (var key in keys)
             {
                 var myPosition = battalionInfo[key].position;
@@ -125,6 +125,17 @@ namespace system.battle.battalion.analysis.exact_position
                     });
                 }
             }
+        }
+
+        private NativeHashSet<long> getKeySet(NativeHashMap<long, BattalionInfo> map)
+        {
+            var result = new NativeHashSet<long>(map.Count, Allocator.Temp);
+            foreach (var id in map.GetKeyArray(Allocator.Temp))
+            {
+                result.Add(id);
+            }
+
+            return result;
         }
     }
 }
