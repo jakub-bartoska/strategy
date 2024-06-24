@@ -65,6 +65,7 @@ namespace system.battle.battalion.execution.reinforcement
             {
                 if (!existingPositions.Contains(reinforcement.reinforcement.positionWithinBattalion))
                 {
+                    existingPositions.Add(reinforcement.reinforcement.positionWithinBattalion);
                     return reinforcement.reinforcement;
                 }
 
