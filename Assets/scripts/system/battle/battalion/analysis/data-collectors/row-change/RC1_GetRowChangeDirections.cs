@@ -26,6 +26,7 @@ namespace system.battle.battalion.analysis.row_change
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            return;
             var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
             var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
             //rowId - flank direction (UP/DOWN), rowId to switch to

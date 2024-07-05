@@ -22,6 +22,7 @@ namespace system.battle.battalion.analysis.flank
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            return;
             var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
             var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
             var positions = dataHolder.ValueRO.positions;

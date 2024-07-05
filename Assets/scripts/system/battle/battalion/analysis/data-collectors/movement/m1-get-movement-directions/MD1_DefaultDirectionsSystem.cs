@@ -24,6 +24,7 @@ namespace system.battle.battalion.analysis
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            return;
             var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
             var battalionDefaultMovementDirection = movementDataHolder.ValueRW.battalionDefaultMovementDirection;
             new CollectBattalionDirections

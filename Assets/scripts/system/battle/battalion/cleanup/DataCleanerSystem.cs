@@ -20,6 +20,7 @@ namespace system.battle.battalion.analysis
         {
             var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
             var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
+            var backupPlanDataHolder = SystemAPI.GetSingletonRW<BackupPlanDataHolder>();
 
             dataHolder.ValueRW.positions.Clear();
             dataHolder.ValueRW.fightingPairs.Clear();
@@ -45,6 +46,8 @@ namespace system.battle.battalion.analysis
             movementDataHolder.ValueRW.battalionFollowers.Clear();
             movementDataHolder.ValueRW.waitingForSoldiersBattalions.Clear();
             movementDataHolder.ValueRW.battalionExactDistance.Clear();
+
+            backupPlanDataHolder.ValueRW.battleChunks.Clear();
         }
     }
 }

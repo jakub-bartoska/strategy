@@ -2,6 +2,7 @@
 using component._common.system_switchers;
 using component.battle.battalion;
 using component.battle.battalion.data_holders;
+using system.battle.battalion.analysis.utils;
 using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Collections;
@@ -64,15 +65,7 @@ namespace system.battle.battalion.analysis
 
             tmpUnsortedData.Dispose();
         }
-
-        public class SortByPosition : IComparer<BattalionInfo>
-        {
-            public int Compare(BattalionInfo e1, BattalionInfo e2)
-            {
-                return e2.position.x.CompareTo(e1.position.x);
-            }
-        }
-
+        
         [BurstCompile]
         public partial struct CollectBattleUnitPositionsJob : IJobEntity
         {

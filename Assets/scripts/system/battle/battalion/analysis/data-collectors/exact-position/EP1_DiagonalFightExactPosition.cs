@@ -26,6 +26,7 @@ namespace system.battle.battalion.analysis.exact_position
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            return;
             var dataHolder = SystemAPI.GetSingleton<DataHolder>();
             var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
             // can contain dupolicities (A -> B and B -> A)

@@ -21,6 +21,7 @@ namespace system.battle.battalion.analysis.exact_position
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            return;
             var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
             var deltaTime = SystemAPI.Time.DeltaTime;
             var debugConfig = SystemAPI.GetSingleton<DebugConfig>();

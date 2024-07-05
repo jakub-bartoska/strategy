@@ -20,6 +20,7 @@ namespace system.battle.battalion.execution.movement
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            return;
             var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
             var defaultDirections = movementDataHolder.ValueRO.battalionDefaultMovementDirection;
             foreach (var defaultDirection in defaultDirections)

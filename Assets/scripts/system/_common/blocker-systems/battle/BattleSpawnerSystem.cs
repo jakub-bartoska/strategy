@@ -162,6 +162,11 @@ namespace system
                 splitBattalions = new(1000, Allocator.Persistent),
             };
 
+            var backupPlanDataHolder = new BackupPlanDataHolder
+            {
+                battleChunks = new(1000, Allocator.Persistent)
+            };
+
             var config = DebugConfigAuthoring.instance.collectData();
 
             ecb.AddComponent(singletonEntity, config);
@@ -170,6 +175,7 @@ namespace system
             ecb.AddComponent(singletonEntity, new BattleCleanupTag());
             ecb.AddComponent(singletonEntity, movementDataHolder);
             ecb.AddComponent(singletonEntity, dataHolder);
+            ecb.AddComponent(singletonEntity, backupPlanDataHolder);
 
             randomPerThread.Dispose();
             ecb.Playback(state.EntityManager);

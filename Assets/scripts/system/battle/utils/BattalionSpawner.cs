@@ -148,7 +148,7 @@ namespace system.battle.utils
             return newBattalion;
         }
 
-        private static float getSizeForBattalionType(SoldierType soldierType)
+        public static float getSizeForBattalionType(SoldierType soldierType)
         {
             var scaleCoefficient = 0.3f;
             switch (soldierType)

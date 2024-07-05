@@ -21,6 +21,7 @@ namespace system.battle.battalion.execution.movement
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            return;
             var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
             var inFightMovement = movementDataHolder.ValueRO.inFightMovement;
             foreach (var battalionDirectionDistance in inFightMovement)
