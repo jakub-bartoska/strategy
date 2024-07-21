@@ -1,10 +1,7 @@
 ﻿using System;
-using component;
 using component._common.system_switchers;
 using component.battle.battalion.data_holders;
-using system.battle.battalion.analysis.horizontal_split;
 using system.battle.battalion.analysis.utils;
-using system.battle.enums;
 using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Collections;
@@ -43,6 +40,11 @@ namespace system.battle.battalion.analysis.backup_plans
                 var chunkBattalionCount = chunk.battalions.Length;
                 if (chunkBattalionCount == 0)
                     continue;
+
+                if (!chunk.leftFighting && !chunk.rightFighting)
+                {
+                    continue;
+                }
 
                 var battleInfo = new NativeList<BattalionInfo>(100, Allocator.Temp);
                 foreach (var chunkBattalion in chunk.battalions)

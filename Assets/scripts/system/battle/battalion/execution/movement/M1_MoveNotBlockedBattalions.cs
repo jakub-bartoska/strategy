@@ -22,7 +22,6 @@ namespace system.battle.battalion.execution
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            return;
             var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
             var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
 

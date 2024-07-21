@@ -1,8 +1,6 @@
-﻿using System;
-using component;
-using component._common.system_switchers;
+﻿using component._common.system_switchers;
+using component.battle.battalion;
 using component.battle.battalion.data_holders;
-using system.battle.battalion.analysis.horizontal_split;
 using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Collections;
@@ -36,6 +34,11 @@ namespace system.battle.battalion.analysis.backup_plans
                 var chunkBattalions = new NativeList<long>(100, Allocator.Persistent);
                 foreach (var battalionInfo in positions.GetValuesForKey(rowId))
                 {
+                    if (battalionInfo.unitType == BattleUnitTypeEnum.SHADOW)
+                    {
+                        continue;
+                    }
+
                     if (!currentChunk.HasValue)
                     {
                         currentChunk = new BattleChunk
@@ -72,7 +75,7 @@ namespace system.battle.battalion.analysis.backup_plans
                             team = currentChunk.Value.team
                         };
                         result.Add(teamRow, chunkToSave);
-                        
+
                         chunkBattalions = new NativeList<long>(100, Allocator.Persistent);
                         chunkBattalions.Add(battalionInfo.battalionId);
                         currentChunk = new BattleChunk
@@ -85,6 +88,7 @@ namespace system.battle.battalion.analysis.backup_plans
                         };
                     }
                 }
+
                 //if chunk is the most right, there was not performed save into result, do it now
                 if (currentChunk.HasValue)
                 {

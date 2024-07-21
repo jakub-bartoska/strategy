@@ -48,6 +48,9 @@ namespace system.battle.battalion.analysis
             movementDataHolder.ValueRW.battalionExactDistance.Clear();
 
             backupPlanDataHolder.ValueRW.battleChunks.Clear();
+            backupPlanDataHolder.ValueRW.moveLeft.Clear();
+            backupPlanDataHolder.ValueRW.moveRight.Clear();
+            backupPlanDataHolder.ValueRW.moveToDifferentChunk.Clear();
         }
     }
 }

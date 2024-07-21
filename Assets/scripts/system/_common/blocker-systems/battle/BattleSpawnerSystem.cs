@@ -164,7 +164,10 @@ namespace system
 
             var backupPlanDataHolder = new BackupPlanDataHolder
             {
-                battleChunks = new(1000, Allocator.Persistent)
+                battleChunks = new(1000, Allocator.Persistent),
+                moveLeft = new(1000, Allocator.Persistent),
+                moveRight = new(1000, Allocator.Persistent),
+                moveToDifferentChunk = new(1000, Allocator.Persistent)
             };
 
             var config = DebugConfigAuthoring.instance.collectData();

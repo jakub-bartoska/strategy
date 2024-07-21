@@ -2,6 +2,7 @@
 using component.battle.battalion;
 using component.battle.battalion.data_holders;
 using component.battle.battalion.markers;
+using system.battle.battalion.analysis.backup_plans;
 using system.battle.battalion.analysis.flank;
 using system.battle.enums;
 using system.battle.system_groups;
@@ -13,6 +14,7 @@ namespace system.battle.battalion.analysis
 {
     [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
     [UpdateAfter(typeof(F2_FindFlankBattalions))]
+    [UpdateAfter(typeof(CHM3_SetMovement))]
     public partial struct MD1_DefaultDirectionsSystem : ISystem
     {
         [BurstCompile]
