@@ -1,12 +1,4 @@
-﻿using component._common.system_switchers;
-using component.battle.battalion;
-using component.battle.battalion.data_holders;
-using system.battle.system_groups;
-using Unity.Burst;
-using Unity.Collections;
-using Unity.Entities;
-
-namespace system.battle.battalion.analysis.backup_plans
+﻿namespace system.battle.battalion.analysis.backup_plans
 {
     [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
     [UpdateAfter(typeof(PositionParserSystem))]
@@ -32,12 +24,15 @@ namespace system.battle.battalion.analysis.backup_plans
                 var firstBatalion = true;
                 BattleChunk? currentChunk = null;
                 var chunkBattalions = new NativeList<long>(100, Allocator.Persistent);
+                BattalionInfo? lastBattalion = null;
                 foreach (var battalionInfo in positions.GetValuesForKey(rowId))
                 {
                     if (battalionInfo.unitType == BattleUnitTypeEnum.SHADOW)
                     {
                         continue;
                     }
+
+                    lastBattalion = battalionInfo;
 
                     if (!currentChunk.HasValue)
                     {
@@ -47,6 +42,8 @@ namespace system.battle.battalion.analysis.backup_plans
                             leftFighting = !firstBatalion,
                             rightFighting = false,
                             battalions = chunkBattalions,
+                            startX = battalionInfo.position.x - battalionInfo.width / 2,
+                            endX = -1, //will be saved later 
                             team = battalionInfo.team
                         };
                     }
@@ -66,6 +63,8 @@ namespace system.battle.battalion.analysis.backup_plans
                             leftFighting = currentChunk.Value.leftFighting,
                             rightFighting = true,
                             battalions = chunkBattalions,
+                            startX = currentChunk.Value.startX,
+                            endX = battalionInfo.position.x - battalionInfo.width / 2,
                             team = currentChunk.Value.team
                         };
 
@@ -84,6 +83,8 @@ namespace system.battle.battalion.analysis.backup_plans
                             leftFighting = !firstBatalion,
                             rightFighting = false,
                             battalions = chunkBattalions,
+                            startX = battalionInfo.position.x - battalionInfo.width / 2,
+                            endX = -1, //will be saved later
                             team = battalionInfo.team
                         };
                     }
@@ -103,6 +104,8 @@ namespace system.battle.battalion.analysis.backup_plans
                         leftFighting = currentChunk.Value.leftFighting,
                         rightFighting = false,
                         battalions = chunkBattalions,
+                        startX = currentChunk.Value.startX,
+                        endX = lastBattalion.Value.position.x + lastBattalion.Value.width / 2,
                         team = currentChunk.Value.team
                     };
                     result.Add(teamRowFinish, chunkToSave);

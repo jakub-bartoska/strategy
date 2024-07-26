@@ -1,23 +1,4 @@
-﻿using System;
-using component;
-using component._common.system_switchers;
-using component.authoring_pairs.PrefabHolder;
-using component.battle.battalion;
-using component.battle.battalion.data_holders;
-using component.battle.config;
-using component.config.authoring_pairs;
-using component.config.game_settings;
-using component.general;
-using system.battle.utils;
-using Unity.Burst;
-using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
-using Unity.Entities;
-using Unity.Jobs;
-using Unity.Jobs.LowLevel.Unsafe;
-using Unity.Mathematics;
-
-namespace system
+﻿namespace system
 {
     [BurstCompile]
     public partial struct BattleSpawnerSystem : ISystem
@@ -165,6 +146,7 @@ namespace system
             var backupPlanDataHolder = new BackupPlanDataHolder
             {
                 battleChunks = new(1000, Allocator.Persistent),
+                emptyChunks = new(1000, Allocator.Persistent),
                 moveLeft = new(1000, Allocator.Persistent),
                 moveRight = new(1000, Allocator.Persistent),
                 moveToDifferentChunk = new(1000, Allocator.Persistent)

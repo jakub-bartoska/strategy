@@ -1,12 +1,9 @@
-﻿using System;
-using Unity.Collections;
-using Unity.Entities;
-
-namespace component.battle.battalion.data_holders
+﻿namespace component.battle.battalion.data_holders
 {
     public struct BackupPlanDataHolder : IComponentData
     {
         public NativeParallelMultiHashMap<TeamRow, BattleChunk> battleChunks;
+        public NativeParallelMultiHashMap<TeamRow, BattleChunk> emptyChunks;
         public NativeList<BattalionInfo> moveLeft;
         public NativeList<BattalionInfo> moveRight;
         public NativeList<BattalionInfo> moveToDifferentChunk;
@@ -34,6 +31,8 @@ namespace component.battle.battalion.data_holders
         public bool leftFighting;
         public bool rightFighting;
         public NativeList<long> battalions;
+        public float startX;
+        public float endX;
         public Team team;
     }
 }

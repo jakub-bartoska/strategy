@@ -1,9 +1,4 @@
-﻿using NUnit.Framework;
-using Unity.Entities;
-using Unity.Jobs.LowLevel.Unsafe;
-using UnityEngine.LowLevel;
-
-namespace tests
+﻿namespace tests
 {
     public class ECSTestsFixture
     {
@@ -17,7 +12,7 @@ namespace tests
 
         protected WorldUnmanaged WorldUnmanaged => this.World!.Unmanaged;
 
-        protected EntityManager Manager { get; private set; }
+        protected EntityManager manager { get; private set; }
 
         protected EntityManager.EntityManagerDebug ManagerDebug { get; private set; }
 
@@ -28,7 +23,7 @@ namespace tests
 
         protected SystemHandle CreateSystem<T>() where T : unmanaged, ISystem => World.CreateSystem<T>();
 
-        protected Entity CreateEntity(params ComponentType[] types) => Manager.CreateEntity(types);
+        protected Entity CreateEntity(params ComponentType[] types) => manager.CreateEntity(types);
 
         protected void CreateEntityCommandBufferSystem()
         {
@@ -45,8 +40,8 @@ namespace tests
             this.previousWorld = World.DefaultGameObjectInjectionWorld;
             this.world = World.DefaultGameObjectInjectionWorld = new World("Test World");
             this.World.UpdateAllocatorEnableBlockFree = true;
-            this.Manager = this.World.EntityManager;
-            this.ManagerDebug = new EntityManager.EntityManagerDebug(this.Manager);
+            this.manager = this.World.EntityManager;
+            this.ManagerDebug = new EntityManager.EntityManagerDebug(this.manager);
 
             // Many ECS tests will only pass if the Jobs Debugger enabled;
             // force it enabled for all tests, and restore the original value at teardown.

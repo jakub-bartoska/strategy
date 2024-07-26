@@ -1,15 +1,8 @@
-﻿using component._common.system_switchers;
-using component.battle.battalion.data_holders;
-using system.battle.enums;
-using system.battle.system_groups;
-using Unity.Burst;
-using Unity.Entities;
-
-namespace system.battle.battalion.analysis.backup_plans
+﻿namespace system.battle.battalion.analysis.backup_plans
 {
     [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
-    [UpdateAfter(typeof(CHM2_BasicChunkMovement))]
-    public partial struct CHM3_SetMovement : ISystem
+    [UpdateAfter(typeof(CHM3_BasicChunkMovement))]
+    public partial struct CHM4_SetMovement : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)

@@ -1,10 +1,4 @@
-﻿using component._common.system_switchers;
-using component.battle.battalion.data_holders;
-using system.battle.system_groups;
-using Unity.Burst;
-using Unity.Entities;
-
-namespace system.battle.battalion.analysis
+﻿namespace system.battle.battalion.analysis
 {
     [UpdateInGroup(typeof(BattleCleanupSystemGroup))]
     public partial struct DataCleanerSystem : ISystem
@@ -48,6 +42,7 @@ namespace system.battle.battalion.analysis
             movementDataHolder.ValueRW.battalionExactDistance.Clear();
 
             backupPlanDataHolder.ValueRW.battleChunks.Clear();
+            backupPlanDataHolder.ValueRW.emptyChunks.Clear();
             backupPlanDataHolder.ValueRW.moveLeft.Clear();
             backupPlanDataHolder.ValueRW.moveRight.Clear();
             backupPlanDataHolder.ValueRW.moveToDifferentChunk.Clear();

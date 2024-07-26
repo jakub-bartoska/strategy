@@ -1,29 +1,16 @@
-﻿using component;
-using component._common.system_switchers;
-using component.battle.battalion;
-using component.battle.battalion.data_holders;
-using component.config.game_settings;
-using NUnit.Framework;
-using system.battle.battalion.analysis.backup_plans;
-using system.battle.utils;
-using Unity.Collections;
-using Unity.Entities;
-using Unity.Mathematics;
-using Assert = Unity.Assertions.Assert;
-
-namespace tests.testiky
+﻿namespace tests.testiky
 {
     [TestFixture]
-    public class CHM2_BasicChunkMovement_Test : ECSTestsFixture
+    public class CHM3_BasicChunkMovement_Test : ECSTestsFixture
     {
         [SetUp]
         public override void Setup()
         {
             base.Setup();
-            CreateSystem<CHM2_BasicChunkMovement>();
+            CreateSystem<CHM3_BasicChunkMovement>();
             var entity = CreateEntity();
             var battleMapStateMarker = new BattleMapStateMarker();
-            Manager.AddComponentData(entity, battleMapStateMarker);
+            manager.AddComponentData(entity, battleMapStateMarker);
         }
 
         [Test]
@@ -32,14 +19,14 @@ namespace tests.testiky
             var singletonEntity = CreateEntity();
 
             var battalionInfo = new NativeHashMap<long, BattalionInfo>(5, Allocator.Temp);
-            battalionInfo.Add(1, createBattalion(new float3(0, 0, 0), Team.TEAM1, 1));
-            battalionInfo.Add(2, createBattalion(new float3(1, 0, 0), Team.TEAM1, 2));
-            battalionInfo.Add(3, createBattalion(new float3(2, 0, 0), Team.TEAM1, 3));
+            battalionInfo.Add(1, DataHolderUtils.createBattalion(new float3(0, 0, 0), Team.TEAM1, 1));
+            battalionInfo.Add(2, DataHolderUtils.createBattalion(new float3(1, 0, 0), Team.TEAM1, 2));
+            battalionInfo.Add(3, DataHolderUtils.createBattalion(new float3(2, 0, 0), Team.TEAM1, 3));
 
-            var dataHolder = createBasicDataholder();
+            var dataHolder = DataHolderUtils.createBasicDataholder();
             dataHolder.battalionInfo = battalionInfo;
 
-            Manager.AddComponentData(singletonEntity, dataHolder);
+            manager.AddComponentData(singletonEntity, dataHolder);
 
             var battalions = new NativeList<long>(10, Allocator.Temp);
             battalions.Add(1);
@@ -70,12 +57,12 @@ namespace tests.testiky
                 moveToDifferentChunk = new NativeList<BattalionInfo>(100, Allocator.TempJob)
             };
 
-            Manager.AddComponentData(singletonEntity, backupPlanHolder);
+            manager.AddComponentData(singletonEntity, backupPlanHolder);
 
 
-            UpdateSystem<CHM2_BasicChunkMovement>();
+            UpdateSystem<CHM3_BasicChunkMovement>();
 
-            var backupPlanDataHolder = Manager.GetComponentData<BackupPlanDataHolder>(singletonEntity);
+            var backupPlanDataHolder = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity);
             var moveLeft = backupPlanDataHolder.moveLeft;
             var moveRight = backupPlanDataHolder.moveRight;
             var moveToDifferentChunk = backupPlanDataHolder.moveToDifferentChunk;
@@ -93,14 +80,14 @@ namespace tests.testiky
             var singletonEntity = CreateEntity();
 
             var battalionInfo = new NativeHashMap<long, BattalionInfo>(5, Allocator.Temp);
-            battalionInfo.Add(1, createBattalion(new float3(0, 0, 0), Team.TEAM1, 1));
-            battalionInfo.Add(2, createBattalion(new float3(1, 0, 0), Team.TEAM1, 2));
-            battalionInfo.Add(3, createBattalion(new float3(2, 0, 0), Team.TEAM1, 3));
+            battalionInfo.Add(1, DataHolderUtils.createBattalion(new float3(0, 0, 0), Team.TEAM1, 1));
+            battalionInfo.Add(2, DataHolderUtils.createBattalion(new float3(1, 0, 0), Team.TEAM1, 2));
+            battalionInfo.Add(3, DataHolderUtils.createBattalion(new float3(2, 0, 0), Team.TEAM1, 3));
 
-            var dataHolder = createBasicDataholder();
+            var dataHolder = DataHolderUtils.createBasicDataholder();
             dataHolder.battalionInfo = battalionInfo;
 
-            Manager.AddComponentData(singletonEntity, dataHolder);
+            manager.AddComponentData(singletonEntity, dataHolder);
 
             var battalions = new NativeList<long>(10, Allocator.Temp);
             battalions.Add(2);
@@ -131,12 +118,12 @@ namespace tests.testiky
                 moveToDifferentChunk = new NativeList<BattalionInfo>(100, Allocator.TempJob)
             };
 
-            Manager.AddComponentData(singletonEntity, backupPlanHolder);
+            manager.AddComponentData(singletonEntity, backupPlanHolder);
 
 
-            UpdateSystem<CHM2_BasicChunkMovement>();
+            UpdateSystem<CHM3_BasicChunkMovement>();
 
-            var backupPlanDataHolder = Manager.GetComponentData<BackupPlanDataHolder>(singletonEntity);
+            var backupPlanDataHolder = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity);
             var moveLeft = backupPlanDataHolder.moveLeft;
             var moveRight = backupPlanDataHolder.moveRight;
             var moveToDifferentChunk = backupPlanDataHolder.moveToDifferentChunk;
@@ -147,21 +134,21 @@ namespace tests.testiky
             Assert.AreEqual(3, moveRight[0].battalionId);
             Assert.AreEqual(2, moveToDifferentChunk[0].battalionId);
         }
-        
-                [Test]
+
+        [Test]
         public void left_only()
         {
             var singletonEntity = CreateEntity();
 
             var battalionInfo = new NativeHashMap<long, BattalionInfo>(5, Allocator.Temp);
-            battalionInfo.Add(1, createBattalion(new float3(0, 0, 0), Team.TEAM1, 1));
-            battalionInfo.Add(2, createBattalion(new float3(1, 0, 0), Team.TEAM1, 2));
-            battalionInfo.Add(3, createBattalion(new float3(2, 0, 0), Team.TEAM1, 3));
+            battalionInfo.Add(1, DataHolderUtils.createBattalion(new float3(0, 0, 0), Team.TEAM1, 1));
+            battalionInfo.Add(2, DataHolderUtils.createBattalion(new float3(1, 0, 0), Team.TEAM1, 2));
+            battalionInfo.Add(3, DataHolderUtils.createBattalion(new float3(2, 0, 0), Team.TEAM1, 3));
 
-            var dataHolder = createBasicDataholder();
+            var dataHolder = DataHolderUtils.createBasicDataholder();
             dataHolder.battalionInfo = battalionInfo;
 
-            Manager.AddComponentData(singletonEntity, dataHolder);
+            manager.AddComponentData(singletonEntity, dataHolder);
 
             var battalions = new NativeList<long>(10, Allocator.Temp);
             battalions.Add(1);
@@ -192,12 +179,12 @@ namespace tests.testiky
                 moveToDifferentChunk = new NativeList<BattalionInfo>(100, Allocator.TempJob)
             };
 
-            Manager.AddComponentData(singletonEntity, backupPlanHolder);
+            manager.AddComponentData(singletonEntity, backupPlanHolder);
 
 
-            UpdateSystem<CHM2_BasicChunkMovement>();
+            UpdateSystem<CHM3_BasicChunkMovement>();
 
-            var backupPlanDataHolder = Manager.GetComponentData<BackupPlanDataHolder>(singletonEntity);
+            var backupPlanDataHolder = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity);
             var moveLeft = backupPlanDataHolder.moveLeft;
             var moveRight = backupPlanDataHolder.moveRight;
             var moveToDifferentChunk = backupPlanDataHolder.moveToDifferentChunk;
@@ -206,21 +193,21 @@ namespace tests.testiky
             Assert.AreEqual(2, moveToDifferentChunk.Length);
             Assert.AreEqual(1, moveLeft[0].battalionId);
         }
-        
-                 [Test]
+
+        [Test]
         public void right_only()
         {
             var singletonEntity = CreateEntity();
 
             var battalionInfo = new NativeHashMap<long, BattalionInfo>(5, Allocator.Temp);
-            battalionInfo.Add(1, createBattalion(new float3(0, 0, 0), Team.TEAM1, 1));
-            battalionInfo.Add(2, createBattalion(new float3(1, 0, 0), Team.TEAM1, 2));
-            battalionInfo.Add(3, createBattalion(new float3(2, 0, 0), Team.TEAM1, 3));
+            battalionInfo.Add(1, DataHolderUtils.createBattalion(new float3(0, 0, 0), Team.TEAM1, 1));
+            battalionInfo.Add(2, DataHolderUtils.createBattalion(new float3(1, 0, 0), Team.TEAM1, 2));
+            battalionInfo.Add(3, DataHolderUtils.createBattalion(new float3(2, 0, 0), Team.TEAM1, 3));
 
-            var dataHolder = createBasicDataholder();
+            var dataHolder = DataHolderUtils.createBasicDataholder();
             dataHolder.battalionInfo = battalionInfo;
 
-            Manager.AddComponentData(singletonEntity, dataHolder);
+            manager.AddComponentData(singletonEntity, dataHolder);
 
             var battalions = new NativeList<long>(10, Allocator.Temp);
             battalions.Add(1);
@@ -251,12 +238,12 @@ namespace tests.testiky
                 moveToDifferentChunk = new NativeList<BattalionInfo>(100, Allocator.TempJob)
             };
 
-            Manager.AddComponentData(singletonEntity, backupPlanHolder);
+            manager.AddComponentData(singletonEntity, backupPlanHolder);
 
 
-            UpdateSystem<CHM2_BasicChunkMovement>();
+            UpdateSystem<CHM3_BasicChunkMovement>();
 
-            var backupPlanDataHolder = Manager.GetComponentData<BackupPlanDataHolder>(singletonEntity);
+            var backupPlanDataHolder = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity);
             var moveLeft = backupPlanDataHolder.moveLeft;
             var moveRight = backupPlanDataHolder.moveRight;
             var moveToDifferentChunk = backupPlanDataHolder.moveToDifferentChunk;
@@ -266,23 +253,23 @@ namespace tests.testiky
             Assert.AreEqual(3, moveRight[0].battalionId);
         }
 
-           [Test]
+        [Test]
         public void lot_of_battalions()
         {
             var singletonEntity = CreateEntity();
 
             var battalionInfo = new NativeHashMap<long, BattalionInfo>(5, Allocator.Temp);
-            battalionInfo.Add(1, createBattalion(new float3(0, 0, 0), Team.TEAM1, 1));
-            battalionInfo.Add(2, createBattalion(new float3(1, 0, 0), Team.TEAM1, 2));
-            battalionInfo.Add(3, createBattalion(new float3(2, 0, 0), Team.TEAM1, 3));
-            battalionInfo.Add(4, createBattalion(new float3(3, 0, 0), Team.TEAM1, 4));
-            battalionInfo.Add(5, createBattalion(new float3(4, 0, 0), Team.TEAM1, 5));
-            battalionInfo.Add(6, createBattalion(new float3(5, 0, 0), Team.TEAM1, 6));
+            battalionInfo.Add(1, DataHolderUtils.createBattalion(new float3(0, 0, 0), Team.TEAM1, 1));
+            battalionInfo.Add(2, DataHolderUtils.createBattalion(new float3(1, 0, 0), Team.TEAM1, 2));
+            battalionInfo.Add(3, DataHolderUtils.createBattalion(new float3(2, 0, 0), Team.TEAM1, 3));
+            battalionInfo.Add(4, DataHolderUtils.createBattalion(new float3(3, 0, 0), Team.TEAM1, 4));
+            battalionInfo.Add(5, DataHolderUtils.createBattalion(new float3(4, 0, 0), Team.TEAM1, 5));
+            battalionInfo.Add(6, DataHolderUtils.createBattalion(new float3(5, 0, 0), Team.TEAM1, 6));
 
-            var dataHolder = createBasicDataholder();
+            var dataHolder = DataHolderUtils.createBasicDataholder();
             dataHolder.battalionInfo = battalionInfo;
 
-            Manager.AddComponentData(singletonEntity, dataHolder);
+            manager.AddComponentData(singletonEntity, dataHolder);
 
             var battalions = new NativeList<long>(10, Allocator.Temp);
             battalions.Add(1);
@@ -316,12 +303,12 @@ namespace tests.testiky
                 moveToDifferentChunk = new NativeList<BattalionInfo>(100, Allocator.TempJob)
             };
 
-            Manager.AddComponentData(singletonEntity, backupPlanHolder);
+            manager.AddComponentData(singletonEntity, backupPlanHolder);
 
 
-            UpdateSystem<CHM2_BasicChunkMovement>();
+            UpdateSystem<CHM3_BasicChunkMovement>();
 
-            var backupPlanDataHolder = Manager.GetComponentData<BackupPlanDataHolder>(singletonEntity);
+            var backupPlanDataHolder = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity);
             var moveLeft = backupPlanDataHolder.moveLeft;
             var moveRight = backupPlanDataHolder.moveRight;
             var moveToDifferentChunk = backupPlanDataHolder.moveToDifferentChunk;
@@ -330,61 +317,6 @@ namespace tests.testiky
             Assert.AreEqual(4, moveToDifferentChunk.Length);
             Assert.AreEqual(1, moveLeft[0].battalionId);
             Assert.AreEqual(6, moveRight[0].battalionId);
-        }
-        
-        private DataHolder createBasicDataholder()
-        {
-            var allRowIds = new NativeList<int>(Allocator.Temp);
-            for (int i = 0; i < 10; i++)
-            {
-                allRowIds.Add(i);
-            }
-
-            var dataHolder = new DataHolder
-            {
-                allRowIds = allRowIds
-            };
-            return dataHolder;
-        }
-
-        private BattalionInfo createBattalion(float3 position, Team team, long id = -1)
-        {
-            var size = BattalionSpawner.getSizeForBattalionType(SoldierType.SWORDSMAN);
-            return new BattalionInfo
-            {
-                position = position,
-                team = team,
-                width = size,
-                battalionId = id,
-                unitType = BattleUnitTypeEnum.BATTALION
-            };
-        }
-
-        private NativeParallelMultiHashMap<int, BattalionInfo> createPositions(BattalionInfo[] battalions)
-        {
-            var result = new NativeParallelMultiHashMap<int, BattalionInfo>(battalions.Length, Allocator.Temp);
-            foreach (var soldier in battalions)
-            {
-                result.Add(1, soldier);
-            }
-
-            return result;
-        }
-
-        private BattleChunk getChunkByTeamPosition(Entity singletonEntity, Team team, int position = 0, int row = 1)
-        {
-            var battleChunks = Manager.GetComponentData<BackupPlanDataHolder>(singletonEntity).battleChunks;
-            var iterator = battleChunks.GetValuesForKey(new TeamRow
-            {
-                team = team,
-                rowId = row
-            });
-            for (int i = 0; i <= position; i++)
-            {
-                iterator.MoveNext();
-            }
-
-            return iterator.Current;
         }
     }
 }

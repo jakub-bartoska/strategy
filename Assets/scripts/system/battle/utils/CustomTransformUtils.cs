@@ -1,14 +1,9 @@
-﻿using System;
-using component.battle.battalion;
-using system.battle.enums;
-using Unity.Mathematics;
-using Unity.Transforms;
-
-namespace system.battle.utils
+﻿namespace system.battle.utils
 {
     public class CustomTransformUtils
     {
-        private static float3 defaulBattleMapOffset = new(10000, 0, 10000);
+        public static float3 defaulBattleMapOffset = new(10000, 0, 10000);
+        public static float battleXSize = 300; //to each side
 
         public static LocalTransform getMapTransform()
         {
