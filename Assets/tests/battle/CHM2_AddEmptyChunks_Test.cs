@@ -1,4 +1,12 @@
-﻿namespace tests.testiky
+﻿using component;
+using component._common.system_switchers;
+using component.battle.battalion.data_holders;
+using NUnit.Framework;
+using system.battle.battalion.analysis.backup_plans;
+using tests.testiky.utils;
+using Unity.Collections;
+
+namespace tests.testiky
 {
     [TestFixture]
     public class CHM2_AddEmptyChunks_Test : ECSTestsFixture

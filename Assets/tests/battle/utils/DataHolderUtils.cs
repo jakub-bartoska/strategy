@@ -1,4 +1,13 @@
-﻿namespace tests.testiky.utils
+﻿using component;
+using component.battle.battalion;
+using component.battle.battalion.data_holders;
+using component.config.game_settings;
+using system.battle.utils;
+using Unity.Collections;
+using Unity.Entities;
+using Unity.Mathematics;
+
+namespace tests.testiky.utils
 {
     public class DataHolderUtils
     {

@@ -1,4 +1,13 @@
-﻿namespace system.battle.battalion.analysis.backup_plans
+﻿using System;
+using component._common.system_switchers;
+using component.battle.battalion.data_holders;
+using system.battle.battalion.analysis.utils;
+using system.battle.system_groups;
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Entities;
+
+namespace system.battle.battalion.analysis.backup_plans
 {
     [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
     [UpdateAfter(typeof(CHM1_ParseToChunks))]

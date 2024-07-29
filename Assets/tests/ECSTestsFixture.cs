@@ -1,4 +1,9 @@
-﻿namespace tests
+﻿using NUnit.Framework;
+using Unity.Entities;
+using Unity.Jobs.LowLevel.Unsafe;
+using UnityEngine.LowLevel;
+
+namespace tests
 {
     public class ECSTestsFixture
     {

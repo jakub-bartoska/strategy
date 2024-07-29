@@ -1,4 +1,8 @@
-﻿namespace component.battle.battalion.data_holders
+﻿using System;
+using Unity.Collections;
+using Unity.Entities;
+
+namespace component.battle.battalion.data_holders
 {
     public struct BackupPlanDataHolder : IComponentData
     {
