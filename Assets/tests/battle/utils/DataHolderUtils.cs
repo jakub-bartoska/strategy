@@ -50,9 +50,9 @@ namespace tests.testiky.utils
             return result;
         }
 
-        public static BattleChunk getChunkByTeamPosition(Entity singletonEntity, Team team, EntityManager manager, int position = 0, int row = 1)
+        public static long getChunkByTeamPosition(Entity singletonEntity, Team team, EntityManager manager, int position = 0, int row = 1)
         {
-            var battleChunks = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity).battleChunks;
+            var battleChunks = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity).battleChunksPerRowTeam;
             var iterator = battleChunks.GetValuesForKey(new TeamRow
             {
                 team = team,

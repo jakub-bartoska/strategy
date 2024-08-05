@@ -21,7 +21,11 @@ namespace system.battle.battalion.analysis.backup_plans
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var result = SystemAPI.GetSingletonRW<BackupPlanDataHolder>().ValueRW.battleChunks;
+            var backupPlanDataHolder = SystemAPI.GetSingletonRW<BackupPlanDataHolder>();
+            var allChunks = backupPlanDataHolder.ValueRW.allChunks;
+            var battleChunksPerRowTeam = backupPlanDataHolder.ValueRW.battleChunksPerRowTeam;
+            var lastChunkId = backupPlanDataHolder.ValueRW.lastChunkId;
+
             var dataHolder = SystemAPI.GetSingleton<DataHolder>();
 
             var allRows = dataHolder.allRowIds;
@@ -46,6 +50,7 @@ namespace system.battle.battalion.analysis.backup_plans
                     {
                         currentChunk = new BattleChunk
                         {
+                            chunkId = lastChunkId++,
                             rowId = rowId,
                             leftFighting = !firstBatalion,
                             rightFighting = false,
@@ -67,6 +72,7 @@ namespace system.battle.battalion.analysis.backup_plans
                         //update immutable old value to save it and then delete it
                         var chunkToSave = new BattleChunk
                         {
+                            chunkId = currentChunk.Value.chunkId,
                             rowId = currentChunk.Value.rowId,
                             leftFighting = currentChunk.Value.leftFighting,
                             rightFighting = true,
@@ -81,12 +87,14 @@ namespace system.battle.battalion.analysis.backup_plans
                             rowId = rowId,
                             team = currentChunk.Value.team
                         };
-                        result.Add(teamRow, chunkToSave);
+                        allChunks.Add(chunkToSave.chunkId, chunkToSave);
+                        battleChunksPerRowTeam.Add(teamRow, chunkToSave.chunkId);
 
                         chunkBattalions = new NativeList<long>(100, Allocator.Persistent);
                         chunkBattalions.Add(battalionInfo.battalionId);
                         currentChunk = new BattleChunk
                         {
+                            chunkId = lastChunkId++,
                             rowId = rowId,
                             leftFighting = !firstBatalion,
                             rightFighting = false,
@@ -108,6 +116,7 @@ namespace system.battle.battalion.analysis.backup_plans
                     };
                     var chunkToSave = new BattleChunk
                     {
+                        chunkId = currentChunk.Value.chunkId,
                         rowId = currentChunk.Value.rowId,
                         leftFighting = currentChunk.Value.leftFighting,
                         rightFighting = false,
@@ -116,7 +125,24 @@ namespace system.battle.battalion.analysis.backup_plans
                         endX = lastBattalion.Value.position.x + lastBattalion.Value.width / 2,
                         team = currentChunk.Value.team
                     };
-                    result.Add(teamRowFinish, chunkToSave);
+                    allChunks.Add(chunkToSave.chunkId, chunkToSave);
+                    battleChunksPerRowTeam.Add(teamRowFinish, chunkToSave.chunkId);
+                }
+            }
+
+            var battalionIdToChunk = backupPlanDataHolder.ValueRW.battalionIdToChunk;
+            createBattalionToChunkMap(allChunks, battalionIdToChunk);
+            backupPlanDataHolder.ValueRW.lastChunkId = lastChunkId;
+        }
+
+        private void createBattalionToChunkMap(NativeHashMap<long, BattleChunk> allChunks, NativeHashMap<long, long> result)
+        {
+            foreach (var chunkPair in allChunks)
+            {
+                var chunk = chunkPair.Value;
+                foreach (var battalionId in chunk.battalions)
+                {
+                    result.Add(battalionId, chunk.chunkId);
                 }
             }
         }

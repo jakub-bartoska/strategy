@@ -164,11 +164,17 @@ namespace system
 
             var backupPlanDataHolder = new BackupPlanDataHolder
             {
-                battleChunks = new(1000, Allocator.Persistent),
+                battleChunksPerRowTeam = new(1000, Allocator.Persistent),
                 emptyChunks = new(1000, Allocator.Persistent),
                 moveLeft = new(1000, Allocator.Persistent),
                 moveRight = new(1000, Allocator.Persistent),
-                moveToDifferentChunk = new(1000, Allocator.Persistent)
+                moveToDifferentChunk = new(1000, Allocator.Persistent),
+                allChunks = new(1000, Allocator.Persistent),
+                chunkLinks = new(1000, Allocator.Persistent),
+                chunksNeedingReinforcements = new(1000, Allocator.Persistent),
+                chunkReinforcementPaths = new(1000, Allocator.Persistent),
+                battalionIdToChunk = new(1000, Allocator.Persistent),
+                lastChunkId = 0
             };
 
             var config = DebugConfigAuthoring.instance.collectData();

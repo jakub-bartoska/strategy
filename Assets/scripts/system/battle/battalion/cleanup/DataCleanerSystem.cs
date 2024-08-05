@@ -47,11 +47,17 @@ namespace system.battle.battalion.analysis
             movementDataHolder.ValueRW.waitingForSoldiersBattalions.Clear();
             movementDataHolder.ValueRW.battalionExactDistance.Clear();
 
-            backupPlanDataHolder.ValueRW.battleChunks.Clear();
+            backupPlanDataHolder.ValueRW.battleChunksPerRowTeam.Clear();
             backupPlanDataHolder.ValueRW.emptyChunks.Clear();
             backupPlanDataHolder.ValueRW.moveLeft.Clear();
             backupPlanDataHolder.ValueRW.moveRight.Clear();
             backupPlanDataHolder.ValueRW.moveToDifferentChunk.Clear();
+            backupPlanDataHolder.ValueRW.chunkLinks.Clear();
+            backupPlanDataHolder.ValueRW.allChunks.Clear();
+            backupPlanDataHolder.ValueRW.chunksNeedingReinforcements.Clear();
+            backupPlanDataHolder.ValueRW.chunkReinforcementPaths.Clear();
+            backupPlanDataHolder.ValueRW.battalionIdToChunk.Clear();
+            backupPlanDataHolder.ValueRW.lastChunkId = 0;
         }
     }
 }

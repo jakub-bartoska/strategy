@@ -12,7 +12,7 @@ namespace system.battle.battalion.analysis.backup_plans
 {
     [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
     [UpdateAfter(typeof(CHM1_ParseToChunks))]
-    public partial struct CHM2_AddEmptyChunks : ISystem
+    public partial struct CHM2_0_AddEmptyChunks : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)
@@ -23,27 +23,35 @@ namespace system.battle.battalion.analysis.backup_plans
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var chunkHolder = SystemAPI.GetSingletonRW<BackupPlanDataHolder>();
-            var battleChunks = chunkHolder.ValueRO.battleChunks;
-            var result = chunkHolder.ValueRW.emptyChunks;
+            var backupPlanDataHolder = SystemAPI.GetSingletonRW<BackupPlanDataHolder>();
+            var battleChunks = backupPlanDataHolder.ValueRO.battleChunksPerRowTeam;
+            var emptyChunks = backupPlanDataHolder.ValueRW.emptyChunks;
+            var allChunks = backupPlanDataHolder.ValueRW.allChunks;
+            var lastChunkId = backupPlanDataHolder.ValueRW.lastChunkId;
 
             var dataHolder = SystemAPI.GetSingleton<DataHolder>();
             var allRows = dataHolder.allRowIds;
 
-            var team = Team.TEAM1;
-
             foreach (var rowId in allRows)
             {
-                addChunkToEmptyRow(team, rowId, ref result, battleChunks);
+                addChunkToEmptyRow(Team.TEAM1, rowId, ref emptyChunks, battleChunks, allChunks, ref lastChunkId);
+                addChunkToEmptyRow(Team.TEAM2, rowId, ref emptyChunks, battleChunks, allChunks, ref lastChunkId);
             }
+
+            backupPlanDataHolder.ValueRW.lastChunkId = lastChunkId;
         }
 
-        private void addChunkToEmptyRow(Team myTeam, int rowId, ref NativeParallelMultiHashMap<TeamRow, BattleChunk> result, NativeParallelMultiHashMap<TeamRow, BattleChunk> filledChunks)
+        private void addChunkToEmptyRow(Team myTeam,
+            int rowId,
+            ref NativeParallelMultiHashMap<TeamRow, long> emptyChunks,
+            NativeParallelMultiHashMap<TeamRow, long> filledChunks,
+            NativeHashMap<long, BattleChunk> allChunks,
+            ref long lastChunkId)
         {
             var enemyKey = new TeamRow
             {
                 rowId = rowId,
-                team = getEDnemyTeam(myTeam)
+                team = getEnemyTeam(myTeam)
             };
             var hasEnemyChunk = filledChunks.ContainsKey(enemyKey);
 
@@ -55,8 +63,15 @@ namespace system.battle.battalion.analysis.backup_plans
 
             if (!hasEnemyChunk)
             {
-                result.Add(myKey, new BattleChunk
+                var hasMateInRow = filledChunks.ContainsKey(enemyKey);
+                if (hasMateInRow)
                 {
+                    return;
+                }
+
+                var chunk = new BattleChunk
+                {
+                    chunkId = lastChunkId++,
                     rowId = rowId,
                     leftFighting = false,
                     rightFighting = false,
@@ -64,14 +79,21 @@ namespace system.battle.battalion.analysis.backup_plans
                     startX = CustomTransformUtils.defaulBattleMapOffset.x - CustomTransformUtils.battleXSize,
                     endX = CustomTransformUtils.defaulBattleMapOffset.x + CustomTransformUtils.battleXSize,
                     team = myTeam
-                });
+                };
+                allChunks.Add(chunk.chunkId, chunk);
+                emptyChunks.Add(myKey, chunk.chunkId);
                 return;
             }
 
-            addChunk(myTeam, rowId, ref result, filledChunks);
+            addChunk(myTeam, rowId, ref emptyChunks, filledChunks, allChunks, ref lastChunkId);
         }
 
-        private void addChunk(Team myTeam, int rowId, ref NativeParallelMultiHashMap<TeamRow, BattleChunk> result, NativeParallelMultiHashMap<TeamRow, BattleChunk> filledChunks)
+        private void addChunk(Team myTeam,
+            int rowId,
+            ref NativeParallelMultiHashMap<TeamRow, long> emptyChunks,
+            NativeParallelMultiHashMap<TeamRow, long> filledChunks,
+            NativeHashMap<long, BattleChunk> allChunks,
+            ref long lastChunkId)
         {
             var myKey = new TeamRow
             {
@@ -82,13 +104,14 @@ namespace system.battle.battalion.analysis.backup_plans
             var enemyKey = new TeamRow
             {
                 rowId = rowId,
-                team = getEDnemyTeam(myTeam)
+                team = getEnemyTeam(myTeam)
             };
             var enemyValues = filledChunks.GetValuesForKey(enemyKey);
             float? minX = null;
             float? maxX = null;
-            foreach (var battleChunk in enemyValues)
+            foreach (var chunkId in enemyValues)
             {
+                var battleChunk = allChunks[chunkId];
                 var startX = battleChunk.startX;
                 var endX = battleChunk.endX;
                 if (!battleChunk.leftFighting)
@@ -104,8 +127,9 @@ namespace system.battle.battalion.analysis.backup_plans
 
             if (minX.HasValue)
             {
-                result.Add(myKey, new BattleChunk
+                var chunk = new BattleChunk
                 {
+                    chunkId = lastChunkId++,
                     rowId = rowId,
                     leftFighting = false,
                     rightFighting = true,
@@ -113,13 +137,16 @@ namespace system.battle.battalion.analysis.backup_plans
                     startX = CustomTransformUtils.defaulBattleMapOffset.x - CustomTransformUtils.battleXSize,
                     endX = minX.Value,
                     team = myTeam
-                });
+                };
+                allChunks.Add(chunk.chunkId, chunk);
+                emptyChunks.Add(myKey, chunk.chunkId);
             }
 
             if (maxX.HasValue)
             {
-                result.Add(myKey, new BattleChunk
+                var chunk = new BattleChunk
                 {
+                    chunkId = lastChunkId++,
                     rowId = rowId,
                     leftFighting = true,
                     rightFighting = false,
@@ -127,11 +154,13 @@ namespace system.battle.battalion.analysis.backup_plans
                     startX = maxX.Value,
                     endX = CustomTransformUtils.defaulBattleMapOffset.x + CustomTransformUtils.battleXSize,
                     team = myTeam
-                });
+                };
+                allChunks.Add(chunk.chunkId, chunk);
+                emptyChunks.Add(myKey, chunk.chunkId);
             }
         }
 
-        private Team getEDnemyTeam(Team myTeam)
+        private Team getEnemyTeam(Team myTeam)
         {
             return myTeam switch
             {

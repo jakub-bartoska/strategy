@@ -10,13 +10,13 @@ using Unity.Mathematics;
 namespace tests.testiky
 {
     [TestFixture]
-    public class CHM3_BasicChunkMovement_Test : ECSTestsFixture
+    public class CHM4_BasicChunkMovement_Test : ECSTestsFixture
     {
         [SetUp]
         public override void Setup()
         {
             base.Setup();
-            CreateSystem<CHM3_BasicChunkMovement>();
+            CreateSystem<CHM4_BasicChunkMovement>();
             var entity = CreateEntity();
             var battleMapStateMarker = new BattleMapStateMarker();
             manager.AddComponentData(entity, battleMapStateMarker);
@@ -44,32 +44,35 @@ namespace tests.testiky
 
             var chunk = new BattleChunk
             {
+                chunkId = 0,
                 rowId = 1,
                 leftFighting = true,
                 rightFighting = true,
                 battalions = battalions,
                 team = Team.TEAM1
             };
-
-            var chunks = new NativeParallelMultiHashMap<TeamRow, BattleChunk>(10, Allocator.Temp);
-            chunks.Add(new TeamRow
+            var allChunks = new NativeHashMap<long, BattleChunk>(10, Allocator.Temp);
+            var battleChunksPerRowTeam = new NativeParallelMultiHashMap<TeamRow, long>(10, Allocator.Temp);
+            allChunks.Add(chunk.chunkId, chunk);
+            battleChunksPerRowTeam.Add(new TeamRow
             {
                 team = Team.TEAM1,
                 rowId = 1
-            }, chunk);
+            }, chunk.chunkId);
 
             var backupPlanHolder = new BackupPlanDataHolder
             {
-                battleChunks = chunks,
-                moveLeft = new NativeList<BattalionInfo>(100, Allocator.TempJob),
-                moveRight = new NativeList<BattalionInfo>(100, Allocator.TempJob),
-                moveToDifferentChunk = new NativeList<BattalionInfo>(100, Allocator.TempJob)
+                allChunks = allChunks,
+                battleChunksPerRowTeam = battleChunksPerRowTeam,
+                moveLeft = new NativeList<long>(100, Allocator.TempJob),
+                moveRight = new NativeList<long>(100, Allocator.TempJob),
+                moveToDifferentChunk = new NativeList<long>(100, Allocator.TempJob)
             };
 
             manager.AddComponentData(singletonEntity, backupPlanHolder);
 
 
-            UpdateSystem<CHM3_BasicChunkMovement>();
+            UpdateSystem<CHM4_BasicChunkMovement>();
 
             var backupPlanDataHolder = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity);
             var moveLeft = backupPlanDataHolder.moveLeft;
@@ -78,9 +81,9 @@ namespace tests.testiky
             Assert.AreEqual(1, moveLeft.Length);
             Assert.AreEqual(1, moveRight.Length);
             Assert.AreEqual(1, moveToDifferentChunk.Length);
-            Assert.AreEqual(1, moveLeft[0].battalionId);
-            Assert.AreEqual(3, moveRight[0].battalionId);
-            Assert.AreEqual(2, moveToDifferentChunk[0].battalionId);
+            Assert.AreEqual(1, moveLeft[0]);
+            Assert.AreEqual(3, moveRight[0]);
+            Assert.AreEqual(2, moveToDifferentChunk[0]);
         }
 
         [Test]
@@ -105,6 +108,7 @@ namespace tests.testiky
 
             var chunk = new BattleChunk
             {
+                chunkId = 0,
                 rowId = 1,
                 leftFighting = true,
                 rightFighting = true,
@@ -112,25 +116,28 @@ namespace tests.testiky
                 team = Team.TEAM1
             };
 
-            var chunks = new NativeParallelMultiHashMap<TeamRow, BattleChunk>(10, Allocator.Temp);
-            chunks.Add(new TeamRow
+            var allChunks = new NativeHashMap<long, BattleChunk>(10, Allocator.Temp);
+            var battleChunksPerRowTeam = new NativeParallelMultiHashMap<TeamRow, long>(10, Allocator.Temp);
+            allChunks.Add(chunk.chunkId, chunk);
+            battleChunksPerRowTeam.Add(new TeamRow
             {
                 team = Team.TEAM1,
                 rowId = 1
-            }, chunk);
+            }, chunk.chunkId);
 
             var backupPlanHolder = new BackupPlanDataHolder
             {
-                battleChunks = chunks,
-                moveLeft = new NativeList<BattalionInfo>(100, Allocator.TempJob),
-                moveRight = new NativeList<BattalionInfo>(100, Allocator.TempJob),
-                moveToDifferentChunk = new NativeList<BattalionInfo>(100, Allocator.TempJob)
+                allChunks = allChunks,
+                battleChunksPerRowTeam = battleChunksPerRowTeam,
+                moveLeft = new NativeList<long>(100, Allocator.TempJob),
+                moveRight = new NativeList<long>(100, Allocator.TempJob),
+                moveToDifferentChunk = new NativeList<long>(100, Allocator.TempJob)
             };
 
             manager.AddComponentData(singletonEntity, backupPlanHolder);
 
 
-            UpdateSystem<CHM3_BasicChunkMovement>();
+            UpdateSystem<CHM4_BasicChunkMovement>();
 
             var backupPlanDataHolder = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity);
             var moveLeft = backupPlanDataHolder.moveLeft;
@@ -139,9 +146,9 @@ namespace tests.testiky
             Assert.AreEqual(1, moveLeft.Length);
             Assert.AreEqual(1, moveRight.Length);
             Assert.AreEqual(1, moveToDifferentChunk.Length);
-            Assert.AreEqual(1, moveLeft[0].battalionId);
-            Assert.AreEqual(3, moveRight[0].battalionId);
-            Assert.AreEqual(2, moveToDifferentChunk[0].battalionId);
+            Assert.AreEqual(1, moveLeft[0]);
+            Assert.AreEqual(3, moveRight[0]);
+            Assert.AreEqual(2, moveToDifferentChunk[0]);
         }
 
         [Test]
@@ -166,6 +173,7 @@ namespace tests.testiky
 
             var chunk = new BattleChunk
             {
+                chunkId = 0,
                 rowId = 1,
                 leftFighting = true,
                 rightFighting = false,
@@ -173,25 +181,28 @@ namespace tests.testiky
                 team = Team.TEAM1
             };
 
-            var chunks = new NativeParallelMultiHashMap<TeamRow, BattleChunk>(10, Allocator.Temp);
-            chunks.Add(new TeamRow
+            var allChunks = new NativeHashMap<long, BattleChunk>(10, Allocator.Temp);
+            var battleChunksPerRowTeam = new NativeParallelMultiHashMap<TeamRow, long>(10, Allocator.Temp);
+            allChunks.Add(chunk.chunkId, chunk);
+            battleChunksPerRowTeam.Add(new TeamRow
             {
                 team = Team.TEAM1,
                 rowId = 1
-            }, chunk);
+            }, chunk.chunkId);
 
             var backupPlanHolder = new BackupPlanDataHolder
             {
-                battleChunks = chunks,
-                moveLeft = new NativeList<BattalionInfo>(100, Allocator.TempJob),
-                moveRight = new NativeList<BattalionInfo>(100, Allocator.TempJob),
-                moveToDifferentChunk = new NativeList<BattalionInfo>(100, Allocator.TempJob)
+                allChunks = allChunks,
+                battleChunksPerRowTeam = battleChunksPerRowTeam,
+                moveLeft = new NativeList<long>(100, Allocator.TempJob),
+                moveRight = new NativeList<long>(100, Allocator.TempJob),
+                moveToDifferentChunk = new NativeList<long>(100, Allocator.TempJob)
             };
 
             manager.AddComponentData(singletonEntity, backupPlanHolder);
 
 
-            UpdateSystem<CHM3_BasicChunkMovement>();
+            UpdateSystem<CHM4_BasicChunkMovement>();
 
             var backupPlanDataHolder = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity);
             var moveLeft = backupPlanDataHolder.moveLeft;
@@ -200,7 +211,7 @@ namespace tests.testiky
             Assert.AreEqual(1, moveLeft.Length);
             Assert.AreEqual(0, moveRight.Length);
             Assert.AreEqual(2, moveToDifferentChunk.Length);
-            Assert.AreEqual(1, moveLeft[0].battalionId);
+            Assert.AreEqual(1, moveLeft[0]);
         }
 
         [Test]
@@ -225,6 +236,7 @@ namespace tests.testiky
 
             var chunk = new BattleChunk
             {
+                chunkId = 0,
                 rowId = 1,
                 leftFighting = false,
                 rightFighting = true,
@@ -232,25 +244,28 @@ namespace tests.testiky
                 team = Team.TEAM1
             };
 
-            var chunks = new NativeParallelMultiHashMap<TeamRow, BattleChunk>(10, Allocator.Temp);
-            chunks.Add(new TeamRow
+            var allChunks = new NativeHashMap<long, BattleChunk>(10, Allocator.Temp);
+            var battleChunksPerRowTeam = new NativeParallelMultiHashMap<TeamRow, long>(10, Allocator.Temp);
+            allChunks.Add(chunk.chunkId, chunk);
+            battleChunksPerRowTeam.Add(new TeamRow
             {
                 team = Team.TEAM1,
                 rowId = 1
-            }, chunk);
+            }, chunk.chunkId);
 
             var backupPlanHolder = new BackupPlanDataHolder
             {
-                battleChunks = chunks,
-                moveLeft = new NativeList<BattalionInfo>(100, Allocator.TempJob),
-                moveRight = new NativeList<BattalionInfo>(100, Allocator.TempJob),
-                moveToDifferentChunk = new NativeList<BattalionInfo>(100, Allocator.TempJob)
+                allChunks = allChunks,
+                battleChunksPerRowTeam = battleChunksPerRowTeam,
+                moveLeft = new NativeList<long>(100, Allocator.TempJob),
+                moveRight = new NativeList<long>(100, Allocator.TempJob),
+                moveToDifferentChunk = new NativeList<long>(100, Allocator.TempJob)
             };
 
             manager.AddComponentData(singletonEntity, backupPlanHolder);
 
 
-            UpdateSystem<CHM3_BasicChunkMovement>();
+            UpdateSystem<CHM4_BasicChunkMovement>();
 
             var backupPlanDataHolder = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity);
             var moveLeft = backupPlanDataHolder.moveLeft;
@@ -259,7 +274,7 @@ namespace tests.testiky
             Assert.AreEqual(0, moveLeft.Length);
             Assert.AreEqual(1, moveRight.Length);
             Assert.AreEqual(2, moveToDifferentChunk.Length);
-            Assert.AreEqual(3, moveRight[0].battalionId);
+            Assert.AreEqual(3, moveRight[0]);
         }
 
         [Test]
@@ -290,6 +305,7 @@ namespace tests.testiky
 
             var chunk = new BattleChunk
             {
+                chunkId = 0,
                 rowId = 1,
                 leftFighting = true,
                 rightFighting = true,
@@ -297,25 +313,28 @@ namespace tests.testiky
                 team = Team.TEAM1
             };
 
-            var chunks = new NativeParallelMultiHashMap<TeamRow, BattleChunk>(10, Allocator.Temp);
-            chunks.Add(new TeamRow
+            var battleChunksPerRowTeam = new NativeParallelMultiHashMap<TeamRow, long>(10, Allocator.Temp);
+            var allChunks = new NativeHashMap<long, BattleChunk>(10, Allocator.Temp);
+            allChunks.Add(chunk.chunkId, chunk);
+            battleChunksPerRowTeam.Add(new TeamRow
             {
                 team = Team.TEAM1,
                 rowId = 1
-            }, chunk);
+            }, chunk.chunkId);
 
             var backupPlanHolder = new BackupPlanDataHolder
             {
-                battleChunks = chunks,
-                moveLeft = new NativeList<BattalionInfo>(100, Allocator.TempJob),
-                moveRight = new NativeList<BattalionInfo>(100, Allocator.TempJob),
-                moveToDifferentChunk = new NativeList<BattalionInfo>(100, Allocator.TempJob)
+                allChunks = allChunks,
+                battleChunksPerRowTeam = battleChunksPerRowTeam,
+                moveLeft = new NativeList<long>(100, Allocator.TempJob),
+                moveRight = new NativeList<long>(100, Allocator.TempJob),
+                moveToDifferentChunk = new NativeList<long>(100, Allocator.TempJob)
             };
 
             manager.AddComponentData(singletonEntity, backupPlanHolder);
 
 
-            UpdateSystem<CHM3_BasicChunkMovement>();
+            UpdateSystem<CHM4_BasicChunkMovement>();
 
             var backupPlanDataHolder = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity);
             var moveLeft = backupPlanDataHolder.moveLeft;
@@ -324,8 +343,8 @@ namespace tests.testiky
             Assert.AreEqual(1, moveLeft.Length);
             Assert.AreEqual(1, moveRight.Length);
             Assert.AreEqual(4, moveToDifferentChunk.Length);
-            Assert.AreEqual(1, moveLeft[0].battalionId);
-            Assert.AreEqual(6, moveRight[0].battalionId);
+            Assert.AreEqual(1, moveLeft[0]);
+            Assert.AreEqual(6, moveRight[0]);
         }
     }
 }

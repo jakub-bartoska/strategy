@@ -1,7 +1,6 @@
 ﻿using System;
 using component._common.system_switchers;
 using component.battle.battalion.data_holders;
-using system.battle.battalion.analysis.utils;
 using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Collections;
@@ -10,8 +9,8 @@ using Unity.Entities;
 namespace system.battle.battalion.analysis.backup_plans
 {
     [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
-    [UpdateAfter(typeof(CHM1_ParseToChunks))]
-    public partial struct CHM3_BasicChunkMovement : ISystem
+    [UpdateAfter(typeof(CHM3_2_FindReinforcementPaths))]
+    public partial struct CHM4_BasicChunkMovement : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)
@@ -23,36 +22,27 @@ namespace system.battle.battalion.analysis.backup_plans
         public void OnUpdate(ref SystemState state)
         {
             var backupPlanDataHolder = SystemAPI.GetSingletonRW<BackupPlanDataHolder>();
-            var chunks = backupPlanDataHolder.ValueRW.battleChunks;
+            var battleChunksPerRowTeam = backupPlanDataHolder.ValueRW.battleChunksPerRowTeam;
+            var allChunks = backupPlanDataHolder.ValueRW.allChunks;
 
-            //todo bacha, neni to zinicializovano
             var moveLeft = backupPlanDataHolder.ValueRW.moveLeft;
             var moveRight = backupPlanDataHolder.ValueRW.moveRight;
             var moveToDifferentChunk = backupPlanDataHolder.ValueRW.moveToDifferentChunk;
 
-            var dataHolder = SystemAPI.GetSingleton<DataHolder>();
-            var battalionInfo = dataHolder.battalionInfo;
-
-
-            var descSorter = new SortByPositionDesc();
-            foreach (var chunk in chunks.GetValueArray(Allocator.Temp))
+            foreach (var chunkId in battleChunksPerRowTeam.GetValueArray(Allocator.Temp))
             {
+                var chunk = allChunks[chunkId];
                 var chunkBattalionCount = chunk.battalions.Length;
                 if (chunkBattalionCount == 0)
                     continue;
 
-                if (!chunk.leftFighting && !chunk.rightFighting)
-                {
-                    continue;
-                }
-
-                var battleInfo = new NativeList<BattalionInfo>(100, Allocator.Temp);
+                var battleInfo = new NativeList<long>(100, Allocator.Temp);
                 foreach (var chunkBattalion in chunk.battalions)
                 {
-                    battleInfo.Add(battalionInfo[chunkBattalion]);
+                    battleInfo.Add(chunkBattalion);
                 }
 
-                battleInfo.Sort(descSorter);
+                battleInfo.Sort();
 
                 var availableDirections = chunkToAvailableDirection(chunk);
                 if (availableDirections == ChunkDirection.NONE)
@@ -88,10 +78,10 @@ namespace system.battle.battalion.analysis.backup_plans
 
         private void splitChunk(
             int battalionsSend,
-            NativeList<BattalionInfo> orderedBattleInfo,
-            NativeList<BattalionInfo> moveLeft,
-            NativeList<BattalionInfo> moveRight,
-            NativeList<BattalionInfo> moveToDifferentChunk,
+            NativeList<long> orderedBattleInfo,
+            NativeList<long> moveLeft,
+            NativeList<long> moveRight,
+            NativeList<long> moveToDifferentChunk,
             ChunkDirection direction,
             ChunkDirection availableDirections
         )

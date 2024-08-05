@@ -14,7 +14,7 @@ namespace system.battle.battalion.analysis
 {
     [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
     [UpdateAfter(typeof(F2_FindFlankBattalions))]
-    [UpdateAfter(typeof(CHM4_SetMovement))]
+    [UpdateAfter(typeof(CHM5_2_SetMovementForRestBattalions))]
     public partial struct MD1_DefaultDirectionsSystem : ISystem
     {
         [BurstCompile]

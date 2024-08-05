@@ -15,7 +15,7 @@ namespace tests.testiky
         public override void Setup()
         {
             base.Setup();
-            CreateSystem<CHM2_AddEmptyChunks>();
+            CreateSystem<CHM2_0_AddEmptyChunks>();
             var entity = CreateEntity();
             var battleMapStateMarker = new BattleMapStateMarker();
             manager.AddComponentData(entity, battleMapStateMarker);
@@ -36,11 +36,14 @@ namespace tests.testiky
 
             var backupPlanHolder = new BackupPlanDataHolder
             {
-                battleChunks = new NativeParallelMultiHashMap<TeamRow, BattleChunk>(100, Allocator.Temp),
-                emptyChunks = new NativeParallelMultiHashMap<TeamRow, BattleChunk>(100, Allocator.Temp)
+                allChunks = new NativeHashMap<long, BattleChunk>(100, Allocator.Temp),
+                battleChunksPerRowTeam = new NativeParallelMultiHashMap<TeamRow, long>(100, Allocator.Temp),
+                emptyChunks = new NativeParallelMultiHashMap<TeamRow, long>(100, Allocator.Temp),
+                lastChunkId = 0
             };
-            backupPlanHolder.battleChunks.Add(team1Key, new BattleChunk
+            var chunk = new BattleChunk
             {
+                chunkId = backupPlanHolder.lastChunkId++,
                 rowId = 0,
                 leftFighting = false,
                 rightFighting = false,
@@ -48,11 +51,14 @@ namespace tests.testiky
                 startX = 10,
                 endX = 100,
                 team = Team.TEAM1
-            });
+            };
+            backupPlanHolder.allChunks.Add(chunk.chunkId, chunk);
+            backupPlanHolder.battleChunksPerRowTeam.Add(team1Key, chunk.chunkId);
             manager.AddComponentData(singletonEntity, backupPlanHolder);
 
-            UpdateSystem<CHM2_AddEmptyChunks>();
+            UpdateSystem<CHM2_0_AddEmptyChunks>();
 
+            var allChunks = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity).allChunks;
             var battleChunks = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity).emptyChunks;
             var iterator = battleChunks.GetValuesForKey(new TeamRow
             {
@@ -60,7 +66,7 @@ namespace tests.testiky
                 rowId = 1
             });
             iterator.MoveNext();
-            var emptyChunk = iterator.Current;
+            var emptyChunk = allChunks[iterator.Current];
             //Assert.AreEqual(0, emptyChunk.battalions.Length);
             Assert.AreEqual(false, emptyChunk.leftFighting);
             Assert.AreEqual(false, emptyChunk.rightFighting);
@@ -90,11 +96,14 @@ namespace tests.testiky
 
             var backupPlanHolder = new BackupPlanDataHolder
             {
-                battleChunks = new NativeParallelMultiHashMap<TeamRow, BattleChunk>(100, Allocator.Temp),
-                emptyChunks = new NativeParallelMultiHashMap<TeamRow, BattleChunk>(100, Allocator.Temp)
+                allChunks = new NativeHashMap<long, BattleChunk>(100, Allocator.Temp),
+                battleChunksPerRowTeam = new NativeParallelMultiHashMap<TeamRow, long>(100, Allocator.Temp),
+                emptyChunks = new NativeParallelMultiHashMap<TeamRow, long>(100, Allocator.Temp),
+                lastChunkId = 0
             };
-            backupPlanHolder.battleChunks.Add(team1Key, new BattleChunk
+            var chunk1 = new BattleChunk
             {
+                chunkId = backupPlanHolder.lastChunkId++,
                 rowId = 0,
                 leftFighting = false,
                 rightFighting = false,
@@ -102,9 +111,12 @@ namespace tests.testiky
                 startX = 10,
                 endX = 100,
                 team = Team.TEAM1
-            });
-            backupPlanHolder.battleChunks.Add(team2Key, new BattleChunk
+            };
+            backupPlanHolder.allChunks.Add(chunk1.chunkId, chunk1);
+            backupPlanHolder.battleChunksPerRowTeam.Add(team1Key, chunk1.chunkId);
+            var chunk2 = new BattleChunk
             {
+                chunkId = backupPlanHolder.lastChunkId++,
                 rowId = 1,
                 leftFighting = false,
                 rightFighting = false,
@@ -112,11 +124,14 @@ namespace tests.testiky
                 startX = 10,
                 endX = 100,
                 team = Team.TEAM2
-            });
+            };
+            backupPlanHolder.allChunks.Add(chunk2.chunkId, chunk2);
+            backupPlanHolder.battleChunksPerRowTeam.Add(team2Key, chunk2.chunkId);
             manager.AddComponentData(singletonEntity, backupPlanHolder);
 
-            UpdateSystem<CHM2_AddEmptyChunks>();
+            UpdateSystem<CHM2_0_AddEmptyChunks>();
 
+            var allChunks = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity).allChunks;
             var battleChunks = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity).emptyChunks;
             var iterator = battleChunks.GetValuesForKey(new TeamRow
             {
@@ -124,9 +139,9 @@ namespace tests.testiky
                 rowId = 1
             });
             iterator.MoveNext();
-            var emptyChunk2 = iterator.Current;
+            var emptyChunk2 = allChunks[iterator.Current];
             iterator.MoveNext();
-            var emptyChunk1 = iterator.Current;
+            var emptyChunk1 = allChunks[iterator.Current];
             Assert.AreEqual(false, emptyChunk1.leftFighting);
             Assert.AreEqual(true, emptyChunk1.rightFighting);
             Assert.AreEqual((int) Team.TEAM1, (int) emptyChunk1.team);
@@ -162,11 +177,14 @@ namespace tests.testiky
 
             var backupPlanHolder = new BackupPlanDataHolder
             {
-                battleChunks = new NativeParallelMultiHashMap<TeamRow, BattleChunk>(100, Allocator.Temp),
-                emptyChunks = new NativeParallelMultiHashMap<TeamRow, BattleChunk>(100, Allocator.Temp)
+                allChunks = new NativeHashMap<long, BattleChunk>(100, Allocator.Temp),
+                battleChunksPerRowTeam = new NativeParallelMultiHashMap<TeamRow, long>(100, Allocator.Temp),
+                emptyChunks = new NativeParallelMultiHashMap<TeamRow, long>(100, Allocator.Temp),
+                lastChunkId = 0
             };
-            backupPlanHolder.battleChunks.Add(team1Key, new BattleChunk
+            var chunk1 = new BattleChunk
             {
+                chunkId = backupPlanHolder.lastChunkId++,
                 rowId = 0,
                 leftFighting = true,
                 rightFighting = false,
@@ -174,9 +192,12 @@ namespace tests.testiky
                 startX = 10,
                 endX = 30,
                 team = Team.TEAM1
-            });
-            backupPlanHolder.battleChunks.Add(team2Key, new BattleChunk
+            };
+            backupPlanHolder.allChunks.Add(chunk1.chunkId, chunk1);
+            backupPlanHolder.battleChunksPerRowTeam.Add(team1Key, chunk1.chunkId);
+            var chunk2 = new BattleChunk
             {
+                chunkId = backupPlanHolder.lastChunkId++,
                 rowId = 0,
                 leftFighting = false,
                 rightFighting = true,
@@ -184,11 +205,14 @@ namespace tests.testiky
                 startX = -10,
                 endX = 10,
                 team = Team.TEAM2
-            });
+            };
+            backupPlanHolder.allChunks.Add(chunk2.chunkId, chunk2);
+            backupPlanHolder.battleChunksPerRowTeam.Add(team2Key, chunk2.chunkId);
             manager.AddComponentData(singletonEntity, backupPlanHolder);
 
-            UpdateSystem<CHM2_AddEmptyChunks>();
+            UpdateSystem<CHM2_0_AddEmptyChunks>();
 
+            var allChunks = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity).allChunks;
             var battleChunks = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity).emptyChunks;
             var iterator = battleChunks.GetValuesForKey(new TeamRow
             {
@@ -196,7 +220,7 @@ namespace tests.testiky
                 rowId = 0
             });
             iterator.MoveNext();
-            var emptyChunk1 = iterator.Current;
+            var emptyChunk1 = allChunks[iterator.Current];
             Assert.AreEqual(false, emptyChunk1.leftFighting);
             Assert.AreEqual(true, emptyChunk1.rightFighting);
             Assert.AreEqual((int) Team.TEAM1, (int) emptyChunk1.team);
@@ -225,11 +249,14 @@ namespace tests.testiky
 
             var backupPlanHolder = new BackupPlanDataHolder
             {
-                battleChunks = new NativeParallelMultiHashMap<TeamRow, BattleChunk>(100, Allocator.Temp),
-                emptyChunks = new NativeParallelMultiHashMap<TeamRow, BattleChunk>(100, Allocator.Temp)
+                allChunks = new NativeHashMap<long, BattleChunk>(100, Allocator.Temp),
+                battleChunksPerRowTeam = new NativeParallelMultiHashMap<TeamRow, long>(100, Allocator.Temp),
+                emptyChunks = new NativeParallelMultiHashMap<TeamRow, long>(100, Allocator.Temp),
+                lastChunkId = 0
             };
-            backupPlanHolder.battleChunks.Add(team1Key, new BattleChunk
+            var chunk1 = new BattleChunk
             {
+                chunkId = backupPlanHolder.lastChunkId++,
                 rowId = 0,
                 leftFighting = false,
                 rightFighting = true,
@@ -237,9 +264,12 @@ namespace tests.testiky
                 startX = 10,
                 endX = 30,
                 team = Team.TEAM1
-            });
-            backupPlanHolder.battleChunks.Add(team2Key, new BattleChunk
+            };
+            backupPlanHolder.allChunks.Add(chunk1.chunkId, chunk1);
+            backupPlanHolder.battleChunksPerRowTeam.Add(team1Key, chunk1.chunkId);
+            var chunk2 = new BattleChunk
             {
+                chunkId = backupPlanHolder.lastChunkId++,
                 rowId = 0,
                 leftFighting = true,
                 rightFighting = false,
@@ -247,11 +277,14 @@ namespace tests.testiky
                 startX = 30,
                 endX = 100,
                 team = Team.TEAM2
-            });
+            };
+            backupPlanHolder.allChunks.Add(chunk2.chunkId, chunk2);
+            backupPlanHolder.battleChunksPerRowTeam.Add(team2Key, chunk2.chunkId);
             manager.AddComponentData(singletonEntity, backupPlanHolder);
 
-            UpdateSystem<CHM2_AddEmptyChunks>();
+            UpdateSystem<CHM2_0_AddEmptyChunks>();
 
+            var allChunks = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity).allChunks;
             var battleChunks = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity).emptyChunks;
             var iterator = battleChunks.GetValuesForKey(new TeamRow
             {
@@ -259,7 +292,7 @@ namespace tests.testiky
                 rowId = 0
             });
             iterator.MoveNext();
-            var emptyChunk1 = iterator.Current;
+            var emptyChunk1 = allChunks[iterator.Current];
             Assert.AreEqual(true, emptyChunk1.leftFighting);
             Assert.AreEqual(false, emptyChunk1.rightFighting);
             Assert.AreEqual((int) Team.TEAM1, (int) emptyChunk1.team);
@@ -288,21 +321,27 @@ namespace tests.testiky
 
             var backupPlanHolder = new BackupPlanDataHolder
             {
-                battleChunks = new NativeParallelMultiHashMap<TeamRow, BattleChunk>(100, Allocator.Temp),
-                emptyChunks = new NativeParallelMultiHashMap<TeamRow, BattleChunk>(100, Allocator.Temp)
+                allChunks = new NativeHashMap<long, BattleChunk>(100, Allocator.Temp),
+                battleChunksPerRowTeam = new NativeParallelMultiHashMap<TeamRow, long>(100, Allocator.Temp),
+                emptyChunks = new NativeParallelMultiHashMap<TeamRow, long>(100, Allocator.Temp),
+                lastChunkId = 0
             };
-            backupPlanHolder.battleChunks.Add(team1Key, new BattleChunk
+            var chunk1 = new BattleChunk
             {
+                chunkId = backupPlanHolder.lastChunkId++,
                 rowId = 0,
                 leftFighting = true,
-                rightFighting = true,
+                rightFighting = false,
                 battalions = new NativeList<long>(0, Allocator.Persistent),
                 startX = 10,
                 endX = 30,
                 team = Team.TEAM1
-            });
-            backupPlanHolder.battleChunks.Add(team2Key, new BattleChunk
+            };
+            backupPlanHolder.allChunks.Add(chunk1.chunkId, chunk1);
+            backupPlanHolder.battleChunksPerRowTeam.Add(team1Key, chunk1.chunkId);
+            var chunk2 = new BattleChunk
             {
+                chunkId = backupPlanHolder.lastChunkId++,
                 rowId = 0,
                 leftFighting = true,
                 rightFighting = false,
@@ -310,9 +349,12 @@ namespace tests.testiky
                 startX = 30,
                 endX = 100,
                 team = Team.TEAM2
-            });
-            backupPlanHolder.battleChunks.Add(team2Key, new BattleChunk
+            };
+            backupPlanHolder.allChunks.Add(chunk2.chunkId, chunk2);
+            backupPlanHolder.battleChunksPerRowTeam.Add(team2Key, chunk2.chunkId);
+            var chunk3 = new BattleChunk
             {
+                chunkId = backupPlanHolder.lastChunkId++,
                 rowId = 0,
                 leftFighting = false,
                 rightFighting = true,
@@ -320,11 +362,14 @@ namespace tests.testiky
                 startX = -10,
                 endX = 10,
                 team = Team.TEAM2
-            });
+            };
+            backupPlanHolder.allChunks.Add(chunk3.chunkId, chunk3);
+            backupPlanHolder.battleChunksPerRowTeam.Add(team2Key, chunk3.chunkId);
             manager.AddComponentData(singletonEntity, backupPlanHolder);
 
-            UpdateSystem<CHM2_AddEmptyChunks>();
+            UpdateSystem<CHM2_0_AddEmptyChunks>();
 
+            var allChunks = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity).allChunks;
             var battleChunks = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity).emptyChunks;
             var iterator = battleChunks.GetValuesForKey(new TeamRow
             {
@@ -332,9 +377,9 @@ namespace tests.testiky
                 rowId = 0
             });
             iterator.MoveNext();
-            var emptyChunk2 = iterator.Current;
+            var emptyChunk2 = allChunks[iterator.Current];
             iterator.MoveNext();
-            var emptyChunk1 = iterator.Current;
+            var emptyChunk1 = allChunks[iterator.Current];
             Assert.AreEqual(false, emptyChunk1.leftFighting);
             Assert.AreEqual(true, emptyChunk1.rightFighting);
             Assert.AreEqual((int) Team.TEAM1, (int) emptyChunk1.team);
