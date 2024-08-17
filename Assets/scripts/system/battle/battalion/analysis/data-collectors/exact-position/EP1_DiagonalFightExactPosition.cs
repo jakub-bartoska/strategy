@@ -26,7 +26,6 @@ namespace system.battle.battalion.analysis.exact_position
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            return;
             var dataHolder = SystemAPI.GetSingleton<DataHolder>();
             var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
             // can contain dupolicities (A -> B and B -> A)
@@ -104,7 +103,7 @@ namespace system.battle.battalion.analysis.exact_position
                     //distance is the same
                     else
                     {
-                        //battalion should nto move since it is in exactPosition
+                        //battalion should not move since it is in exactPosition
                         direction = Direction.NONE;
                         conflict = true;
                     }
