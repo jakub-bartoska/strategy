@@ -1,7 +1,7 @@
 ﻿using component._common.system_switchers;
 using component.battle.battalion.data_holders;
+using system.battle.battalion.analysis.backup_plans;
 using system.battle.battalion.analysis.utils;
-using system.battle.battalion.execution.movement;
 using system.battle.enums;
 using system.battle.system_groups;
 using Unity.Burst;
@@ -12,7 +12,7 @@ namespace system.battle.battalion.analysis.horizontal_split
     [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
     [UpdateAfter(typeof(PositionParserSystem))]
     [UpdateAfter(typeof(FindFightingPairsSystem))]
-    [UpdateAfter(typeof(MD3_OverrideByFlanks))]
+    [UpdateAfter(typeof(CHM5_2_SetMovementForRestBattalions))]
     public partial struct HS1_FindHorizontalSplitBlockers : ISystem
     {
         [BurstCompile]

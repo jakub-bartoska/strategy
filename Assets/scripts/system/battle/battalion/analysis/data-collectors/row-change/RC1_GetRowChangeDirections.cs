@@ -2,18 +2,15 @@
 using component;
 using component._common.system_switchers;
 using component.battle.battalion.data_holders;
-using system.battle.battalion.analysis.flank;
 using system.battle.enums;
 using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Mathematics;
 
 namespace system.battle.battalion.analysis.row_change
 {
     [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
-    [UpdateAfter(typeof(F2_FindFlankBattalions))]
     [UpdateAfter(typeof(FindBlockerSystem))]
     public partial struct RC1_GetRowChangeDirections : ISystem
     {
@@ -66,6 +63,7 @@ namespace system.battle.battalion.analysis.row_change
 
         private void setNoRowChanges(NativeHashMap<int, (Direction, int)> tmpResult, Team team, DataHolder dataHolder, MovementDataHolder movementDataHolder)
         {
+            /*
             var flankPositions = movementDataHolder.flankPositions;
             var allRowIds = dataHolder.allRowIds;
 
@@ -87,6 +85,7 @@ namespace system.battle.battalion.analysis.row_change
                     tmpResult.Add(rowId, (Direction.NONE, rowId));
                 }
             }
+            */
         }
 
         private void fillClosestRows(NativeHashMap<int, (Direction, int)> tmpResult, DataHolder dataHolder)

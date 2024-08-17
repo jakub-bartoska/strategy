@@ -28,7 +28,6 @@ namespace system.battle.battalion.analysis
             dataHolder.ValueRW.needReinforcements.Clear();
             dataHolder.ValueRW.allBattalionIds.Clear();
             dataHolder.ValueRW.reinforcements.Clear();
-            dataHolder.ValueRW.flankingBattalions.Clear();
             dataHolder.ValueRW.rowChanges.Clear();
             dataHolder.ValueRW.battalionSwitchRowDirections.Clear();
             dataHolder.ValueRW.blockedHorizontalSplits.Clear();
@@ -37,12 +36,10 @@ namespace system.battle.battalion.analysis
             dataHolder.ValueRW.battalionInfo.Clear();
             dataHolder.ValueRW.declinedReinforcements.Clear();
 
-            movementDataHolder.ValueRW.flankPositions.Clear();
             movementDataHolder.ValueRW.inFightMovement.Clear();
             movementDataHolder.ValueRW.movingBattalions.Clear();
             movementDataHolder.ValueRW.plannedMovementDirections.Clear();
             movementDataHolder.ValueRW.blockers.Clear();
-            movementDataHolder.ValueRW.battalionDefaultMovementDirection.Clear();
             movementDataHolder.ValueRW.battalionFollowers.Clear();
             movementDataHolder.ValueRW.waitingForSoldiersBattalions.Clear();
             movementDataHolder.ValueRW.battalionExactDistance.Clear();

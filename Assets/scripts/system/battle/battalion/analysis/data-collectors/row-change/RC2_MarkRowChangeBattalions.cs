@@ -1,5 +1,4 @@
-﻿using System;
-using component;
+﻿using component;
 using component._common.system_switchers;
 using component.battle.battalion;
 using component.battle.battalion.data_holders;
@@ -71,6 +70,7 @@ namespace system.battle.battalion.analysis.row_change
 
         private float3? getFlankingPositionForRow(int targetRow, Team team, MovementDataHolder movementDataHolder)
         {
+            /*
             movementDataHolder.flankPositions.TryGetValue(targetRow, out var teamFlanks);
             return team switch
             {
@@ -78,6 +78,8 @@ namespace system.battle.battalion.analysis.row_change
                 Team.TEAM2 => teamFlanks.team2,
                 _ => throw new Exception("unknown team"),
             };
+            */
+            return null;
         }
     }
 }

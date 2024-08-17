@@ -33,7 +33,7 @@ namespace system.battle.battalion.analysis.utils
             {
                 Direction.LEFT => -width * safetyMargin,
                 Direction.RIGHT => width * safetyMargin,
-                _ => throw new Exception("Unsupported direction spliut")
+                _ => throw new Exception("Unsupported direction split " + direction)
             };
             var newX = myCurrentPosition.x + xDelta;
             return new float3(newX, myCurrentPosition.y, myCurrentPosition.z);

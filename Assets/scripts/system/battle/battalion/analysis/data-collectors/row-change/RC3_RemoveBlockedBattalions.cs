@@ -1,6 +1,7 @@
 ﻿using component._common.system_switchers;
 using component.battle.battalion;
 using component.battle.battalion.data_holders;
+using system.battle.battalion.analysis.backup_plans;
 using system.battle.enums;
 using system.battle.system_groups;
 using Unity.Burst;
@@ -10,7 +11,8 @@ using Unity.Entities;
 namespace system.battle.battalion.analysis.row_change
 {
     [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
-    [UpdateAfter(typeof(RC2_MarkRowChangeBattalions))]
+    [UpdateAfter(typeof(CHM5_2_SetMovementForRestBattalions))]
+    [UpdateAfter(typeof(FindBlockerSystem))]
     public partial struct RC3_RemoveBlockedBattalions : ISystem
     {
         [BurstCompile]
@@ -22,7 +24,6 @@ namespace system.battle.battalion.analysis.row_change
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            return;
             var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
             var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
 

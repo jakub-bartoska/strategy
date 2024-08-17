@@ -8,7 +8,6 @@ using Unity.Entities;
 namespace system.battle.battalion.execution.movement
 {
     [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
-    [UpdateAfter(typeof(MD3_OverrideByFlanks))]
     [UpdateAfter(typeof(EP2_ExactPositionForEnemies))]
     public partial struct MD4_AdjustByBattleMovements : ISystem
     {

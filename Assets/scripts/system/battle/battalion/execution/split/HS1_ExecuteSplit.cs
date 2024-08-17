@@ -75,7 +75,8 @@ namespace system.battle.battalion.split
                 return;
             }
 
-            var newPosition = BattleTransformUtils.getNewPositionForSplit(localTransform.Position, width.value, splitBattalions[battalionMarker.id]);
+            var splitDirection = splitBattalions[battalionMarker.id];
+            var newPosition = BattleTransformUtils.getNewPositionForSplit(localTransform.Position, width.value, splitDirection);
 
             var soldiersToMove = new NativeList<BattalionSoldiers>(10, Allocator.Temp);
             for (var i = soldiers.Length - 1; i > soldierCountToStay - 1; i--)

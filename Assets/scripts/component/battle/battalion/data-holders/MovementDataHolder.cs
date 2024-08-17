@@ -1,7 +1,6 @@
 ﻿using system.battle.enums;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Mathematics;
 
 namespace component.battle.battalion.data_holders
 {
@@ -22,20 +21,6 @@ namespace component.battle.battalion.data_holders
         public NativeParallelMultiHashMap<long, BattalionFollower> battalionFollowers;
 
         /**
-         * battalionId - direction battalion should move in normal conditions
-         */
-        public NativeHashMap<long, Direction> battalionDefaultMovementDirection;
-
-        /**
-         * rowId - (team1FlankPosition, team2FlankPosition)
-         * flank position for team1 = when team1 is on right side of this position, it should go left instead of right
-         * flank position for team2 = when team2 is on left side of this position, it should go right instead of left
-         *
-         * positions are null in case that row contains only other team units
-         */
-        public NativeHashMap<int, FlankPositions> flankPositions;
-
-        /**
          * battalionId - (direction, distance, mindDistanceEnemyId)
          * battalionId - (direction, distance, mindDistanceEnemyId)
          * contains only battalions which should move in exact direction
@@ -50,6 +35,7 @@ namespace component.battle.battalion.data_holders
          * battalion planned directions, contains even battalions which are stopped.
          * useful for reinforcements
          */
+        //todo used for chunk movement -> remove once cleared
         public NativeHashMap<long, Direction> plannedMovementDirections;
 
         /**
@@ -83,12 +69,6 @@ namespace component.battle.battalion.data_holders
     {
         public long blockedBattalionId;
         public Direction direction;
-    }
-
-    public struct FlankPositions
-    {
-        public float3? team1;
-        public float3? team2;
     }
 
     public struct ExactPositionMovement

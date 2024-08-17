@@ -24,7 +24,7 @@ namespace system.battle.battalion.analysis.horizontal_split
         {
             var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
             var movementDataHolder = SystemAPI.GetSingletonRW<MovementDataHolder>();
-            var result = dataHolder.ValueRO.splitBattalions;
+            var result = dataHolder.ValueRW.splitBattalions;
             //containns battalions which fight vertically only
             var verticalFighters = getVerticalFighters(dataHolder.ValueRO);
             removeBlockedBattalions(verticalFighters, movementDataHolder.ValueRO, dataHolder.ValueRO);
@@ -33,7 +33,10 @@ namespace system.battle.battalion.analysis.horizontal_split
             foreach (var verticalFighter in verticalFighters)
             {
                 battalionDefaultMovementDirection.TryGetValue(verticalFighter, out var direction);
-                result.Add(verticalFighter, direction);
+                if (direction != Direction.NONE)
+                {
+                    result.Add(verticalFighter, direction);
+                }
             }
         }
 
@@ -72,13 +75,13 @@ namespace system.battle.battalion.analysis.horizontal_split
 
         private void removeBlockedBattalions(NativeHashSet<long> fightingBattalionIds, MovementDataHolder movementDataHolder, DataHolder dataHolder)
         {
-            var battalionDefaultMovementDirection = movementDataHolder.battalionDefaultMovementDirection;
+            var plannedMovementDirections = movementDataHolder.plannedMovementDirections;
             var blockedHorizontalSplits = dataHolder.blockedHorizontalSplits;
 
             var blockedBattalions = new NativeHashSet<long>(1000, Allocator.Temp);
             foreach (var fightingBattalionId in fightingBattalionIds)
             {
-                battalionDefaultMovementDirection.TryGetValue(fightingBattalionId, out var defaultDirection);
+                plannedMovementDirections.TryGetValue(fightingBattalionId, out var defaultDirection);
                 foreach (var direction in blockedHorizontalSplits.GetValuesForKey(fightingBattalionId))
                 {
                     if (direction == defaultDirection)

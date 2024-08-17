@@ -40,6 +40,7 @@ namespace system.battle.battalion
                 {
                     return;
                 }
+
                 //some soldiers needs to be killed
 
                 for (var i = 0; i < soldiersToDestroy; i++)

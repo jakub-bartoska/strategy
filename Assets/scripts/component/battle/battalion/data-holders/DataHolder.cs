@@ -70,12 +70,6 @@ namespace component.battle.battalion.data_holders
         public NativeParallelMultiHashMap<long, Reinforcements> declinedReinforcements;
 
         /**
-         * battalion id
-         * Battalion ids which are flanking
-         */
-        public NativeHashSet<long> flankingBattalions;
-
-        /**
          * rowId - (team1 row change direction - closest enemy row, team2 row change direction - closest enemy row)
          *  - if Team 2 has any unit in row 3, value for team1 direction will be NONE - 3
          *  - if them 2 has 0 units in row 3, 1 in row 5 and 1 in row 2, direction for team 1 for row 3 will be up-3 since it is the most close enemy row
