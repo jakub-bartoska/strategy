@@ -8,8 +8,8 @@ using Unity.Entities;
 namespace system.battle.battalion.analysis.backup_plans
 {
     [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
-    [UpdateAfter(typeof(CHM3_1_FindNeedReinforcementChunks))]
-    public partial struct CHM3_2_FindReinforcementPaths : ISystem
+    [UpdateAfter(typeof(CHM3_3_AddChunkLinks))]
+    public partial struct CHM3_4_FindReinforcementPaths : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)

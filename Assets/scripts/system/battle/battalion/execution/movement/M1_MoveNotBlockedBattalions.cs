@@ -40,19 +40,21 @@ namespace system.battle.battalion.execution
                 }
 
                 var blockedForDirection = false;
-                var direction = movementDataHolder.ValueRO.plannedMovementDirections[battalionId];
-                foreach (var valueTuple in blockers.GetValuesForKey(battalionId))
+                if (movementDataHolder.ValueRO.plannedMovementDirections.TryGetValue(battalionId, out var direction))
                 {
-                    if (valueTuple.blockingDirection == direction)
+                    foreach (var valueTuple in blockers.GetValuesForKey(battalionId))
                     {
-                        blockedForDirection = true;
-                        break;
+                        if (valueTuple.blockingDirection == direction)
+                        {
+                            blockedForDirection = true;
+                            break;
+                        }
                     }
-                }
 
-                if (!blockedForDirection)
-                {
-                    battalionsAbleToMove.Add((battalionId, direction));
+                    if (!blockedForDirection)
+                    {
+                        battalionsAbleToMove.Add((battalionId, direction));
+                    }
                 }
             }
 

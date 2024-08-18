@@ -85,7 +85,14 @@ namespace system.battle.battalion.execution.reinforcement
                     }
 
                     //can reinforce only in my current direction of move
-                    if (blocker.blockingDirection != plannedMovementDirections[battalionMarker.id])
+                    if (plannedMovementDirections.TryGetValue(battalionMarker.id, out var direction))
+                    {
+                        if (blocker.blockingDirection != direction)
+                        {
+                            continue;
+                        }
+                    }
+                    else
                     {
                         continue;
                     }

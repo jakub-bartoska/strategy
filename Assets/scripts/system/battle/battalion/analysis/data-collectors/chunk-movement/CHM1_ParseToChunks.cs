@@ -10,6 +10,7 @@ namespace system.battle.battalion.analysis.backup_plans
 {
     [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
     [UpdateAfter(typeof(PositionParserSystem))]
+    [UpdateAfter(typeof(FindFightingPairsSystem))]
     public partial struct CHM1_ParseToChunks : ISystem
     {
         [BurstCompile]

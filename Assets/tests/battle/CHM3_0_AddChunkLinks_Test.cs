@@ -15,7 +15,7 @@ namespace tests.testiky
         public override void Setup()
         {
             base.Setup();
-            CreateSystem<CHM3_0_AddChunkLinks>();
+            CreateSystem<CHM3_3_AddChunkLinks>();
             var entity = CreateEntity();
             var battleMapStateMarker = new BattleMapStateMarker();
             manager.AddComponentData(entity, battleMapStateMarker);
@@ -73,7 +73,7 @@ namespace tests.testiky
 
             manager.AddComponentData(singletonEntity, backupPlanHolder);
 
-            UpdateSystem<CHM3_0_AddChunkLinks>();
+            UpdateSystem<CHM3_3_AddChunkLinks>();
 
             var backupPlanDataHolder = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity);
             var moveToDifferentChunk = backupPlanDataHolder.chunkLinks;
@@ -134,7 +134,7 @@ namespace tests.testiky
 
             manager.AddComponentData(singletonEntity, backupPlanHolder);
 
-            UpdateSystem<CHM3_0_AddChunkLinks>();
+            UpdateSystem<CHM3_3_AddChunkLinks>();
 
             var backupPlanDataHolder = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity);
             var moveToDifferentChunk = backupPlanDataHolder.chunkLinks;
@@ -203,7 +203,7 @@ namespace tests.testiky
 
             manager.AddComponentData(singletonEntity, backupPlanHolder);
 
-            UpdateSystem<CHM3_0_AddChunkLinks>();
+            UpdateSystem<CHM3_3_AddChunkLinks>();
 
             var backupPlanDataHolder = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity);
             var moveToDifferentChunk = backupPlanDataHolder.chunkLinks;
@@ -272,7 +272,7 @@ namespace tests.testiky
 
             manager.AddComponentData(singletonEntity, backupPlanHolder);
 
-            UpdateSystem<CHM3_0_AddChunkLinks>();
+            UpdateSystem<CHM3_3_AddChunkLinks>();
 
             var backupPlanDataHolder = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity);
             var moveToDifferentChunk = backupPlanDataHolder.chunkLinks;
@@ -341,7 +341,7 @@ namespace tests.testiky
 
             manager.AddComponentData(singletonEntity, backupPlanHolder);
 
-            UpdateSystem<CHM3_0_AddChunkLinks>();
+            UpdateSystem<CHM3_3_AddChunkLinks>();
 
             var backupPlanDataHolder = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity);
             var moveToDifferentChunk = backupPlanDataHolder.chunkLinks;

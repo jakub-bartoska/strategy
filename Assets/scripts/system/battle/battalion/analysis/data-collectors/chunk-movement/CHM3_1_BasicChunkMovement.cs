@@ -1,6 +1,7 @@
 ﻿using System;
 using component._common.system_switchers;
 using component.battle.battalion.data_holders;
+using system.battle.battalion.analysis.utils;
 using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Collections;
@@ -9,8 +10,8 @@ using Unity.Entities;
 namespace system.battle.battalion.analysis.backup_plans
 {
     [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
-    [UpdateAfter(typeof(CHM3_2_FindReinforcementPaths))]
-    public partial struct CHM4_BasicChunkMovement : ISystem
+    [UpdateAfter(typeof(CHM3_0_FindNeedReinforcementChunks))]
+    public partial struct CHM3_1_BasicChunkMovement : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)
@@ -24,6 +25,8 @@ namespace system.battle.battalion.analysis.backup_plans
             var backupPlanDataHolder = SystemAPI.GetSingletonRW<BackupPlanDataHolder>();
             var battleChunksPerRowTeam = backupPlanDataHolder.ValueRW.battleChunksPerRowTeam;
             var allChunks = backupPlanDataHolder.ValueRW.allChunks;
+            var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
+            var allBattalions = dataHolder.ValueRO.battalionInfo;
 
             var moveLeft = backupPlanDataHolder.ValueRW.moveLeft;
             var moveRight = backupPlanDataHolder.ValueRW.moveRight;
@@ -36,23 +39,27 @@ namespace system.battle.battalion.analysis.backup_plans
                 if (chunkBattalionCount == 0)
                     continue;
 
-                var battleInfo = new NativeList<long>(100, Allocator.Temp);
+                var battalions = new NativeList<BattalionInfo>(100, Allocator.Temp);
                 foreach (var chunkBattalion in chunk.battalions)
                 {
-                    battleInfo.Add(chunkBattalion);
+                    battalions.Add(allBattalions[chunkBattalion]);
                 }
 
-                battleInfo.Sort();
+                battalions.Sort(new SortByPositionDesc());
 
                 var availableDirections = chunkToAvailableDirection(chunk);
                 if (availableDirections == ChunkDirection.NONE)
                 {
-                    moveToDifferentChunk.AddRange(battleInfo);
+                    foreach (var battalionInfo in battalions)
+                    {
+                        moveToDifferentChunk.Add(battalionInfo.battalionId);
+                    }
+
                     continue;
                 }
 
                 var directionToStart = availableDirections == ChunkDirection.RIGHT ? ChunkDirection.RIGHT : ChunkDirection.LEFT;
-                splitChunk(0, battleInfo, moveLeft, moveRight, moveToDifferentChunk, directionToStart, availableDirections);
+                splitChunk(0, battalions, moveLeft, moveRight, moveToDifferentChunk, directionToStart, availableDirections);
             }
         }
 
@@ -78,7 +85,7 @@ namespace system.battle.battalion.analysis.backup_plans
 
         private void splitChunk(
             int battalionsSend,
-            NativeList<long> orderedBattleInfo,
+            NativeList<BattalionInfo> orderedBattleInfo,
             NativeList<long> moveLeft,
             NativeList<long> moveRight,
             NativeList<long> moveToDifferentChunk,
@@ -108,18 +115,18 @@ namespace system.battle.battalion.analysis.backup_plans
 
             if (isFull)
             {
-                moveToDifferentChunk.Add(battalionToPick);
+                moveToDifferentChunk.Add(battalionToPick.battalionId);
             }
             else
             {
                 if (direction == ChunkDirection.LEFT)
                 {
-                    moveLeft.Add(battalionToPick);
+                    moveLeft.Add(battalionToPick.battalionId);
                 }
 
                 if (direction == ChunkDirection.RIGHT)
                 {
-                    moveRight.Add(battalionToPick);
+                    moveRight.Add(battalionToPick.battalionId);
                 }
             }
 
