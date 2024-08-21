@@ -10,8 +10,8 @@ using Unity.Entities;
 namespace system.battle.battalion.analysis.backup_plans
 {
     [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
-    [UpdateAfter(typeof(CHM3_0_FindNeedReinforcementChunks))]
-    public partial struct CHM3_1_BasicChunkMovement : ISystem
+    [UpdateAfter(typeof(CHM3_4_FindReinforcementPaths))]
+    public partial struct CHM3_5_BasicChunkMovement : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)
@@ -27,6 +27,7 @@ namespace system.battle.battalion.analysis.backup_plans
             var allChunks = backupPlanDataHolder.ValueRW.allChunks;
             var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
             var allBattalions = dataHolder.ValueRO.battalionInfo;
+            var chunkReinforcementPaths = backupPlanDataHolder.ValueRW.chunkReinforcementPaths;
 
             var moveLeft = backupPlanDataHolder.ValueRW.moveLeft;
             var moveRight = backupPlanDataHolder.ValueRW.moveRight;
@@ -58,8 +59,10 @@ namespace system.battle.battalion.analysis.backup_plans
                     continue;
                 }
 
+                var chunkPath = chunkReinforcementPaths[chunkId];
+                var maxBattalionsPerSide = getMaxBattalionsPerSide(chunkPath.pathLength, chunkPath.targetChunkBattalionCount);
                 var directionToStart = availableDirections == ChunkDirection.RIGHT ? ChunkDirection.RIGHT : ChunkDirection.LEFT;
-                splitChunk(0, battalions, moveLeft, moveRight, moveToDifferentChunk, directionToStart, availableDirections);
+                splitChunk(0, battalions, moveLeft, moveRight, moveToDifferentChunk, directionToStart, availableDirections, maxBattalionsPerSide);
             }
         }
 
@@ -90,7 +93,8 @@ namespace system.battle.battalion.analysis.backup_plans
             NativeList<long> moveRight,
             NativeList<long> moveToDifferentChunk,
             ChunkDirection direction,
-            ChunkDirection availableDirections
+            ChunkDirection availableDirections,
+            int maxBattalionsPerSide
         )
         {
             if (battalionsSend == orderedBattleInfo.Length)
@@ -98,9 +102,9 @@ namespace system.battle.battalion.analysis.backup_plans
 
             var isFull = availableDirections switch
             {
-                ChunkDirection.LEFT => battalionsSend + 1 > 1,
-                ChunkDirection.RIGHT => battalionsSend + 1 > 1,
-                ChunkDirection.BOTH => battalionsSend + 1 > 2,
+                ChunkDirection.LEFT => battalionsSend + 1 > maxBattalionsPerSide,
+                ChunkDirection.RIGHT => battalionsSend + 1 > maxBattalionsPerSide,
+                ChunkDirection.BOTH => battalionsSend + 1 > maxBattalionsPerSide * 2,
                 ChunkDirection.NONE => true
             };
 
@@ -132,7 +136,7 @@ namespace system.battle.battalion.analysis.backup_plans
 
             var nextDirection = pickNextDirection(direction, availableDirections);
 
-            splitChunk(battalionsSend + 1, orderedBattleInfo, moveLeft, moveRight, moveToDifferentChunk, nextDirection, availableDirections);
+            splitChunk(battalionsSend + 1, orderedBattleInfo, moveLeft, moveRight, moveToDifferentChunk, nextDirection, availableDirections, maxBattalionsPerSide);
         }
 
         private ChunkDirection pickNextDirection(ChunkDirection current, ChunkDirection available)
@@ -150,6 +154,12 @@ namespace system.battle.battalion.analysis.backup_plans
             }
 
             throw new Exception("Unexpected direction value: " + current + " " + available);
+        }
+
+        private int getMaxBattalionsPerSide(int pathLength, int targetBattalionCount)
+        {
+            var coefficient = 1f / (1f + pathLength) / (1f + targetBattalionCount * 1.5f);
+            return (int) ((1f / coefficient) - 1f);
         }
 
         private enum ChunkDirection

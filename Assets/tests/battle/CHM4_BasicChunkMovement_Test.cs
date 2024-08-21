@@ -16,7 +16,7 @@ namespace tests.testiky
         public override void Setup()
         {
             base.Setup();
-            CreateSystem<CHM3_1_BasicChunkMovement>();
+            CreateSystem<CHM3_5_BasicChunkMovement>();
             var entity = CreateEntity();
             var battleMapStateMarker = new BattleMapStateMarker();
             manager.AddComponentData(entity, battleMapStateMarker);
@@ -72,7 +72,7 @@ namespace tests.testiky
             manager.AddComponentData(singletonEntity, backupPlanHolder);
 
 
-            UpdateSystem<CHM3_1_BasicChunkMovement>();
+            UpdateSystem<CHM3_5_BasicChunkMovement>();
 
             var backupPlanDataHolder = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity);
             var moveLeft = backupPlanDataHolder.moveLeft;
@@ -137,7 +137,7 @@ namespace tests.testiky
             manager.AddComponentData(singletonEntity, backupPlanHolder);
 
 
-            UpdateSystem<CHM3_1_BasicChunkMovement>();
+            UpdateSystem<CHM3_5_BasicChunkMovement>();
 
             var backupPlanDataHolder = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity);
             var moveLeft = backupPlanDataHolder.moveLeft;
@@ -202,7 +202,7 @@ namespace tests.testiky
             manager.AddComponentData(singletonEntity, backupPlanHolder);
 
 
-            UpdateSystem<CHM3_1_BasicChunkMovement>();
+            UpdateSystem<CHM3_5_BasicChunkMovement>();
 
             var backupPlanDataHolder = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity);
             var moveLeft = backupPlanDataHolder.moveLeft;
@@ -265,7 +265,7 @@ namespace tests.testiky
             manager.AddComponentData(singletonEntity, backupPlanHolder);
 
 
-            UpdateSystem<CHM3_1_BasicChunkMovement>();
+            UpdateSystem<CHM3_5_BasicChunkMovement>();
 
             var backupPlanDataHolder = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity);
             var moveLeft = backupPlanDataHolder.moveLeft;
@@ -334,7 +334,7 @@ namespace tests.testiky
             manager.AddComponentData(singletonEntity, backupPlanHolder);
 
 
-            UpdateSystem<CHM3_1_BasicChunkMovement>();
+            UpdateSystem<CHM3_5_BasicChunkMovement>();
 
             var backupPlanDataHolder = manager.GetComponentData<BackupPlanDataHolder>(singletonEntity);
             var moveLeft = backupPlanDataHolder.moveLeft;

@@ -74,10 +74,8 @@ namespace system.battle.battalion.analysis.backup_plans
                 case PathType.NO_VALID_PATH:
                     return Direction.NONE;
                 case PathType.PATH:
-                    break;
                 case PathType.TARGET:
-                    //battalion cannot be send from batalion which is trying to get reinforcements.
-                    throw new Exception("Invalid situation.");
+                    break;
                 default:
                     throw new Exception("Unknown path type.");
             }

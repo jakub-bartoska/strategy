@@ -27,16 +27,17 @@ namespace system.battle.battalion.analysis.backup_plans
 
             foreach (var needReinforcement in needReinforcements)
             {
-                result.Add(needReinforcement, new ChunkPath
+                result.Add(needReinforcement.Key, new ChunkPath
                 {
                     pathType = PathType.TARGET,
-                    pathComplexity = 0,
+                    targetChunkBattalionCount = needReinforcement.Value,
+                    pathLength = 0,
                 });
             }
 
             foreach (var needReinforcement in needReinforcements)
             {
-                findPaths(needReinforcement, result, 1, chunkLinks);
+                findPaths(needReinforcement.Key, result, 1, needReinforcement.Value, chunkLinks);
             }
 
             var allChunks = backupPlanDataHolder.ValueRO.allChunks;
@@ -52,13 +53,13 @@ namespace system.battle.battalion.analysis.backup_plans
             }
         }
 
-        private void findPaths(long currentChunk, NativeHashMap<long, ChunkPath> result, int pathDepth, NativeParallelMultiHashMap<long, long> chunkLinks)
+        private void findPaths(long currentChunk, NativeHashMap<long, ChunkPath> result, int pathDepth, int targetBattalionCount, NativeParallelMultiHashMap<long, long> chunkLinks)
         {
             foreach (var neighbour in chunkLinks.GetValuesForKey(currentChunk))
             {
                 if (result.TryGetValue(neighbour, out var oldPath))
                 {
-                    if (oldPath.pathComplexity < pathDepth)
+                    if (pathToCoeficient(oldPath.pathLength, oldPath.targetChunkBattalionCount) >= pathToCoeficient(pathDepth, targetBattalionCount))
                     {
                         continue;
                     }
@@ -68,11 +69,17 @@ namespace system.battle.battalion.analysis.backup_plans
                 {
                     pathType = PathType.PATH,
                     targetChunkId = currentChunk,
-                    pathComplexity = pathDepth,
+                    targetChunkBattalionCount = targetBattalionCount,
+                    pathLength = pathDepth,
                 };
 
-                findPaths(neighbour, result, pathDepth + 1, chunkLinks);
+                findPaths(neighbour, result, pathDepth + 1, targetBattalionCount, chunkLinks);
             }
+        }
+
+        private float pathToCoeficient(int pathLength, int targetBattalionCount)
+        {
+            return 1f / (1f + pathLength) / (1f + targetBattalionCount * 1.5f);
         }
     }
 }

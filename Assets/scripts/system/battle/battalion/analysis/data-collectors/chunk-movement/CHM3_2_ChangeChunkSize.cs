@@ -9,7 +9,7 @@ using Unity.Entities;
 namespace system.battle.battalion.analysis.backup_plans
 {
     [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
-    [UpdateAfter(typeof(CHM3_1_BasicChunkMovement))]
+    [UpdateAfter(typeof(CHM3_0_FindNeedReinforcementChunks))]
     public partial struct CHM3_2_ChangeChunkSize : ISystem
     {
         [BurstCompile]

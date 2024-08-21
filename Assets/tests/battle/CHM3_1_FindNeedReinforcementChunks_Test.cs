@@ -43,7 +43,7 @@ namespace tests.testiky
             var backupPlanHolder = new BackupPlanDataHolder
             {
                 allChunks = allChunks,
-                chunksNeedingReinforcements = new NativeHashSet<long>(10, Allocator.Temp)
+                chunksNeedingReinforcements = new NativeHashMap<long, int>(10, Allocator.Temp)
             };
 
             manager.AddComponentData(singletonEntity, backupPlanHolder);
@@ -79,7 +79,7 @@ namespace tests.testiky
             var backupPlanHolder = new BackupPlanDataHolder
             {
                 allChunks = allChunks,
-                chunksNeedingReinforcements = new NativeHashSet<long>(10, Allocator.Temp)
+                chunksNeedingReinforcements = new NativeHashMap<long, int>(10, Allocator.Temp)
             };
 
             manager.AddComponentData(singletonEntity, backupPlanHolder);
@@ -90,7 +90,7 @@ namespace tests.testiky
             var moveToDifferentChunk = backupPlanDataHolder.chunksNeedingReinforcements;
 
             Assert.AreEqual(1, moveToDifferentChunk.Count);
-            Assert.AreEqual(true, moveToDifferentChunk.Contains(1));
+            Assert.AreEqual(true, moveToDifferentChunk.ContainsKey(1));
         }
 
         [Test]
@@ -116,7 +116,7 @@ namespace tests.testiky
             var backupPlanHolder = new BackupPlanDataHolder
             {
                 allChunks = allChunks,
-                chunksNeedingReinforcements = new NativeHashSet<long>(10, Allocator.Temp)
+                chunksNeedingReinforcements = new NativeHashMap<long, int>(10, Allocator.Temp)
             };
 
             manager.AddComponentData(singletonEntity, backupPlanHolder);
@@ -127,7 +127,7 @@ namespace tests.testiky
             var moveToDifferentChunk = backupPlanDataHolder.chunksNeedingReinforcements;
 
             Assert.AreEqual(1, moveToDifferentChunk.Count);
-            Assert.AreEqual(true, moveToDifferentChunk.Contains(1));
+            Assert.AreEqual(true, moveToDifferentChunk.ContainsKey(1));
         }
 
         [Test]
@@ -153,7 +153,7 @@ namespace tests.testiky
             var backupPlanHolder = new BackupPlanDataHolder
             {
                 allChunks = allChunks,
-                chunksNeedingReinforcements = new NativeHashSet<long>(10, Allocator.Temp)
+                chunksNeedingReinforcements = new NativeHashMap<long, int>(10, Allocator.Temp)
             };
 
             manager.AddComponentData(singletonEntity, backupPlanHolder);
@@ -164,7 +164,7 @@ namespace tests.testiky
             var moveToDifferentChunk = backupPlanDataHolder.chunksNeedingReinforcements;
 
             Assert.AreEqual(1, moveToDifferentChunk.Count);
-            Assert.AreEqual(true, moveToDifferentChunk.Contains(1));
+            Assert.AreEqual(true, moveToDifferentChunk.ContainsKey(1));
         }
 
         [Test]
@@ -192,7 +192,7 @@ namespace tests.testiky
             var backupPlanHolder = new BackupPlanDataHolder
             {
                 allChunks = allChunks,
-                chunksNeedingReinforcements = new NativeHashSet<long>(10, Allocator.Temp)
+                chunksNeedingReinforcements = new NativeHashMap<long, int>(10, Allocator.Temp)
             };
 
             manager.AddComponentData(singletonEntity, backupPlanHolder);
@@ -203,7 +203,7 @@ namespace tests.testiky
             var moveToDifferentChunk = backupPlanDataHolder.chunksNeedingReinforcements;
 
             Assert.AreEqual(1, moveToDifferentChunk.Count);
-            Assert.AreEqual(true, moveToDifferentChunk.Contains(1));
+            Assert.AreEqual(true, moveToDifferentChunk.ContainsKey(1));
         }
 
         [Test]
@@ -232,7 +232,7 @@ namespace tests.testiky
             var backupPlanHolder = new BackupPlanDataHolder
             {
                 allChunks = allChunks,
-                chunksNeedingReinforcements = new NativeHashSet<long>(10, Allocator.Temp)
+                chunksNeedingReinforcements = new NativeHashMap<long, int>(10, Allocator.Temp)
             };
 
             manager.AddComponentData(singletonEntity, backupPlanHolder);
@@ -270,7 +270,7 @@ namespace tests.testiky
             var backupPlanHolder = new BackupPlanDataHolder
             {
                 allChunks = allChunks,
-                chunksNeedingReinforcements = new NativeHashSet<long>(10, Allocator.Temp)
+                chunksNeedingReinforcements = new NativeHashMap<long, int>(10, Allocator.Temp)
             };
 
             manager.AddComponentData(singletonEntity, backupPlanHolder);
@@ -308,7 +308,7 @@ namespace tests.testiky
             var backupPlanHolder = new BackupPlanDataHolder
             {
                 allChunks = allChunks,
-                chunksNeedingReinforcements = new NativeHashSet<long>(10, Allocator.Temp)
+                chunksNeedingReinforcements = new NativeHashMap<long, int>(10, Allocator.Temp)
             };
 
             manager.AddComponentData(singletonEntity, backupPlanHolder);

@@ -26,21 +26,12 @@ namespace system.battle.battalion.analysis.backup_plans
             foreach (var idChunk in allChunks)
             {
                 var chunk = idChunk.Value;
-                var neededBattalions = 0;
-                if (chunk.leftFighting)
+                if (!chunk.rightFighting && !chunk.leftFighting)
                 {
-                    neededBattalions++;
+                    continue;
                 }
 
-                if (chunk.rightFighting)
-                {
-                    neededBattalions++;
-                }
-
-                if (chunk.battalions.Length < neededBattalions)
-                {
-                    chunksNeedingReinforcements.Add(chunk.chunkId);
-                }
+                chunksNeedingReinforcements.Add(chunk.chunkId, chunk.battalions.Length);
             }
         }
     }

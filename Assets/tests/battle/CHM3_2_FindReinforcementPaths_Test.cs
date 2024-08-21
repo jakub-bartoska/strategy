@@ -29,7 +29,7 @@ namespace tests.testiky
 
             manager.AddComponentData(singletonEntity, dataHolder);
 
-            var needReinforcements = new NativeHashSet<long>(10, Allocator.Temp);
+            var needReinforcements = new NativeHashMap<long, int>(10, Allocator.Temp);
             var chunkLinks = new NativeParallelMultiHashMap<long, long>(10, Allocator.Temp);
             var allChunks = new NativeHashMap<long, BattleChunk>(10, Allocator.Temp);
 
@@ -66,7 +66,7 @@ namespace tests.testiky
 
             manager.AddComponentData(singletonEntity, dataHolder);
 
-            var needReinforcements = new NativeHashSet<long>(10, Allocator.Temp);
+            var needReinforcements = new NativeHashMap<long, int>(10, Allocator.Temp);
             var chunkLinks = new NativeParallelMultiHashMap<long, long>(10, Allocator.Temp);
             var allChunks = new NativeHashMap<long, BattleChunk>(10, Allocator.Temp);
 
@@ -106,11 +106,11 @@ namespace tests.testiky
 
             manager.AddComponentData(singletonEntity, dataHolder);
 
-            var needReinforcements = new NativeHashSet<long>(10, Allocator.Temp);
+            var needReinforcements = new NativeHashMap<long, int>(10, Allocator.Temp);
             var chunkLinks = new NativeParallelMultiHashMap<long, long>(10, Allocator.Temp);
             var allChunks = new NativeHashMap<long, BattleChunk>(10, Allocator.Temp);
 
-            needReinforcements.Add(0);
+            needReinforcements.Add(0, 0);
 
             allChunks.Add(0, new BattleChunk());
             allChunks.Add(1, new BattleChunk());
@@ -137,7 +137,7 @@ namespace tests.testiky
             Assert.AreEqual(PathType.TARGET, path1.pathType);
             var path2 = chunkReinforcementPaths[1];
             Assert.AreEqual(PathType.PATH, path2.pathType);
-            Assert.AreEqual(1, path2.pathComplexity);
+            Assert.AreEqual(1, path2.pathLength);
             Assert.AreEqual(0, path2.targetChunkId);
         }
 
@@ -150,11 +150,11 @@ namespace tests.testiky
 
             manager.AddComponentData(singletonEntity, dataHolder);
 
-            var needReinforcements = new NativeHashSet<long>(10, Allocator.Temp);
+            var needReinforcements = new NativeHashMap<long, int>(10, Allocator.Temp);
             var chunkLinks = new NativeParallelMultiHashMap<long, long>(10, Allocator.Temp);
             var allChunks = new NativeHashMap<long, BattleChunk>(10, Allocator.Temp);
 
-            needReinforcements.Add(0);
+            needReinforcements.Add(0, 0);
 
             allChunks.Add(0, new BattleChunk());
             allChunks.Add(1, new BattleChunk());
@@ -189,11 +189,11 @@ namespace tests.testiky
 
             manager.AddComponentData(singletonEntity, dataHolder);
 
-            var needReinforcements = new NativeHashSet<long>(10, Allocator.Temp);
+            var needReinforcements = new NativeHashMap<long, int>(10, Allocator.Temp);
             var chunkLinks = new NativeParallelMultiHashMap<long, long>(10, Allocator.Temp);
             var allChunks = new NativeHashMap<long, BattleChunk>(10, Allocator.Temp);
 
-            needReinforcements.Add(0);
+            needReinforcements.Add(0, 0);
 
             allChunks.Add(0, new BattleChunk());
             allChunks.Add(1, new BattleChunk());
@@ -223,11 +223,11 @@ namespace tests.testiky
             Assert.AreEqual(PathType.TARGET, path1.pathType);
             var path2 = chunkReinforcementPaths[1];
             Assert.AreEqual(PathType.PATH, path2.pathType);
-            Assert.AreEqual(1, path2.pathComplexity);
+            Assert.AreEqual(1, path2.pathLength);
             Assert.AreEqual(0, path2.targetChunkId);
             var path3 = chunkReinforcementPaths[2];
             Assert.AreEqual(PathType.PATH, path3.pathType);
-            Assert.AreEqual(2, path3.pathComplexity);
+            Assert.AreEqual(2, path3.pathLength);
             Assert.AreEqual(1, path3.targetChunkId);
         }
 
@@ -240,12 +240,12 @@ namespace tests.testiky
 
             manager.AddComponentData(singletonEntity, dataHolder);
 
-            var needReinforcements = new NativeHashSet<long>(10, Allocator.Temp);
+            var needReinforcements = new NativeHashMap<long, int>(10, Allocator.Temp);
             var chunkLinks = new NativeParallelMultiHashMap<long, long>(10, Allocator.Temp);
             var allChunks = new NativeHashMap<long, BattleChunk>(10, Allocator.Temp);
 
-            needReinforcements.Add(0);
-            needReinforcements.Add(3);
+            needReinforcements.Add(0, 0);
+            needReinforcements.Add(3, 0);
 
             allChunks.Add(0, new BattleChunk());
             allChunks.Add(1, new BattleChunk());
@@ -278,11 +278,11 @@ namespace tests.testiky
             Assert.AreEqual(PathType.TARGET, path1.pathType);
             var path2 = chunkReinforcementPaths[1];
             Assert.AreEqual(PathType.PATH, path2.pathType);
-            Assert.AreEqual(1, path2.pathComplexity);
+            Assert.AreEqual(1, path2.pathLength);
             Assert.AreEqual(0, path2.targetChunkId);
             var path3 = chunkReinforcementPaths[2];
             Assert.AreEqual(PathType.PATH, path3.pathType);
-            Assert.AreEqual(1, path3.pathComplexity);
+            Assert.AreEqual(1, path3.pathLength);
             Assert.AreEqual(3, path3.targetChunkId);
             var path4 = chunkReinforcementPaths[3];
             Assert.AreEqual(PathType.TARGET, path4.pathType);

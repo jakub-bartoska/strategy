@@ -8,7 +8,7 @@ using Unity.Entities;
 namespace system.battle.battalion.analysis.backup_plans
 {
     [UpdateInGroup(typeof(BattleAnalysisSystemGroup))]
-    [UpdateAfter(typeof(CHM3_4_FindReinforcementPaths))]
+    [UpdateAfter(typeof(CHM3_5_BasicChunkMovement))]
     public partial struct CHM5_0_SetMovement : ISystem
     {
         [BurstCompile]

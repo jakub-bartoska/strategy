@@ -35,11 +35,11 @@ namespace component.battle.battalion.data_holders
         public NativeParallelMultiHashMap<long, long> chunkLinks;
 
         /**
-         * chunkId
+         * chunkId - battalion count inside chunk
          *
-         * If chunk is fighting from 1 or both sides and dont have battalion to fight enemy facing that dirrection, then chunk is marked as it needs additional reinforcements
+         * If Battalion is fighting from 1 or 2 sides it is marked as it needs reinforcements
          */
-        public NativeHashSet<long> chunksNeedingReinforcements;
+        public NativeHashMap<long, int> chunksNeedingReinforcements;
 
         /**
          * chunkId -> path to chung which needs reinforcement
@@ -59,7 +59,12 @@ namespace component.battle.battalion.data_holders
         /**
          * How many chunks have to be passed till battalion gets to target chunk
          */
-        public int pathComplexity;
+        public int pathLength;
+
+        /**
+         * How many battalions have target chunk
+         */
+        public int targetChunkBattalionCount;
 
         /**
          * Next chunk id in the path
