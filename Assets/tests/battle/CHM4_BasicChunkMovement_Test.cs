@@ -46,8 +46,8 @@ namespace tests.testiky
             {
                 chunkId = 0,
                 rowId = 1,
-                leftFighting = true,
-                rightFighting = true,
+                //leftEnemy = true,
+                //rightEnemy = true,
                 battalions = battalions,
                 team = Team.TEAM1
             };
@@ -110,8 +110,8 @@ namespace tests.testiky
             {
                 chunkId = 0,
                 rowId = 1,
-                leftFighting = true,
-                rightFighting = true,
+                //leftEnemy = true,
+                //rightEnemy = true,
                 battalions = battalions,
                 team = Team.TEAM1
             };
@@ -175,8 +175,8 @@ namespace tests.testiky
             {
                 chunkId = 0,
                 rowId = 1,
-                leftFighting = true,
-                rightFighting = false,
+                //leftEnemy = true,
+                rightEnemy = null,
                 battalions = battalions,
                 team = Team.TEAM1
             };
@@ -238,8 +238,8 @@ namespace tests.testiky
             {
                 chunkId = 0,
                 rowId = 1,
-                leftFighting = false,
-                rightFighting = true,
+                leftEnemy = null,
+                //rightEnemy = true,
                 battalions = battalions,
                 team = Team.TEAM1
             };
@@ -307,8 +307,8 @@ namespace tests.testiky
             {
                 chunkId = 0,
                 rowId = 1,
-                leftFighting = true,
-                rightFighting = true,
+                //leftEnemy = true,
+                //rightEnemy = true,
                 battalions = battalions,
                 team = Team.TEAM1
             };

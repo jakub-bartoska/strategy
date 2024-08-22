@@ -67,8 +67,8 @@ namespace tests.testiky
             var team1 = allChunks[team1Id];
             Assert.AreEqual((int) Team.TEAM1, (int) team1.team);
             Assert.AreEqual(0, team1.chunkId);
-            Assert.AreEqual(false, team1.leftFighting);
-            Assert.AreEqual(true, team1.rightFighting);
+            Assert.AreEqual(false, team1.leftEnemy);
+            Assert.AreEqual(true, team1.rightEnemy);
             Assert.AreEqual(2, team1.battalions.Length);
             Assert.AreEqual(1, team1.battalions[0]);
             Assert.AreEqual(2, team1.battalions[1]);
@@ -82,8 +82,8 @@ namespace tests.testiky
             var team2 = allChunks[team2Id];
             Assert.AreEqual((int) Team.TEAM2, (int) team2.team);
             Assert.AreEqual(1, team2.chunkId);
-            Assert.AreEqual(true, team2.leftFighting);
-            Assert.AreEqual(false, team2.rightFighting);
+            Assert.AreEqual(true, team2.leftEnemy);
+            Assert.AreEqual(false, team2.rightEnemy);
             Assert.AreEqual(1, team2.battalions.Length);
             Assert.AreEqual(3, team2.battalions[0]);
             Assert.AreEqual(1, team2.rowId);
@@ -136,8 +136,8 @@ namespace tests.testiky
             var team1id = DataHolderUtils.getChunkByTeamPosition(singletonEntity, Team.TEAM1, manager);
             var team1 = allChunks[team1id];
             Assert.AreEqual((int) Team.TEAM1, (int) team1.team);
-            Assert.AreEqual(true, team1.leftFighting);
-            Assert.AreEqual(true, team1.rightFighting);
+            Assert.AreEqual(true, team1.leftEnemy);
+            Assert.AreEqual(true, team1.rightEnemy);
             Assert.AreEqual(1, team1.battalions.Length);
             Assert.AreEqual(2, team1.battalions[0]);
             Assert.AreEqual(1, team1.rowId);
@@ -147,8 +147,8 @@ namespace tests.testiky
             var team2_1id = DataHolderUtils.getChunkByTeamPosition(singletonEntity, Team.TEAM2, manager, 1);
             var team2_1 = allChunks[team2_1id];
             Assert.AreEqual((int) Team.TEAM2, (int) team2_1.team);
-            Assert.AreEqual(false, team2_1.leftFighting);
-            Assert.AreEqual(true, team2_1.rightFighting);
+            Assert.AreEqual(false, team2_1.leftEnemy);
+            Assert.AreEqual(true, team2_1.rightEnemy);
             Assert.AreEqual(1, team2_1.battalions.Length);
             Assert.AreEqual(1, team2_1.battalions[0]);
             Assert.AreEqual(1, team2_1.rowId);
@@ -158,8 +158,8 @@ namespace tests.testiky
             var team2_2id = DataHolderUtils.getChunkByTeamPosition(singletonEntity, Team.TEAM2, manager, 0);
             var team2_2 = allChunks[team2_2id];
             Assert.AreEqual((int) Team.TEAM2, (int) team2_2.team);
-            Assert.AreEqual(true, team2_2.leftFighting);
-            Assert.AreEqual(false, team2_2.rightFighting);
+            Assert.AreEqual(true, team2_2.leftEnemy);
+            Assert.AreEqual(false, team2_2.rightEnemy);
             Assert.AreEqual(1, team2_2.battalions.Length);
             Assert.AreEqual(3, team2_2.battalions[0]);
             Assert.AreEqual(1, team2_2.rowId);

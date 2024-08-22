@@ -73,8 +73,8 @@ namespace system.battle.battalion.analysis.backup_plans
                 {
                     chunkId = lastChunkId++,
                     rowId = rowId,
-                    leftFighting = false,
-                    rightFighting = false,
+                    leftEnemy = null,
+                    rightEnemy = null,
                     battalions = new NativeList<long>(0, Allocator.Persistent),
                     startX = CustomTransformUtils.defaulBattleMapOffset.x - CustomTransformUtils.battleXSize,
                     endX = CustomTransformUtils.defaulBattleMapOffset.x + CustomTransformUtils.battleXSize,
@@ -108,20 +108,24 @@ namespace system.battle.battalion.analysis.backup_plans
             };
             var enemyValues = filledChunks.GetValuesForKey(enemyKey);
             float? minX = null;
+            long? leftEnemy = null;
             float? maxX = null;
+            long? rightEnemy = null;
             foreach (var chunkId in enemyValues)
             {
                 var battleChunk = allChunks[chunkId];
                 var startX = battleChunk.startX;
                 var endX = battleChunk.endX;
-                if (!battleChunk.leftFighting)
+                if (!battleChunk.leftEnemy.HasValue)
                 {
                     minX = startX;
+                    rightEnemy = chunkId;
                 }
 
-                if (!battleChunk.rightFighting)
+                if (!battleChunk.rightEnemy.HasValue)
                 {
                     maxX = endX;
+                    leftEnemy = chunkId;
                 }
             }
 
@@ -131,8 +135,8 @@ namespace system.battle.battalion.analysis.backup_plans
                 {
                     chunkId = lastChunkId++,
                     rowId = rowId,
-                    leftFighting = false,
-                    rightFighting = true,
+                    leftEnemy = null,
+                    rightEnemy = rightEnemy.Value,
                     battalions = new NativeList<long>(0, Allocator.Persistent),
                     startX = CustomTransformUtils.defaulBattleMapOffset.x - CustomTransformUtils.battleXSize,
                     endX = minX.Value,
@@ -148,8 +152,8 @@ namespace system.battle.battalion.analysis.backup_plans
                 {
                     chunkId = lastChunkId++,
                     rowId = rowId,
-                    leftFighting = true,
-                    rightFighting = false,
+                    leftEnemy = leftEnemy.Value,
+                    rightEnemy = null,
                     battalions = new NativeList<long>(0, Allocator.Persistent),
                     startX = maxX.Value,
                     endX = CustomTransformUtils.defaulBattleMapOffset.x + CustomTransformUtils.battleXSize,

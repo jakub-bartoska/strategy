@@ -34,7 +34,7 @@ namespace system.battle.battalion.analysis.backup_plans
 
             foreach (var rowId in allRows)
             {
-                var firstBatalion = true;
+                long? leftBattalion = null;
                 BattleChunk? currentChunk = null;
                 var chunkBattalions = new NativeList<long>(100, Allocator.Persistent);
                 BattalionInfo? lastBattalion = null;
@@ -53,8 +53,8 @@ namespace system.battle.battalion.analysis.backup_plans
                         {
                             chunkId = lastChunkId++,
                             rowId = rowId,
-                            leftFighting = !firstBatalion,
-                            rightFighting = false,
+                            leftEnemy = leftBattalion,
+                            rightEnemy = null,
                             battalions = chunkBattalions,
                             startX = battalionInfo.position.x - battalionInfo.width / 2,
                             endX = -1, //will be saved later 
@@ -62,7 +62,7 @@ namespace system.battle.battalion.analysis.backup_plans
                         };
                     }
 
-                    firstBatalion = false;
+                    leftBattalion = currentChunk.Value.chunkId;
 
                     if (currentChunk.Value.team == battalionInfo.team)
                     {
@@ -70,13 +70,14 @@ namespace system.battle.battalion.analysis.backup_plans
                     }
                     else
                     {
+                        var newChunkId = lastChunkId++;
                         //update immutable old value to save it and then delete it
-                        var chunkToSave = new BattleChunk
+                        var oldChunk = new BattleChunk
                         {
                             chunkId = currentChunk.Value.chunkId,
                             rowId = currentChunk.Value.rowId,
-                            leftFighting = currentChunk.Value.leftFighting,
-                            rightFighting = true,
+                            leftEnemy = currentChunk.Value.leftEnemy,
+                            rightEnemy = newChunkId,
                             battalions = chunkBattalions,
                             startX = currentChunk.Value.startX,
                             endX = battalionInfo.position.x - battalionInfo.width / 2,
@@ -88,17 +89,17 @@ namespace system.battle.battalion.analysis.backup_plans
                             rowId = rowId,
                             team = currentChunk.Value.team
                         };
-                        allChunks.Add(chunkToSave.chunkId, chunkToSave);
-                        battleChunksPerRowTeam.Add(teamRow, chunkToSave.chunkId);
+                        allChunks.Add(oldChunk.chunkId, oldChunk);
+                        battleChunksPerRowTeam.Add(teamRow, oldChunk.chunkId);
 
                         chunkBattalions = new NativeList<long>(100, Allocator.Persistent);
                         chunkBattalions.Add(battalionInfo.battalionId);
                         currentChunk = new BattleChunk
                         {
-                            chunkId = lastChunkId++,
+                            chunkId = newChunkId,
                             rowId = rowId,
-                            leftFighting = !firstBatalion,
-                            rightFighting = false,
+                            leftEnemy = oldChunk.chunkId,
+                            rightEnemy = null,
                             battalions = chunkBattalions,
                             startX = battalionInfo.position.x - battalionInfo.width / 2,
                             endX = -1, //will be saved later
@@ -119,8 +120,8 @@ namespace system.battle.battalion.analysis.backup_plans
                     {
                         chunkId = currentChunk.Value.chunkId,
                         rowId = currentChunk.Value.rowId,
-                        leftFighting = currentChunk.Value.leftFighting,
-                        rightFighting = false,
+                        leftEnemy = currentChunk.Value.leftEnemy,
+                        rightEnemy = null,
                         battalions = chunkBattalions,
                         startX = currentChunk.Value.startX,
                         endX = lastBattalion.Value.position.x + lastBattalion.Value.width / 2,

@@ -64,13 +64,13 @@ namespace system.battle.battalion.analysis.backup_plans
             var newRightXPosition = originalChunk.endX;
             var newLeftXPosition = originalChunk.startX;
 
-            if (isFightingRight && originalChunk.rightFighting)
+            if (isFightingRight && originalChunk.rightEnemy.HasValue)
             {
                 var mostRightBattalion = sortedBattalions[sortedBattalions.Length - 1];
                 newRightXPosition = mostRightBattalion.position.x - mostRightBattalion.width / 2;
             }
 
-            if (isFightingLeft && originalChunk.leftFighting)
+            if (isFightingLeft && originalChunk.leftEnemy.HasValue)
             {
                 var mostLeftPosition = sortedBattalions[0];
                 newLeftXPosition = mostLeftPosition.position.x + mostLeftPosition.width / 2;
@@ -81,8 +81,8 @@ namespace system.battle.battalion.analysis.backup_plans
                 chunkId = originalChunk.chunkId,
                 rowId = originalChunk.rowId,
                 team = originalChunk.team,
-                leftFighting = originalChunk.leftFighting,
-                rightFighting = originalChunk.rightFighting,
+                leftEnemy = originalChunk.leftEnemy,
+                rightEnemy = originalChunk.rightEnemy,
                 battalions = originalChunk.battalions,
                 startX = newLeftXPosition,
                 endX = newRightXPosition

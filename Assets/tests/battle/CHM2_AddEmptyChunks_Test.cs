@@ -45,8 +45,8 @@ namespace tests.testiky
             {
                 chunkId = backupPlanHolder.lastChunkId++,
                 rowId = 0,
-                leftFighting = false,
-                rightFighting = false,
+                leftEnemy = null,
+                rightEnemy = null,
                 battalions = new NativeList<long>(0, Allocator.Persistent),
                 startX = 10,
                 endX = 100,
@@ -68,8 +68,8 @@ namespace tests.testiky
             iterator.MoveNext();
             var emptyChunk = allChunks[iterator.Current];
             //Assert.AreEqual(0, emptyChunk.battalions.Length);
-            Assert.AreEqual(false, emptyChunk.leftFighting);
-            Assert.AreEqual(false, emptyChunk.rightFighting);
+            Assert.AreEqual(false, emptyChunk.leftEnemy);
+            Assert.AreEqual(false, emptyChunk.rightEnemy);
             Assert.AreEqual((int) Team.TEAM1, (int) emptyChunk.team);
             Assert.AreEqual(1, emptyChunk.rowId);
             Assert.AreEqual(10000 - 300, emptyChunk.startX);
@@ -105,8 +105,8 @@ namespace tests.testiky
             {
                 chunkId = backupPlanHolder.lastChunkId++,
                 rowId = 0,
-                leftFighting = false,
-                rightFighting = false,
+                leftEnemy = null,
+                rightEnemy = null,
                 battalions = new NativeList<long>(0, Allocator.Persistent),
                 startX = 10,
                 endX = 100,
@@ -118,8 +118,8 @@ namespace tests.testiky
             {
                 chunkId = backupPlanHolder.lastChunkId++,
                 rowId = 1,
-                leftFighting = false,
-                rightFighting = false,
+                leftEnemy = null,
+                rightEnemy = null,
                 battalions = new NativeList<long>(0, Allocator.Persistent),
                 startX = 10,
                 endX = 100,
@@ -142,15 +142,15 @@ namespace tests.testiky
             var emptyChunk2 = allChunks[iterator.Current];
             iterator.MoveNext();
             var emptyChunk1 = allChunks[iterator.Current];
-            Assert.AreEqual(false, emptyChunk1.leftFighting);
-            Assert.AreEqual(true, emptyChunk1.rightFighting);
+            Assert.AreEqual(false, emptyChunk1.leftEnemy);
+            Assert.AreEqual(true, emptyChunk1.rightEnemy);
             Assert.AreEqual((int) Team.TEAM1, (int) emptyChunk1.team);
             Assert.AreEqual(1, emptyChunk1.rowId);
             Assert.AreEqual(10000 - 300, emptyChunk1.startX);
             Assert.AreEqual(10, emptyChunk1.endX);
 
-            Assert.AreEqual(true, emptyChunk2.leftFighting);
-            Assert.AreEqual(false, emptyChunk2.rightFighting);
+            Assert.AreEqual(true, emptyChunk2.leftEnemy);
+            Assert.AreEqual(false, emptyChunk2.rightEnemy);
             Assert.AreEqual((int) Team.TEAM1, (int) emptyChunk2.team);
             Assert.AreEqual(1, emptyChunk2.rowId);
             Assert.AreEqual(100, emptyChunk2.startX);
@@ -186,8 +186,8 @@ namespace tests.testiky
             {
                 chunkId = backupPlanHolder.lastChunkId++,
                 rowId = 0,
-                leftFighting = true,
-                rightFighting = false,
+                //leftEnemy = true,
+                rightEnemy = null,
                 battalions = new NativeList<long>(0, Allocator.Persistent),
                 startX = 10,
                 endX = 30,
@@ -199,8 +199,8 @@ namespace tests.testiky
             {
                 chunkId = backupPlanHolder.lastChunkId++,
                 rowId = 0,
-                leftFighting = false,
-                rightFighting = true,
+                leftEnemy = null,
+                //rightEnemy = true,
                 battalions = new NativeList<long>(0, Allocator.Persistent),
                 startX = -10,
                 endX = 10,
@@ -221,8 +221,8 @@ namespace tests.testiky
             });
             iterator.MoveNext();
             var emptyChunk1 = allChunks[iterator.Current];
-            Assert.AreEqual(false, emptyChunk1.leftFighting);
-            Assert.AreEqual(true, emptyChunk1.rightFighting);
+            Assert.AreEqual(false, emptyChunk1.leftEnemy);
+            Assert.AreEqual(true, emptyChunk1.rightEnemy);
             Assert.AreEqual((int) Team.TEAM1, (int) emptyChunk1.team);
             Assert.AreEqual(0, emptyChunk1.rowId);
             Assert.AreEqual(10000 - 300, emptyChunk1.startX);
@@ -258,8 +258,8 @@ namespace tests.testiky
             {
                 chunkId = backupPlanHolder.lastChunkId++,
                 rowId = 0,
-                leftFighting = false,
-                rightFighting = true,
+                leftEnemy = null,
+                //rightEnemy = true,
                 battalions = new NativeList<long>(0, Allocator.Persistent),
                 startX = 10,
                 endX = 30,
@@ -271,8 +271,8 @@ namespace tests.testiky
             {
                 chunkId = backupPlanHolder.lastChunkId++,
                 rowId = 0,
-                leftFighting = true,
-                rightFighting = false,
+                //leftEnemy = true,
+                rightEnemy = null,
                 battalions = new NativeList<long>(0, Allocator.Persistent),
                 startX = 30,
                 endX = 100,
@@ -293,8 +293,8 @@ namespace tests.testiky
             });
             iterator.MoveNext();
             var emptyChunk1 = allChunks[iterator.Current];
-            Assert.AreEqual(true, emptyChunk1.leftFighting);
-            Assert.AreEqual(false, emptyChunk1.rightFighting);
+            Assert.AreEqual(true, emptyChunk1.leftEnemy);
+            Assert.AreEqual(false, emptyChunk1.rightEnemy);
             Assert.AreEqual((int) Team.TEAM1, (int) emptyChunk1.team);
             Assert.AreEqual(0, emptyChunk1.rowId);
             Assert.AreEqual(100, emptyChunk1.startX);
@@ -330,8 +330,8 @@ namespace tests.testiky
             {
                 chunkId = backupPlanHolder.lastChunkId++,
                 rowId = 0,
-                leftFighting = true,
-                rightFighting = false,
+                //leftEnemy = true,
+                rightEnemy = null,
                 battalions = new NativeList<long>(0, Allocator.Persistent),
                 startX = 10,
                 endX = 30,
@@ -343,8 +343,8 @@ namespace tests.testiky
             {
                 chunkId = backupPlanHolder.lastChunkId++,
                 rowId = 0,
-                leftFighting = true,
-                rightFighting = false,
+                //leftEnemy = true,
+                rightEnemy = null,
                 battalions = new NativeList<long>(0, Allocator.Persistent),
                 startX = 30,
                 endX = 100,
@@ -356,8 +356,8 @@ namespace tests.testiky
             {
                 chunkId = backupPlanHolder.lastChunkId++,
                 rowId = 0,
-                leftFighting = false,
-                rightFighting = true,
+                leftEnemy = null,
+                //rightEnemy = true,
                 battalions = new NativeList<long>(0, Allocator.Persistent),
                 startX = -10,
                 endX = 10,
@@ -380,15 +380,15 @@ namespace tests.testiky
             var emptyChunk2 = allChunks[iterator.Current];
             iterator.MoveNext();
             var emptyChunk1 = allChunks[iterator.Current];
-            Assert.AreEqual(false, emptyChunk1.leftFighting);
-            Assert.AreEqual(true, emptyChunk1.rightFighting);
+            Assert.AreEqual(false, emptyChunk1.leftEnemy);
+            Assert.AreEqual(true, emptyChunk1.rightEnemy);
             Assert.AreEqual((int) Team.TEAM1, (int) emptyChunk1.team);
             Assert.AreEqual(0, emptyChunk1.rowId);
             Assert.AreEqual(10000 - 300, emptyChunk1.startX);
             Assert.AreEqual(-10, emptyChunk1.endX);
 
-            Assert.AreEqual(true, emptyChunk2.leftFighting);
-            Assert.AreEqual(false, emptyChunk2.rightFighting);
+            Assert.AreEqual(true, emptyChunk2.leftEnemy);
+            Assert.AreEqual(false, emptyChunk2.rightEnemy);
             Assert.AreEqual((int) Team.TEAM1, (int) emptyChunk2.team);
             Assert.AreEqual(0, emptyChunk2.rowId);
             Assert.AreEqual(100, emptyChunk2.startX);

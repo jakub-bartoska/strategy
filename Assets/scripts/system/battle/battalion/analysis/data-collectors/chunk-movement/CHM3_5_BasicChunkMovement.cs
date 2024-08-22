@@ -6,6 +6,7 @@ using system.battle.system_groups;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 
 namespace system.battle.battalion.analysis.backup_plans
 {
@@ -61,24 +62,58 @@ namespace system.battle.battalion.analysis.backup_plans
 
                 var chunkPath = chunkReinforcementPaths[chunkId];
                 var maxBattalionsPerSide = getMaxBattalionsPerSide(chunkPath.pathLength, chunkPath.targetChunkBattalionCount);
-                var directionToStart = availableDirections == ChunkDirection.RIGHT ? ChunkDirection.RIGHT : ChunkDirection.LEFT;
+                var directionToStart = getDirectionToStart(chunk, availableDirections, allBattalions, allChunks);
                 splitChunk(0, battalions, moveLeft, moveRight, moveToDifferentChunk, directionToStart, availableDirections, maxBattalionsPerSide);
             }
         }
 
+        private ChunkDirection getDirectionToStart(BattleChunk chunk, ChunkDirection availableDirections, NativeHashMap<long, BattalionInfo> allBattalions, NativeHashMap<long, BattleChunk> allChunks)
+        {
+            if (availableDirections == ChunkDirection.BOTH && chunk.battalions.Length == 1)
+            {
+                var battalion = allBattalions[chunk.battalions[0]];
+                var leftBorder = getRightBorderOfEnemyChunk(allBattalions, allChunks[chunk.leftEnemy.Value]);
+                var distanceToLeft = math.abs(leftBorder - battalion.position.x);
+                var distanceToRight = math.abs(chunk.endX - battalion.position.x);
+                if (distanceToLeft < distanceToRight)
+                {
+                    return ChunkDirection.LEFT;
+                }
+
+                return ChunkDirection.RIGHT;
+            }
+
+            return availableDirections == ChunkDirection.RIGHT ? ChunkDirection.RIGHT : ChunkDirection.LEFT;
+        }
+
+        private float getRightBorderOfEnemyChunk(NativeHashMap<long, BattalionInfo> allBattalions, BattleChunk chunk)
+        {
+            float? mostRightX = null;
+            foreach (var battalionId in chunk.battalions)
+            {
+                var battalion = allBattalions[battalionId];
+                if (!mostRightX.HasValue || battalion.position.x > mostRightX)
+                {
+                    mostRightX = battalion.position.x;
+                }
+            }
+
+            return mostRightX.Value;
+        }
+
         private ChunkDirection chunkToAvailableDirection(BattleChunk chunk)
         {
-            if (chunk.leftFighting && chunk.rightFighting)
+            if (chunk.leftEnemy.HasValue && chunk.rightEnemy.HasValue)
             {
                 return ChunkDirection.BOTH;
             }
 
-            if (!chunk.leftFighting && chunk.rightFighting)
+            if (!chunk.leftEnemy.HasValue && chunk.rightEnemy.HasValue)
             {
                 return ChunkDirection.RIGHT;
             }
 
-            if (chunk.leftFighting && !chunk.rightFighting)
+            if (chunk.leftEnemy.HasValue && !chunk.rightEnemy.HasValue)
             {
                 return ChunkDirection.LEFT;
             }

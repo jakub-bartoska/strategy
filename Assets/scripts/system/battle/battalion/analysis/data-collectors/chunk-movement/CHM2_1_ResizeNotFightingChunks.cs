@@ -26,9 +26,9 @@ namespace system.battle.battalion.analysis.backup_plans
             foreach (var chunkKey in allChunks.GetKeyArray(Allocator.Temp))
             {
                 var chunk = allChunks[chunkKey];
-                var leftX = chunk.leftFighting ? chunk.startX : CustomTransformUtils.defaulBattleMapOffset.x - CustomTransformUtils.battleXSize;
-                var rightX = chunk.rightFighting ? chunk.endX : CustomTransformUtils.defaulBattleMapOffset.x + CustomTransformUtils.battleXSize;
-                if (!chunk.leftFighting || !chunk.rightFighting)
+                var leftX = chunk.leftEnemy.HasValue ? chunk.startX : CustomTransformUtils.defaulBattleMapOffset.x - CustomTransformUtils.battleXSize;
+                var rightX = chunk.rightEnemy.HasValue ? chunk.endX : CustomTransformUtils.defaulBattleMapOffset.x + CustomTransformUtils.battleXSize;
+                if (!chunk.leftEnemy.HasValue || !chunk.rightEnemy.HasValue)
                 {
                     var newChunk = new BattleChunk
                     {
@@ -36,8 +36,8 @@ namespace system.battle.battalion.analysis.backup_plans
                         battalions = chunk.battalions,
                         startX = leftX,
                         endX = rightX,
-                        leftFighting = chunk.leftFighting,
-                        rightFighting = chunk.rightFighting,
+                        leftEnemy = chunk.leftEnemy,
+                        rightEnemy = chunk.rightEnemy,
                         rowId = chunk.rowId,
                         chunkId = chunk.chunkId
                     };

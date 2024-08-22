@@ -112,8 +112,8 @@ namespace component.battle.battalion.data_holders
     {
         public long chunkId;
         public int rowId;
-        public bool leftFighting;
-        public bool rightFighting;
+        public long? leftEnemy;
+        public long? rightEnemy;
         public NativeList<long> battalions;
         public float startX;
         public float endX;

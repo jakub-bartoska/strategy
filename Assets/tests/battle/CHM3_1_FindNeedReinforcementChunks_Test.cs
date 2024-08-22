@@ -34,8 +34,8 @@ namespace tests.testiky
             var chunk = new BattleChunk
             {
                 chunkId = 1,
-                leftFighting = false,
-                rightFighting = false,
+                leftEnemy = null,
+                rightEnemy = null,
                 battalions = new NativeList<long>(10, Allocator.Temp)
             };
             allChunks.Add(chunk.chunkId, chunk);
@@ -70,8 +70,8 @@ namespace tests.testiky
             var chunk = new BattleChunk
             {
                 chunkId = 1,
-                leftFighting = true,
-                rightFighting = false,
+                //leftEnemy = true,
+                rightEnemy = null,
                 battalions = new NativeList<long>(10, Allocator.Temp)
             };
             allChunks.Add(chunk.chunkId, chunk);
@@ -107,8 +107,8 @@ namespace tests.testiky
             var chunk = new BattleChunk
             {
                 chunkId = 1,
-                leftFighting = false,
-                rightFighting = true,
+                leftEnemy = null,
+                //rightEnemy = true,
                 battalions = new NativeList<long>(10, Allocator.Temp)
             };
             allChunks.Add(chunk.chunkId, chunk);
@@ -144,8 +144,8 @@ namespace tests.testiky
             var chunk = new BattleChunk
             {
                 chunkId = 1,
-                leftFighting = true,
-                rightFighting = true,
+                //leftEnemy = true,
+                //rightEnemy = true,
                 battalions = new NativeList<long>(10, Allocator.Temp)
             };
             allChunks.Add(chunk.chunkId, chunk);
@@ -183,8 +183,8 @@ namespace tests.testiky
             var chunk = new BattleChunk
             {
                 chunkId = 1,
-                leftFighting = true,
-                rightFighting = true,
+                //leftEnemy = true,
+                ///rightEnemy = true,
                 battalions = battalions
             };
             allChunks.Add(chunk.chunkId, chunk);
@@ -223,8 +223,8 @@ namespace tests.testiky
             var chunk = new BattleChunk
             {
                 chunkId = 1,
-                leftFighting = true,
-                rightFighting = true,
+                //leftEnemy = true,
+                //rightEnemy = true,
                 battalions = battalions
             };
             allChunks.Add(chunk.chunkId, chunk);
@@ -261,8 +261,8 @@ namespace tests.testiky
             var chunk = new BattleChunk
             {
                 chunkId = 1,
-                leftFighting = true,
-                rightFighting = false,
+                //leftEnemy = true,
+                rightEnemy = null,
                 battalions = battalions
             };
             allChunks.Add(chunk.chunkId, chunk);
@@ -299,8 +299,8 @@ namespace tests.testiky
             var chunk = new BattleChunk
             {
                 chunkId = 1,
-                leftFighting = false,
-                rightFighting = true,
+                leftEnemy = null,
+                //rightEnemy = true,
                 battalions = battalions
             };
             allChunks.Add(chunk.chunkId, chunk);

@@ -26,7 +26,7 @@ namespace system.battle.battalion.analysis.backup_plans
             foreach (var idChunk in allChunks)
             {
                 var chunk = idChunk.Value;
-                if (!chunk.rightFighting && !chunk.leftFighting)
+                if (!chunk.rightEnemy.HasValue && !chunk.leftEnemy.HasValue)
                 {
                     continue;
                 }
