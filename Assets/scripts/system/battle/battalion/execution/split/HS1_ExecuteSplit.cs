@@ -1,9 +1,9 @@
-﻿using component._common.system_switchers;
+﻿using System;
+using component._common.system_switchers;
 using component.authoring_pairs.PrefabHolder;
 using component.battle.battalion;
 using component.battle.battalion.data_holders;
 using system.battle.battalion.analysis.utils;
-using system.battle.enums;
 using system.battle.system_groups;
 using system.battle.utils;
 using Unity.Burst;
@@ -49,7 +49,7 @@ namespace system.battle.battalion.split
     [BurstCompile]
     public partial struct HorizontalSplitJob : IJobEntity
     {
-        [ReadOnly] public NativeHashMap<long, Direction> splitBattalions;
+        [ReadOnly] public NativeHashMap<long, SplitInfo> splitBattalions;
         [ReadOnly] public PrefabHolder prefabHolder;
         public EntityCommandBuffer ecb;
         [NativeDisableUnsafePtrRestriction] public RefRW<BattalionIdHolder> battalionIdHolder;
@@ -67,26 +67,77 @@ namespace system.battle.battalion.split
                 return;
             }
 
-            var soldierCountToStay = 2;
+            var splitDirection = splitBattalions[battalionMarker.id];
 
-            //min soldier count is 2
+            var soldierCountToStay = splitDirection.verticalFightType switch
+            {
+                VerticalFightType.UP => 2,
+                VerticalFightType.DOWN => 2,
+                VerticalFightType.BOTH => 4,
+                _ => throw new Exception("Unknown vertical fight type")
+            };
+
             if (soldiers.Length <= soldierCountToStay)
             {
                 return;
             }
 
-            var splitDirection = splitBattalions[battalionMarker.id];
-            var newPosition = BattleTransformUtils.getNewPositionForSplit(localTransform.Position, width.value, splitDirection);
+            var positionsToStay = getSoldiersPositionsToStay(soldiers, splitDirection.verticalFightType);
 
             var soldiersToMove = new NativeList<BattalionSoldiers>(10, Allocator.Temp);
-            for (var i = soldiers.Length - 1; i > soldierCountToStay - 1; i--)
+            var soldiersToStay = new NativeList<BattalionSoldiers>(10, Allocator.Temp);
+            foreach (var soldier in soldiers)
             {
-                soldiersToMove.Add(soldiers[i]);
-                soldiers.RemoveAt(i);
-                health.value -= 10;
+                if (!positionsToStay.Contains(soldier.positionWithinBattalion))
+                {
+                    soldiersToMove.Add(soldier);
+                    health.value -= 10;
+                }
+                else
+                {
+                    soldiersToStay.Add(soldier);
+                }
             }
 
+            soldiers.Clear();
+            soldiers.AddRange(soldiersToStay);
+
+            var newPosition = BattleTransformUtils.getNewPositionForSplit(localTransform.Position, width.value, splitDirection.movamentDirrection);
             BattalionSpawner.spawnBattalionParallel(ecb, prefabHolder, battalionIdHolder.ValueRW.nextBattalionId++, newPosition, team.value, row.value, soldiersToMove, battalionMarker.soldierType);
+        }
+
+        private NativeHashSet<int> getSoldiersPositionsToStay(DynamicBuffer<BattalionSoldiers> battalionSoldiers, VerticalFightType fightType)
+        {
+            var sortedBattalionIds = new NativeList<int>(10, Allocator.Temp);
+            foreach (var battalionSoldier in battalionSoldiers)
+            {
+                sortedBattalionIds.Add(battalionSoldier.positionWithinBattalion);
+            }
+
+            sortedBattalionIds.Sort();
+
+            var result = new NativeHashSet<int>(10, Allocator.Temp);
+            switch (fightType)
+            {
+                case VerticalFightType.UP:
+                    result.Add(sortedBattalionIds[^1]);
+                    result.Add(sortedBattalionIds[^2]);
+                    break;
+                case VerticalFightType.DOWN:
+                    result.Add(sortedBattalionIds[0]);
+                    result.Add(sortedBattalionIds[1]);
+                    break;
+                case VerticalFightType.BOTH:
+                    result.Add(sortedBattalionIds[0]);
+                    result.Add(sortedBattalionIds[1]);
+                    result.Add(sortedBattalionIds[^1]);
+                    result.Add(sortedBattalionIds[^2]);
+                    break;
+                default:
+                    throw new Exception("Unknown vertical fight type");
+            }
+
+            return result;
         }
     }
 }

@@ -95,7 +95,7 @@ namespace component.battle.battalion.data_holders
          * contains only battalions which should split + direction of split.
          * direction is final, so 1 battalion can contain only 1 record
          */
-        public NativeHashMap<long, Direction> splitBattalions;
+        public NativeHashMap<long, SplitInfo> splitBattalions;
     }
 
     public struct BattalionInfo
@@ -112,6 +112,7 @@ namespace component.battle.battalion.data_holders
         public long battalionId1;
         public long battalionId2;
         public BattalionFightType fightType;
+        public Direction fightDirection;
     }
 
     public struct RowChange
@@ -131,5 +132,25 @@ namespace component.battle.battalion.data_holders
         public BattalionSoldiers reinforcement;
         public long originalBattalionId;
         public int originalPosition;
+    }
+
+    public struct SplitInfo
+    {
+        /**
+         * Direction in which battalion should split
+         */
+        public Direction movamentDirrection;
+
+        /**
+         * Battalion is fighting vs enemy on top, bot or on both sides
+         */
+        public VerticalFightType verticalFightType;
+    }
+
+    public enum VerticalFightType
+    {
+        UP,
+        DOWN,
+        BOTH
     }
 }

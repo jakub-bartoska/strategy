@@ -54,7 +54,7 @@ namespace system.battle.battalion.analysis
                     var isTooFar = BattleTransformUtils.isTooFar(me.position, leftUnit.position, me.width, leftUnit.width);
                     if (!isTooFar)
                     {
-                        addFightingPair(me.battalionId, leftUnit.battalionId, BattalionFightType.NORMAL, dataHolder);
+                        addFightingPair(me.battalionId, leftUnit.battalionId, BattalionFightType.NORMAL, dataHolder, Direction.LEFT);
                     }
                 }
             }
@@ -74,18 +74,19 @@ namespace system.battle.battalion.analysis
 
                 if (!isTooFarDiagonal)
                 {
-                    addFightingPair(me.battalionId, bellow.battalionId, BattalionFightType.VERTICAL, dataHolder);
+                    addFightingPair(me.battalionId, bellow.battalionId, BattalionFightType.VERTICAL, dataHolder, Direction.UP);
                 }
             }
         }
 
-        private void addFightingPair(long battalionId1, long battalionId2, BattalionFightType fightType, RefRW<DataHolder> dataHolder)
+        private void addFightingPair(long battalionId1, long battalionId2, BattalionFightType fightType, RefRW<DataHolder> dataHolder, Direction fightDirection)
         {
             dataHolder.ValueRW.fightingPairs.Add(new FightingPair
             {
                 battalionId1 = battalionId1,
                 battalionId2 = battalionId2,
-                fightType = fightType
+                fightType = fightType,
+                fightDirection = fightDirection
             });
             dataHolder.ValueRW.battalionsPerformingAction.Add(battalionId1);
             dataHolder.ValueRW.battalionsPerformingAction.Add(battalionId2);

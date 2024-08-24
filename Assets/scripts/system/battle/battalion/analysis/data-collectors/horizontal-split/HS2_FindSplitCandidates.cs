@@ -32,19 +32,23 @@ namespace system.battle.battalion.analysis.horizontal_split
             var battalionDefaultMovementDirection = movementDataHolder.ValueRO.plannedMovementDirections;
             foreach (var verticalFighter in verticalFighters)
             {
-                battalionDefaultMovementDirection.TryGetValue(verticalFighter, out var direction);
+                battalionDefaultMovementDirection.TryGetValue(verticalFighter.Key, out var direction);
                 if (direction != Direction.NONE)
                 {
-                    result.Add(verticalFighter, direction);
+                    result.Add(verticalFighter.Key, new SplitInfo
+                    {
+                        movamentDirrection = direction,
+                        verticalFightType = verticalFighter.Value
+                    });
                 }
             }
         }
 
-        private NativeHashSet<long> getVerticalFighters(DataHolder dataHolder)
+        private NativeHashMap<long, VerticalFightType> getVerticalFighters(DataHolder dataHolder)
         {
             var fightingPairs = dataHolder.fightingPairs;
             //UP/DOWN
-            var verticalFights = new NativeHashSet<long>(1000, Allocator.Temp);
+            var verticalFights = new NativeHashMap<long, VerticalFightType>(1000, Allocator.Temp);
             //LEFT/RIGHT
             var normalFights = new NativeHashSet<long>(1000, Allocator.Temp);
 
@@ -57,8 +61,8 @@ namespace system.battle.battalion.analysis.horizontal_split
                         normalFights.Add(fightingPair.battalionId2);
                         break;
                     case BattalionFightType.VERTICAL:
-                        verticalFights.Add(fightingPair.battalionId1);
-                        verticalFights.Add(fightingPair.battalionId2);
+                        addVerticalFights(verticalFights, fightingPair.battalionId1, fightingPair.fightDirection);
+                        addVerticalFights(verticalFights, fightingPair.battalionId2, getOppositeDeirection(fightingPair.fightDirection));
                         break;
                     default:
                         throw new Exception("Unknown fight type");
@@ -73,27 +77,66 @@ namespace system.battle.battalion.analysis.horizontal_split
             return verticalFights;
         }
 
-        private void removeBlockedBattalions(NativeHashSet<long> fightingBattalionIds, MovementDataHolder movementDataHolder, DataHolder dataHolder)
+        private Direction getOppositeDeirection(Direction direction)
+        {
+            return direction switch
+            {
+                Direction.UP => Direction.DOWN,
+                Direction.DOWN => Direction.UP,
+                _ => throw new Exception("Unknown direction")
+            };
+        }
+
+        private void addVerticalFights(NativeHashMap<long, VerticalFightType> verticalFights, long battalionId, Direction fightType)
+        {
+            var verticalFightType = directionToVerticalFightType(fightType);
+            if (verticalFights.TryGetValue(battalionId, out var existingFightType))
+            {
+                var resultFightType = existingFightType switch
+                {
+                    VerticalFightType.UP => verticalFightType == VerticalFightType.DOWN ? VerticalFightType.BOTH : VerticalFightType.UP,
+                    VerticalFightType.DOWN => verticalFightType == VerticalFightType.UP ? VerticalFightType.BOTH : VerticalFightType.DOWN,
+                    VerticalFightType.BOTH => VerticalFightType.BOTH,
+                    _ => throw new Exception("Unknown fight type")
+                };
+                verticalFights[battalionId] = resultFightType;
+                return;
+            }
+
+            verticalFights.Add(battalionId, verticalFightType);
+        }
+
+        private VerticalFightType directionToVerticalFightType(Direction direction)
+        {
+            return direction switch
+            {
+                Direction.UP => VerticalFightType.UP,
+                Direction.DOWN => VerticalFightType.DOWN,
+                _ => throw new Exception("Unknown direction")
+            };
+        }
+
+        private void removeBlockedBattalions(NativeHashMap<long, VerticalFightType> fightingBattalions, MovementDataHolder movementDataHolder, DataHolder dataHolder)
         {
             var plannedMovementDirections = movementDataHolder.plannedMovementDirections;
             var blockedHorizontalSplits = dataHolder.blockedHorizontalSplits;
 
             var blockedBattalions = new NativeHashSet<long>(1000, Allocator.Temp);
-            foreach (var fightingBattalionId in fightingBattalionIds)
+            foreach (var fightingBattalion in fightingBattalions)
             {
-                plannedMovementDirections.TryGetValue(fightingBattalionId, out var defaultDirection);
-                foreach (var direction in blockedHorizontalSplits.GetValuesForKey(fightingBattalionId))
+                plannedMovementDirections.TryGetValue(fightingBattalion.Key, out var defaultDirection);
+                foreach (var direction in blockedHorizontalSplits.GetValuesForKey(fightingBattalion.Key))
                 {
                     if (direction == defaultDirection)
                     {
-                        blockedBattalions.Add(fightingBattalionId);
+                        blockedBattalions.Add(fightingBattalion.Key);
                     }
                 }
             }
 
             foreach (var blockedBattalion in blockedBattalions)
             {
-                fightingBattalionIds.Remove(blockedBattalion);
+                fightingBattalions.Remove(blockedBattalion);
             }
         }
     }
