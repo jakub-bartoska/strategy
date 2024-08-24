@@ -35,8 +35,8 @@ namespace component.strategy.interactions.town
                 }
             }
 
-            var result = new NativeList<(Team, float3, int)>(createEvents.Length, Allocator.TempJob); //ok
-            var companyIdToCompany = new NativeHashMap<long, ArmyCompany>(createEvents.Length * 10, Allocator.TempJob); //ok
+            var result = new NativeList<(Team, float3, int)>(createEvents.Length, Allocator.TempJob);
+            var companyIdToCompany = new NativeHashMap<long, ArmyCompany>(createEvents.Length * 10, Allocator.TempJob);
             new GetCompaniesFromDeployerJob
                 {
                     createArmyCompanyToGroup = createArmyCompanyToGroup,

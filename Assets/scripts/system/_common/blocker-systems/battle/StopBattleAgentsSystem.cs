@@ -26,7 +26,7 @@ namespace system
 
             if (!containsArmySpawn(blockers)) return;
 
-            var ecb = new EntityCommandBuffer(Allocator.TempJob); //ok
+            var ecb = new EntityCommandBuffer(Allocator.TempJob);
 
             new StopBattleAgentsJob
                 {

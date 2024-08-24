@@ -80,7 +80,7 @@ namespace _Monobehaviors.ui.battle_plan.counter
 
         public NativeList<BattalionToSpawn> getAllBattalions()
         {
-            var result = new NativeList<BattalionToSpawn>(Allocator.TempJob); //ok
+            var result = new NativeList<BattalionToSpawn>(Allocator.TempJob);
             foreach (var allButtonDropTarget in allButtonDropTargets)
             {
                 var battalion = allButtonDropTarget.getBattalion();

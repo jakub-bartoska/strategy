@@ -16,6 +16,7 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Jobs.LowLevel.Unsafe;
 using Unity.Mathematics;
+using Random = Unity.Mathematics.Random;
 
 namespace system
 {
@@ -47,7 +48,7 @@ namespace system
             var teamColors = SystemAPI.GetSingletonBuffer<TeamColor>();
             var prefabHolder = SystemAPI.GetSingleton<PrefabHolder>();
             var random = SystemAPI.GetSingletonRW<GameRandom>();
-            var ecb = new EntityCommandBuffer(Allocator.TempJob); //ok
+            var ecb = new EntityCommandBuffer(Allocator.TempJob);
 
             var mapTransform = CustomTransformUtils.getMapTransform();
             mapTransform.Rotation = quaternion.RotateY(math.PI / 2);
@@ -72,7 +73,7 @@ namespace system
 
                 var newBattalion = BattalionSpawner.spawnBattalion(ecb, battalionToSpawn, prefabHolder, battalionId++);
 
-                var battalionSoldiers = new NativeParallelHashSet<BattalionSoldiers>(battalionToSpawn.count, Allocator.TempJob); //ok
+                var battalionSoldiers = new NativeParallelHashSet<BattalionSoldiers>(battalionToSpawn.count, Allocator.TempJob);
 
                 new SpawnerJob
                     {
@@ -211,14 +212,14 @@ namespace system
             return containsArmySpawn;
         }
 
-        private NativeArray<Unity.Mathematics.Random> createRandomperThread(RefRW<GameRandom> random)
+        private NativeArray<Random> createRandomperThread(RefRW<GameRandom> random)
         {
             var randomPerThread =
-                new NativeArray<Unity.Mathematics.Random>(JobsUtility.MaxJobThreadCount, Allocator.Persistent);
+                new NativeArray<Random>(JobsUtility.MaxJobThreadCount, Allocator.Persistent);
 
             for (var i = 0; i < randomPerThread.Length; i++)
             {
-                randomPerThread[i] = new Unity.Mathematics.Random((uint) random.ValueRW.random.NextInt());
+                randomPerThread[i] = new Random((uint) random.ValueRW.random.NextInt());
             }
 
             return randomPerThread;
@@ -241,7 +242,7 @@ namespace system
     public struct SpawnerJob : IJobParallelFor
     {
         public EntityCommandBuffer.ParallelWriter ecb;
-        [NativeDisableParallelForRestriction] public NativeArray<Unity.Mathematics.Random> randoms;
+        [NativeDisableParallelForRestriction] public NativeArray<Random> randoms;
         public PrefabHolder prefabHolder;
         public Team team;
         public SoldierType soldierType;

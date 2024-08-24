@@ -91,7 +91,7 @@ namespace _Monobehaviors.ui
         private void createNewArmy(long companyId)
         {
             var newArmyEvenBuffer = createNewArmyEventQuery.GetSingletonBuffer<CreateNewArmyEvent>();
-            var companies = new NativeList<long>(Allocator.TempJob); //ok
+            var companies = new NativeList<long>(Allocator.TempJob);
             companies.Add(companyId);
             newArmyEvenBuffer.Add(new CreateNewArmyEvent
             {

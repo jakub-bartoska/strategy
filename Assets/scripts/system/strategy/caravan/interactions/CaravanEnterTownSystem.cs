@@ -22,14 +22,14 @@ namespace system.strategy.minors.interactions
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var townPositions = new NativeHashMap<long, LocalTransform>(200, Allocator.TempJob); //ok
+            var townPositions = new NativeHashMap<long, LocalTransform>(200, Allocator.TempJob);
             new CollectTownsJob
                 {
                     townPositions = townPositions
                 }.Schedule(state.Dependency)
                 .Complete();
 
-            var townIdResourceHolderToAdd = new NativeParallelMultiHashMap<long, ResourceHolder>(100, Allocator.TempJob); //ok
+            var townIdResourceHolderToAdd = new NativeParallelMultiHashMap<long, ResourceHolder>(100, Allocator.TempJob);
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
                 .CreateCommandBuffer(state.WorldUnmanaged);
             new DestroyFinishedCaravansJob

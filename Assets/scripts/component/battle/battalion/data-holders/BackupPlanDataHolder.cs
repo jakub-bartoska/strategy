@@ -6,8 +6,25 @@ namespace component.battle.battalion.data_holders
 {
     public struct BackupPlanDataHolder : IComponentData
     {
+        /**
+         * chunkId - chunk
+         *
+         * all chunk info (even empty ones)
+         */
         public NativeHashMap<long, BattleChunk> allChunks;
+
+        /**
+         * rowId - team - chunkId
+         *
+         * chunks which have at least 1 battalion
+         */
         public NativeParallelMultiHashMap<TeamRow, long> battleChunksPerRowTeam;
+
+        /**
+         * rowId - team - chunkId
+         *
+         * chunks which has 0 battalions
+         */
         public NativeParallelMultiHashMap<TeamRow, long> emptyChunks;
 
         /**

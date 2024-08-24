@@ -36,19 +36,19 @@ namespace system.strategy.spawner
 
             if (!containsArmySpawn(blockers)) return;
 
-            var ecb = new EntityCommandBuffer(Allocator.TempJob); //ok
+            var ecb = new EntityCommandBuffer(Allocator.TempJob);
 
             setupSingleton(ecb);
             ecb.Playback(state.EntityManager);
             ecb.Dispose();
-            ecb = new EntityCommandBuffer(Allocator.TempJob); //ok
+            ecb = new EntityCommandBuffer(Allocator.TempJob);
 
             var prefabHolder = SystemAPI.GetSingleton<PrefabHolder>();
             var teamColors = SystemAPI.GetSingletonBuffer<TeamColor>();
             var idGenerator = SystemAPI.GetSingletonRW<IdGenerator>();
 
             var armiesToSpawn =
-                new NativeParallelMultiHashMap<SpawnArmy, SpawnArmyCompanyBuffer>(1000, Allocator.TempJob); //ok
+                new NativeParallelMultiHashMap<SpawnArmy, SpawnArmyCompanyBuffer>(1000, Allocator.TempJob);
             new FetchArmiesToSpawnJob
                 {
                     ecb = ecb,
@@ -57,7 +57,7 @@ namespace system.strategy.spawner
                 .Complete();
 
             var townsToSpawn =
-                new NativeParallelMultiHashMap<SpawnTown, SpawnTownCompanyBuffer>(1000, Allocator.TempJob); //ok
+                new NativeParallelMultiHashMap<SpawnTown, SpawnTownCompanyBuffer>(1000, Allocator.TempJob);
             new FetchTownsToSpawnJob
                 {
                     ecb = ecb,
@@ -66,7 +66,7 @@ namespace system.strategy.spawner
                 .Complete();
 
             var minorsToSpawn =
-                new NativeParallelMultiHashMap<SpawnMinorMapObject, SpawnResourceGenerator>(1000, Allocator.TempJob); //ok
+                new NativeParallelMultiHashMap<SpawnMinorMapObject, SpawnResourceGenerator>(1000, Allocator.TempJob);
             new FetchMinorsToSpawnJob
                 {
                     ecb = ecb,
@@ -77,7 +77,7 @@ namespace system.strategy.spawner
             var uniqueKeys = getUniqueKeys(armiesToSpawn);
             foreach (var army in uniqueKeys)
             {
-                var companies = new NativeList<ArmyCompany>(Allocator.TempJob); //ok
+                var companies = new NativeList<ArmyCompany>(Allocator.TempJob);
                 foreach (var company in armiesToSpawn.GetValuesForKey(army))
                 {
                     var newCompany = new ArmyCompany
@@ -98,7 +98,7 @@ namespace system.strategy.spawner
             var uniqueKeysForTown = getUniqueKeysForTown(townsToSpawn);
             foreach (var town in uniqueKeysForTown)
             {
-                var companies = new NativeList<ArmyCompany>(Allocator.TempJob); //ok
+                var companies = new NativeList<ArmyCompany>(Allocator.TempJob);
                 foreach (var company in townsToSpawn.GetValuesForKey(town))
                 {
                     var newCompany = new ArmyCompany
@@ -120,7 +120,7 @@ namespace system.strategy.spawner
             var uniqueKeysForMinors = getUniqueKeysForMinors(minorsToSpawn);
             foreach (var minor in uniqueKeysForMinors)
             {
-                var resources = new NativeList<SpawnResourceGenerator>(Allocator.TempJob); //ok
+                var resources = new NativeList<SpawnResourceGenerator>(Allocator.TempJob);
                 foreach (var resource in minorsToSpawn.GetValuesForKey(minor))
                 {
                     resources.Add(resource);
@@ -142,7 +142,7 @@ namespace system.strategy.spawner
 
         private NativeArray<SpawnArmy> getUniqueKeys(NativeParallelMultiHashMap<SpawnArmy, SpawnArmyCompanyBuffer> map)
         {
-            var keys = map.GetKeyArray(Allocator.TempJob); //ok
+            var keys = map.GetKeyArray(Allocator.TempJob);
             var uniqueCount = keys.Unique();
             return keys.GetSubArray(0, uniqueCount);
         }
@@ -150,7 +150,7 @@ namespace system.strategy.spawner
         private NativeArray<SpawnTown> getUniqueKeysForTown(
             NativeParallelMultiHashMap<SpawnTown, SpawnTownCompanyBuffer> map)
         {
-            var keys = map.GetKeyArray(Allocator.TempJob); //ok
+            var keys = map.GetKeyArray(Allocator.TempJob);
             var uniqueCount = keys.Unique();
             return keys.GetSubArray(0, uniqueCount);
         }
@@ -158,7 +158,7 @@ namespace system.strategy.spawner
         private NativeArray<SpawnMinorMapObject> getUniqueKeysForMinors(
             NativeParallelMultiHashMap<SpawnMinorMapObject, SpawnResourceGenerator> map)
         {
-            var keys = map.GetKeyArray(Allocator.TempJob); //ok
+            var keys = map.GetKeyArray(Allocator.TempJob);
             var uniqueCount = keys.Unique();
             return keys.GetSubArray(0, uniqueCount);
         }
