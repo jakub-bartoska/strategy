@@ -37,6 +37,14 @@ namespace component.battle.battalion.data_holders
         public NativeList<FightingPair> fightingPairs;
 
         /**
+         * battalionId - target
+         * All battalions damage.
+         * 1 battalion can do damage to multiple battalions.
+         * This contains only real damage dealed. FightingPairs variable contains only possible fights.
+         */
+        public NativeParallelMultiHashMap<long, BattalionFightTarget> battalionDamages;
+
+        /**
          * battalion id
          * Battalions which are currently in any form of fight
          */
@@ -98,6 +106,26 @@ namespace component.battle.battalion.data_holders
         public NativeHashMap<long, SplitInfo> splitBattalions;
     }
 
+    public struct BattalionFightTarget
+    {
+        /**
+         * Target battalionID
+         */
+        public long targetBattalionId;
+
+        /**
+         * Direction dmg dealer -> dmg receiver
+         */
+        public Direction direction;
+
+        public BattalionFightType fightType;
+
+        /**
+         * Used only for analysis calculation. The higher value, the more important fight is compare to other directions.
+         */
+        public int fightWeight;
+    }
+
     public struct BattalionInfo
     {
         public long battalionId;
@@ -112,6 +140,10 @@ namespace component.battle.battalion.data_holders
         public long battalionId1;
         public long battalionId2;
         public BattalionFightType fightType;
+
+        /**
+         * Direction battalion 1 -> battalion2
+         */
         public Direction fightDirection;
     }
 

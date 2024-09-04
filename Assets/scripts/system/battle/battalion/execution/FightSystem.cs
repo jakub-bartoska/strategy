@@ -26,7 +26,7 @@ namespace system.battle.battalion
             var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
             var debugConfig = SystemAPI.GetSingleton<DebugConfig>();
             var deltaTime = SystemAPI.Time.DeltaTime;
-            //dmg delaed by 1 soldier per second (keep in mind that battalion can have 10 soldiers)
+            //dmg dealed by 1 soldier per second (keep in mind that battalion can have 10 soldiers)
             var dmgPerSoldier = debugConfig.dmgPerSecond;
             var dmgPerPerSoldierPerDeltaTime = dmgPerSoldier * deltaTime;
 
@@ -47,25 +47,15 @@ namespace system.battle.battalion
             //can contain multiple dmg since 1 battalion could be attacked by multiple enemies
             var dmgReceived = new NativeParallelMultiHashMap<long, float>(1000, Allocator.TempJob);
 
-            foreach (var fightingPair in dataHolder.ValueRO.fightingPairs)
+            foreach (var damage in dataHolder.ValueRO.battalionDamages)
             {
-                // battalion1 damages battalion2
-                var dmgToReceive = fightingPair.fightType switch
+                var dmgToReceive = damage.Value.fightType switch
                 {
-                    BattalionFightType.NORMAL => dmgPerPerSoldierPerDeltaTime * soldierCountsPerBattalion[fightingPair.battalionId1],
+                    BattalionFightType.NORMAL => dmgPerPerSoldierPerDeltaTime * soldierCountsPerBattalion[damage.Key],
                     BattalionFightType.VERTICAL => dmgPerPerSoldierPerDeltaTime,
                     _ => throw new Exception("unknown fight type"),
                 };
-                dmgReceived.Add(fightingPair.battalionId2, dmgToReceive);
-
-                // battalion2 damages battalion1
-                dmgToReceive = fightingPair.fightType switch
-                {
-                    BattalionFightType.NORMAL => dmgPerPerSoldierPerDeltaTime * soldierCountsPerBattalion[fightingPair.battalionId2],
-                    BattalionFightType.VERTICAL => dmgPerPerSoldierPerDeltaTime,
-                    _ => throw new Exception("unknown fight type"),
-                };
-                dmgReceived.Add(fightingPair.battalionId1, dmgToReceive);
+                dmgReceived.Add(damage.Value.targetBattalionId, dmgToReceive);
             }
 
             new PerformBattalionFightJob

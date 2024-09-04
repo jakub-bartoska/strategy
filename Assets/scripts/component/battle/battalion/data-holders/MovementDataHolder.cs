@@ -35,7 +35,6 @@ namespace component.battle.battalion.data_holders
          * battalion planned directions, contains even battalions which are stopped.
          * useful for reinforcements
          */
-        //todo used for chunk movement -> remove once cleared
         public NativeHashMap<long, Direction> plannedMovementDirections;
 
         /**
