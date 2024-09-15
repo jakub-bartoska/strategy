@@ -56,9 +56,11 @@ namespace system.battle.battalion.split
         public NativeList<int> soldierPositions9;
         public NativeList<int> soldierPositions10;
 
-        private void Execute(BattalionMarker battalionMarker, ref DynamicBuffer<BattalionSoldiers> soldiers)
+        private void Execute(BattalionMarker battalionMarker, ref DynamicBuffer<BattalionSoldiers> soldiers,
+            EnabledRefRW<SoldierReorderMarker> reorderMarker)
         {
-            //todo this job can run only when at least 1 soldier dies, now it runs always
+            reorderMarker.ValueRW = false;
+
             if (soldiers.Length == 0)
             {
                 return;

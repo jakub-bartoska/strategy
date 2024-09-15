@@ -14,12 +14,14 @@ namespace system.battle.utils
 {
     public class BattalionSpawner
     {
-        public static Entity spawnBattalion(EntityCommandBuffer ecb, BattalionToSpawn battalionToSpawn, PrefabHolder prefabHolder, long battalionId)
+        public static Entity spawnBattalion(EntityCommandBuffer ecb, BattalionToSpawn battalionToSpawn,
+            PrefabHolder prefabHolder, long battalionId)
         {
             var battalionPrefab = prefabHolder.battalionPrefab;
             var newBattalion = ecb.Instantiate(battalionPrefab);
 
-            var battalionTransform = CustomTransformUtils.getBattalionPosition(battalionToSpawn.position.x, battalionToSpawn.position.y);
+            var battalionTransform =
+                CustomTransformUtils.getBattalionPosition(battalionToSpawn.position.x, battalionToSpawn.position.y);
             var battalionMarker = new BattalionMarker
             {
                 id = battalionId,
@@ -53,6 +55,7 @@ namespace system.battle.utils
             {
                 value = size
             };
+            var soldierReorderMarker = new SoldierReorderMarker();
             var waitForSoldiers = new WaitForSoldiersTag();
 
             var transformMatrix = getPostTransformMatrixFromBattalionSize(size);
@@ -65,6 +68,8 @@ namespace system.battle.utils
             ecb.AddComponent(newBattalion, battalionSize);
             ecb.AddComponent(newBattalion, transformMatrix);
             ecb.AddComponent(newBattalion, waitForSoldiers);
+            ecb.AddComponent(newBattalion, soldierReorderMarker);
+            ecb.SetComponentEnabled<SoldierReorderMarker>(newBattalion, true);
 
             ecb.SetComponent(newBattalion, battalionTransform);
 

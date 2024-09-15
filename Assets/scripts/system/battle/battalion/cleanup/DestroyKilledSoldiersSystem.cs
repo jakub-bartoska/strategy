@@ -29,19 +29,23 @@ namespace system.battle.battalion
 
         [BurstCompile]
         [WithAll(typeof(BattalionMarker))]
+        [WithOptions(EntityQueryOptions.IgnoreComponentEnabledState)]
         public partial struct DestroyKilledSoldiersJob : IJobEntity
         {
             public EntityCommandBuffer ecb;
 
-            private void Execute(ref DynamicBuffer<BattalionSoldiers> soldiers, BattalionHealth health)
+            private void Execute(ref DynamicBuffer<BattalionSoldiers> soldiers, BattalionHealth health,
+                EnabledRefRW<SoldierReorderMarker> reorderMarker)
             {
-                var soldiersToDestroy = soldiers.Length - (int) (health.value / 10) - 1;
+                var soldiersToDestroy = soldiers.Length - (int)(health.value / 10) - 1;
                 if (soldiersToDestroy <= 0)
                 {
                     return;
                 }
 
                 //some soldiers needs to be killed
+
+                reorderMarker.ValueRW = true;
 
                 for (var i = 0; i < soldiersToDestroy; i++)
                 {
