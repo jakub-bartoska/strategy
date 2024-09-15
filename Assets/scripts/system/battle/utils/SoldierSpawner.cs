@@ -14,7 +14,8 @@ namespace system.battle.utils
 {
     public class SoldierSpawner
     {
-        public static Entity spawnSoldier(SoldierType soldierType, PrefabHolder prefabHolder, EntityCommandBuffer.ParallelWriter ecb,
+        public static Entity spawnSoldier(SoldierType soldierType, PrefabHolder prefabHolder,
+            EntityCommandBuffer.ParallelWriter ecb,
             int index, int entityIndexAdd, long companyId, Team team, float3 battalionPosition,
             NativeParallelHashSet<BattalionSoldiers>.ParallelWriter battalionSoldiers, float4 teamColor)
         {

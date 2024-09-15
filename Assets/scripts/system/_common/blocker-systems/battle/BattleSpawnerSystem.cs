@@ -69,11 +69,14 @@ namespace system
                     continue;
                 }
 
-                var battalionPosition = CustomTransformUtils.getBattalionPositionForSoldiers(battalionToSpawn.position.x, battalionToSpawn.position.y);
+                var battalionPosition =
+                    CustomTransformUtils.getBattalionPositionForSoldiers(battalionToSpawn.position.x,
+                        battalionToSpawn.position.y);
 
                 var newBattalion = BattalionSpawner.spawnBattalion(ecb, battalionToSpawn, prefabHolder, battalionId++);
 
-                var battalionSoldiers = new NativeParallelHashSet<BattalionSoldiers>(battalionToSpawn.count, Allocator.TempJob);
+                var battalionSoldiers =
+                    new NativeParallelHashSet<BattalionSoldiers>(battalionToSpawn.count, Allocator.TempJob);
 
                 new SpawnerJob
                     {
@@ -175,6 +178,11 @@ namespace system
                 lastChunkId = 0
             };
 
+            var soldierPositions = new SoldierPositions
+            {
+                positions = preparePosition()
+            };
+
             var config = DebugConfigAuthoring.instance.collectData();
 
             ecb.AddComponent(singletonEntity, config);
@@ -184,6 +192,7 @@ namespace system
             ecb.AddComponent(singletonEntity, movementDataHolder);
             ecb.AddComponent(singletonEntity, dataHolder);
             ecb.AddComponent(singletonEntity, backupPlanDataHolder);
+            ecb.AddComponent(singletonEntity, soldierPositions);
 
             randomPerThread.Dispose();
             ecb.Playback(state.EntityManager);
@@ -219,7 +228,7 @@ namespace system
 
             for (var i = 0; i < randomPerThread.Length; i++)
             {
-                randomPerThread[i] = new Random((uint) random.ValueRW.random.NextInt());
+                randomPerThread[i] = new Random((uint)random.ValueRW.random.NextInt());
             }
 
             return randomPerThread;
@@ -235,8 +244,34 @@ namespace system
 
             throw new Exception("unknown team");
         }
-    }
 
+        private NativeHashMap<int, NativeList<int>> preparePosition()
+        {
+            var positions = new NativeHashMap<int, NativeList<int>>(9, Allocator.Persistent);
+            positions.Add(1, createPositonList(4));
+            positions.Add(2, createPositonList(0, 9));
+            positions.Add(3, createPositonList(0, 4, 9));
+            positions.Add(4, createPositonList(0, 3, 6, 9));
+            positions.Add(5, createPositonList(0, 2, 4, 7, 9));
+            positions.Add(6, createPositonList(0, 2, 4, 5, 7, 9));
+            positions.Add(7, createPositonList(0, 1, 3, 4, 6, 8, 9));
+            positions.Add(8, createPositonList(0, 1, 3, 4, 5, 6, 8, 9));
+            positions.Add(9, createPositonList(0, 1, 2, 3, 5, 6, 7, 8, 9));
+            positions.Add(10, createPositonList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
+            return positions;
+        }
+
+        private NativeList<int> createPositonList(params int[] positions)
+        {
+            var result = new NativeList<int>(10, Allocator.Persistent);
+            foreach (var position in positions)
+            {
+                result.Add(position);
+            }
+
+            return result;
+        }
+    }
 
     [BurstCompile]
     public struct SpawnerJob : IJobParallelFor
@@ -259,7 +294,8 @@ namespace system
         [BurstCompile]
         public void Execute(int index)
         {
-            SoldierSpawner.spawnSoldier(soldierType, prefabHolder, ecb, index, entityIndexAdd, companyId, team, battalionPosition, battalionSoldiers, teamColor);
+            SoldierSpawner.spawnSoldier(soldierType, prefabHolder, ecb, index, entityIndexAdd, companyId, team,
+                battalionPosition, battalionSoldiers, teamColor);
         }
     }
 }
