@@ -29,6 +29,7 @@ namespace system.battle.battalion.row_change
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            return;
             var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
             var deltaTime = SystemAPI.Time.DeltaTime;
             var speed = SystemAPI.GetSingleton<DebugConfig>().speed;
@@ -50,7 +51,8 @@ namespace system.battle.battalion.row_change
             [ReadOnly] public float speed;
             public NativeHashSet<long> battalionsPerformingAction;
 
-            private void Execute(BattalionMarker battalionMarker, ChangeRow changeRow, ref LocalTransform localTransform, Row row)
+            private void Execute(BattalionMarker battalionMarker, ChangeRow changeRow,
+                ref LocalTransform localTransform, Row row)
             {
                 battalionsPerformingAction.Add(battalionMarker.id);
 

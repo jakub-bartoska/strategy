@@ -6,6 +6,9 @@ namespace component.authoring_pairs
     public struct ArrowMarkerDebug : IComponentData
     {
         public float3 startingPosition;
-        public float yForce;
+        public float rotation;
+        public float3 normalizedDirection;
+        public float flightTime;
+        public float distanceCoefficient;
     }
 }

@@ -29,6 +29,7 @@ namespace system.battle.battalion.row_change
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            return;
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
                 .CreateCommandBuffer(state.WorldUnmanaged);
             var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
@@ -55,16 +56,19 @@ namespace system.battle.battalion.row_change
             public NativeHashSet<long> battalionsPerformingAction;
             public PrefabHolder prefabHolder;
 
-            private void Execute(BattalionMarker battalionMarker, Entity entity, ref Row row, LocalTransform transform, BattalionTeam team, BattalionWidth width)
+            private void Execute(BattalionMarker battalionMarker, Entity entity, ref Row row, LocalTransform transform,
+                BattalionTeam team, BattalionWidth width)
             {
                 if (battalionsPerformingAction.Contains(battalionMarker.id))
                 {
                     return;
                 }
 
-                if (battalionSwitchRowDirections.TryGetValue(battalionMarker.id, out var direction) && direction != Direction.NONE)
+                if (battalionSwitchRowDirections.TryGetValue(battalionMarker.id, out var direction) &&
+                    direction != Direction.NONE)
                 {
-                    var shadowEntity = BattalionShadowSpawner.spawnBattalionShadow(ecb, prefabHolder, transform.Position, battalionMarker.id, row.value, team.value, width.value);
+                    var shadowEntity = BattalionShadowSpawner.spawnBattalionShadow(ecb, prefabHolder,
+                        transform.Position, battalionMarker.id, row.value, team.value, width.value);
                     ecb.AddComponent(entity, new ChangeRow
                     {
                         direction = direction,

@@ -16,6 +16,7 @@ namespace system.battle.battalion.cleanup
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            return;
             new DisplayError
                 {
                 }.Schedule(state.Dependency)
@@ -26,7 +27,7 @@ namespace system.battle.battalion.cleanup
     [BurstCompile]
     public partial struct DisplayError : IJobEntity
     {
-        private void Execute(BattalionMarker arrowMarkerDebug)
+        private void Execute(BattalionMarker battalionMarker)
         {
         }
     }

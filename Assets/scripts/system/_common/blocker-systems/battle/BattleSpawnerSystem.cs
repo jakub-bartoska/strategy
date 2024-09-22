@@ -183,6 +183,11 @@ namespace system
                 positions = preparePosition()
             };
 
+            var debugConfigComponent = new DebugConfigComponent
+            {
+                arrowSpawner = 1
+            };
+
             var config = DebugConfigAuthoring.instance.collectData();
 
             ecb.AddComponent(singletonEntity, config);
@@ -193,6 +198,7 @@ namespace system
             ecb.AddComponent(singletonEntity, dataHolder);
             ecb.AddComponent(singletonEntity, backupPlanDataHolder);
             ecb.AddComponent(singletonEntity, soldierPositions);
+            ecb.AddComponent(singletonEntity, debugConfigComponent);
 
             randomPerThread.Dispose();
             ecb.Playback(state.EntityManager);
