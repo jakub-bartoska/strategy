@@ -24,6 +24,7 @@ namespace system.battle.battalion.cleanup
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            return;
             var prefabHolder = SystemAPI.GetSingleton<PrefabHolder>();
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
                 .CreateCommandBuffer(state.WorldUnmanaged);
@@ -91,7 +92,6 @@ namespace system.battle.battalion.cleanup
         private float getAngleInRadians(float3 normalizedDirectionVector)
         {
             var angle = Vector3.Angle(new Vector3(1, 0, 0), normalizedDirectionVector);
-            Debug.Log("angle: " + angle);
             var resultInRadians = angle * Mathf.PI / 180;
             return resultInRadians;
         }
@@ -122,10 +122,6 @@ namespace system.battle.battalion.cleanup
                 arrowMarkerDebug.startingPosition.y + y * arrowMarkerDebug.distanceCoefficient,
                 arrowMarkerDebug.startingPosition.z + vectorToAdd.z
             );
-
-            Debug.Log("rotation: " + arrowMarkerDebug.rotation);
-
-            Debug.Log("current quaternion: " + localTransform.Rotation);
 
             localTransform.Rotation = quaternion.EulerXYZ(
                 0,

@@ -29,7 +29,6 @@ namespace system.battle.battalion.row_change
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            return;
             var dataHolder = SystemAPI.GetSingletonRW<DataHolder>();
             var deltaTime = SystemAPI.Time.DeltaTime;
             var speed = SystemAPI.GetSingleton<DebugConfig>().speed;

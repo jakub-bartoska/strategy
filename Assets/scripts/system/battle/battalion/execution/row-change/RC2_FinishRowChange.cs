@@ -23,7 +23,6 @@ namespace system.battle.battalion.row_change
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            return;
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
                 .CreateCommandBuffer(state.WorldUnmanaged);
 
