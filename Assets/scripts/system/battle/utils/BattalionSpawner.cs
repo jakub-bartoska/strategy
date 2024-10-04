@@ -21,7 +21,7 @@ namespace system.battle.utils
             var newBattalion = ecb.Instantiate(battalionPrefab);
 
             var battalionTransform =
-                CustomTransformUtils.getBattalionPosition(battalionToSpawn.position.x, battalionToSpawn.position.y);
+                CustomTransformUtils.getBattalionPosition(battalionToSpawn.position.Value.x, battalionToSpawn.position.Value.y);
             var battalionMarker = new BattalionMarker
             {
                 id = battalionId,
@@ -34,7 +34,7 @@ namespace system.battle.utils
             };
             var row = new Row
             {
-                value = battalionToSpawn.position.y
+                value = (int) battalionToSpawn.position.Value.y
             };
             var team = new BattalionTeam
             {
@@ -162,7 +162,7 @@ namespace system.battle.utils
                     return 10f * scaleCoefficient;
                 case SoldierType.ARCHER:
                     return 20f * scaleCoefficient;
-                case SoldierType.HORSEMAN:
+                case SoldierType.CAVALRY:
                     return 30f * scaleCoefficient;
                 default:
                     throw new NotImplementedException("unknown type");

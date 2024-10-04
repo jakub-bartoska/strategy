@@ -125,6 +125,8 @@ MonoBehaviour:
     type: 3}
   battalionShadowPrefab: {fileID: 3699474186630514537, guid: e90167cc23f2de5479fdb803308eed4f,
     type: 3}
+  archerTilePrefab: {fileID: 4667776682165521700, guid: ecde5971b475f6944964f1d219956175,
+    type: 3}
 --- !u!114 &4500119305238821017
 MonoBehaviour:
   m_ObjectHideFlags: 0

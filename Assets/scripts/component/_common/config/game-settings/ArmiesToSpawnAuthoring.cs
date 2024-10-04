@@ -38,7 +38,7 @@ namespace component.config.game_settings
         public Team team;
         public SoldierType armyType;
         public int count;
-        public int2 position;
+        public float2? position;
     }
 
     public struct CompanyToSpawnMono : IBufferElementData
@@ -53,7 +53,7 @@ namespace component.config.game_settings
     {
         ARCHER,
         SWORDSMAN,
-        HORSEMAN
+        CAVALRY
     }
 
     public class ArmiesToSpawnBaker : Baker<ArmiesToSpawnAuthoring>

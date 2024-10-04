@@ -77,6 +77,22 @@ namespace system._common
                     ecb.RemoveComponent<StrategyMapStateMarker>(singletonEntity);
                 }
             }
+
+            if (desiredStatus == SystemStatus.PRE_BATTLE)
+            {
+                if (!state.EntityManager.HasComponent<PreBattleMarker>(singletonEntity))
+                {
+                    var preBattleStarter = new PreBattleMarker();
+                    ecb.AddComponent(singletonEntity, preBattleStarter);
+                }
+            }
+            else
+            {
+                if (state.EntityManager.HasComponent<PreBattleMarker>(singletonEntity))
+                {
+                    ecb.RemoveComponent<PreBattleMarker>(singletonEntity);
+                }
+            }
         }
     }
 }

@@ -28,7 +28,7 @@ namespace _Monobehaviors.ui.soldier_buy
 
         public void buyCavalry(int count)
         {
-            buySoldiers(count, SoldierType.HORSEMAN);
+            buySoldiers(count, SoldierType.CAVALRY);
         }
 
         private void buySoldiers(int count, SoldierType soldierType)

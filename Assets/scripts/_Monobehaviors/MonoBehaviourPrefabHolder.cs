@@ -26,7 +26,7 @@ namespace _Monobehaviors
                     return swordIcon;
                 case SoldierType.ARCHER:
                     return archerIcon;
-                case SoldierType.HORSEMAN:
+                case SoldierType.CAVALRY:
                     return cavalryIcon;
                 default:
                     throw new Exception("unknown type " + type);

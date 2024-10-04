@@ -1,4 +1,4 @@
-﻿using component._common.camera;
+﻿using _Monobehaviors.camera;
 using component._common.general;
 using component._common.system_switchers;
 using system.battle.battle_finish;
@@ -6,7 +6,6 @@ using system.strategy.spawner;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using UnityEngine;
 
 namespace system._common.army_to_spawn_switcher.common
 {
@@ -33,12 +32,17 @@ namespace system._common.army_to_spawn_switcher.common
             switch (systemStatusHolder.desiredStatus)
             {
                 case SystemStatus.BATTLE:
-                    var battleCameraPosition = SystemAPI.GetSingleton<BattleCamera>();
-                    Camera.main.transform.position = battleCameraPosition.desiredPosition;
+                    CameraManager.instance.SwitchCamera(GameCameraType.BATTLE);
+                    //var battleCameraPosition = SystemAPI.GetSingleton<BattleCamera>();
+                    //Camera.main.transform.position = battleCameraPosition.desiredPosition;
                     break;
                 case SystemStatus.STRATEGY:
-                    var strategyCameraPosition = SystemAPI.GetSingleton<StrategyCamera>();
-                    Camera.main.transform.position = strategyCameraPosition.desiredPosition;
+                    CameraManager.instance.SwitchCamera(GameCameraType.STRATEGY);
+                    //var strategyCameraPosition = SystemAPI.GetSingleton<StrategyCamera>();
+                    //Camera.main.transform.position = strategyCameraPosition.desiredPosition;
+                    break;
+                case SystemStatus.PRE_BATTLE:
+                    CameraManager.instance.SwitchCamera(GameCameraType.PRE_BATTLE);
                     break;
                 default:
                     return;

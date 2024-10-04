@@ -21,7 +21,12 @@ namespace component.authoring_pairs.PrefabHolder
         public GameObject goldMinePrefab;
         public GameObject caravanPrefab;
         public GameObject battalionPrefab;
+
         public GameObject battalionShadowPrefab;
+
+        //pre-battle menu
+        //tiles
+        public GameObject archerTilePrefab;
     }
 
     public class PrefabHolderBaker : Baker<PrefabHolderAuthoring>
@@ -64,6 +69,8 @@ namespace component.authoring_pairs.PrefabHolder
                 battalionPrefab = GetEntity(authoring.battalionPrefab,
                     TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic),
                 battalionShadowPrefab = GetEntity(authoring.battalionShadowPrefab,
+                    TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic),
+                archerTilePrefab = GetEntity(authoring.archerTilePrefab,
                     TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic)
             });
         }

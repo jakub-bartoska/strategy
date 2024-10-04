@@ -20,6 +20,11 @@ namespace component.authoring_pairs.PrefabHolder
         public Entity goldMinePrefab;
         public Entity caravanPrefab;
         public Entity battalionPrefab;
+
         public Entity battalionShadowPrefab;
+
+        //pre-battle menu
+        //tiles
+        public Entity archerTilePrefab;
     }
 }

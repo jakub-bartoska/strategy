@@ -1,14 +1,17 @@
-﻿using component;
+﻿using System;
+using component;
 using component._common.camera;
 using component._common.general;
 using component._common.movement_agents;
 using component._common.system_switchers;
 using component.config.game_settings;
 using component.helpers;
+using component.pre_battle.cards;
 using component.strategy.buy_army;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
+using Random = Unity.Mathematics.Random;
 
 namespace system._common
 {
@@ -61,6 +64,27 @@ namespace system._common
             ecb.AddBuffer<CompanyToSpawn>(singletonEntity);
             ecb.AddBuffer<BattalionToSpawn>(singletonEntity);
             ecb.AddBuffer<Damage>(singletonEntity);
+            var cards = ecb.AddBuffer<CardInfo>(singletonEntity);
+            addCards(cards);
+        }
+
+        private void addCards(DynamicBuffer<CardInfo> cards)
+        {
+            foreach (Team team in Enum.GetValues(typeof(Team)))
+            {
+                foreach (SoldierType soldierType in Enum.GetValues(typeof(SoldierType)))
+                {
+                    var enabled = team == Team.TEAM1;
+
+                    cards.Add(new CardInfo
+                    {
+                        team = team,
+                        soldierType = soldierType,
+                        battalionCount = 0,
+                        enabled = enabled
+                    });
+                }
+            }
         }
     }
 }

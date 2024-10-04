@@ -16,7 +16,7 @@ namespace system.battle.utils
             return LocalTransform.FromPosition(defaulBattleMapOffset);
         }
 
-        public static float3 getBattalionPositionForSoldiers(int x, int y)
+        public static float3 getBattalionPositionForSoldiers(float x, float y)
         {
             var distanceFromMiddle = -90;
             return new float3
@@ -27,7 +27,7 @@ namespace system.battle.utils
             };
         }
 
-        public static LocalTransform getBattalionPosition(int x, int y)
+        public static LocalTransform getBattalionPosition(float x, float y)
         {
             var position = getBattalionPositionForSoldiers(x, y);
             position.y = 0.02f;

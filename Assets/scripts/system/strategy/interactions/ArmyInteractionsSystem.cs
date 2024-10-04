@@ -97,7 +97,7 @@ namespace component.strategy.interactions
                         {
                             blocker = Blocker.AUTO_ADD_BLOCKERS
                         });
-                        systemSwitch.ValueRW.desiredStatus = SystemStatus.BATTLE_PLAN;
+                        systemSwitch.ValueRW.desiredStatus = SystemStatus.PRE_BATTLE;
                         return;
                     case InteractionType.FIGHT_TOWN:
                         new SpawnBattleJob
@@ -113,7 +113,7 @@ namespace component.strategy.interactions
                         {
                             blocker = Blocker.AUTO_ADD_BLOCKERS
                         });
-                        systemSwitch.ValueRW.desiredStatus = SystemStatus.BATTLE_PLAN;
+                        systemSwitch.ValueRW.desiredStatus = SystemStatus.PRE_BATTLE;
                         return;
                     case InteractionType.ENTER_TOWN:
                         if (armyTownPairs.TryGetFirstValue(army1, out var townId, out _) && army2 == townId)

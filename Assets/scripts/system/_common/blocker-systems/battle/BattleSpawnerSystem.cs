@@ -70,8 +70,8 @@ namespace system
                 }
 
                 var battalionPosition =
-                    CustomTransformUtils.getBattalionPositionForSoldiers(battalionToSpawn.position.x,
-                        battalionToSpawn.position.y);
+                    CustomTransformUtils.getBattalionPositionForSoldiers(battalionToSpawn.position.Value.x,
+                        battalionToSpawn.position.Value.y);
 
                 var newBattalion = BattalionSpawner.spawnBattalion(ecb, battalionToSpawn, prefabHolder, battalionId++);
 
@@ -234,7 +234,7 @@ namespace system
 
             for (var i = 0; i < randomPerThread.Length; i++)
             {
-                randomPerThread[i] = new Random((uint)random.ValueRW.random.NextInt());
+                randomPerThread[i] = new Random((uint) random.ValueRW.random.NextInt());
             }
 
             return randomPerThread;

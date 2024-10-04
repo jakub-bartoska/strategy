@@ -11,7 +11,6 @@ namespace _Monobehaviors.ui.manager
         [SerializeField] private GameObject menuUi;
         [SerializeField] private GameObject battleUi;
         [SerializeField] private GameObject ingameMenuUi;
-        [SerializeField] private GameObject battlePlanUi;
 
         private void Awake()
         {
@@ -25,18 +24,13 @@ namespace _Monobehaviors.ui.manager
             var menu = newStatus == SystemStatus.MENU;
             var battle = newStatus == SystemStatus.BATTLE;
             var ingameMenu = newStatus == SystemStatus.INGAME_MENU;
-            var battlePlan = newStatus == SystemStatus.BATTLE_PLAN;
+            var battlePlan = newStatus == SystemStatus.PRE_BATTLE;
 
             strategyUi.SetActive(strategy);
             menuUi.SetActive(menu);
             battleUi.SetActive(battle);
             ingameMenuUi.SetActive(ingameMenu);
-            battlePlanUi.SetActive(battlePlan);
-        }
-
-        public Transform getBattlePlanUiTransform()
-        {
-            return battlePlanUi.transform;
+            //todo nasetovat active Ui
         }
     }
 }

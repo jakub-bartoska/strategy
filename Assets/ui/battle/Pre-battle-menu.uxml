@@ -1,11 +1,38 @@
-<engine:UXML xmlns:engine="UnityEngine.UIElements"
-             noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+<engine:UXML xmlns:engine="UnityEngine.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <engine:VisualElement name="main" style="flex-grow: 1; width: 100%; height: 100%; -unity-background-image-tint-color: rgb(255, 0, 0); background-color: rgba(255, 255, 255, 0);"/>
     <engine:VisualElement name="footer" style="flex-grow: 1; width: 100%; height: auto; flex-direction: column; justify-content: flex-start; align-items: stretch;">
         <engine:VisualElement name="soldier-picker"
                               style="flex-grow: 1; background-color: rgb(111, 111, 111); width: 100%; height: 150px; flex-direction: row; align-self: auto; justify-content: flex-start; align-items: stretch; align-content: auto; flex-wrap: nowrap; flex-basis: auto;">
-            <engine:VisualElement name="soldier-type"
-                                  style="flex-grow: 0; width: 80px; background-color: rgb(0, 89, 1); margin-top: 10px; margin-right: 10px; margin-bottom: 10px; margin-left: 10px; align-self: auto; justify-content: flex-start; align-content: auto; align-items: auto; flex-shrink: 0;"/>
+            <engine:VisualElement name="soldier-type-swordsman-team1"
+                                  style="flex-grow: 0; width: 80px; background-color: rgb(0, 89, 1); margin-top: 10px; margin-right: 10px; margin-bottom: 10px; margin-left: 10px; align-self: auto; justify-content: flex-start; align-content: auto; align-items: auto; flex-shrink: 0; background-image: url(&quot;project://database/Assets/art/2d/icons/swordsman.png?fileID=2800000&amp;guid=87266c379ba1f9541abf4394216d1643&amp;type=3#swordsman&quot;); flex-direction: column-reverse;">
+                <engine:Label text="0&#10;" selectable="true"
+                              style="align-self: center; justify-content: flex-end; align-items: center; -unity-font-style: bold; font-size: 24px; -unity-text-outline-width: 1px; -unity-text-outline-color: rgb(0, 0, 0); -unity-text-align: upper-center; background-color: rgba(140, 140, 140, 0.74); width: 100%; color: rgb(255, 255, 255);"/>
+            </engine:VisualElement>
+            <engine:VisualElement name="soldier-type-cavalry-team1"
+                                  style="flex-grow: 0; width: 80px; background-color: rgb(0, 89, 1); margin-top: 10px; margin-right: 10px; margin-bottom: 10px; margin-left: 10px; align-self: auto; justify-content: flex-start; align-content: auto; align-items: auto; flex-shrink: 0; background-image: url(&quot;project://database/Assets/art/2d/icons/cavalry.png?fileID=2800000&amp;guid=1d6105cfd8ed2da42b92887689aa1868&amp;type=3#cavalry&quot;); flex-direction: column-reverse;">
+                <engine:Label text="0&#10;" selectable="true"
+                              style="align-self: center; justify-content: flex-end; align-items: center; -unity-font-style: bold; font-size: 24px; -unity-text-outline-width: 1px; -unity-text-outline-color: rgb(0, 0, 0); -unity-text-align: upper-center; background-color: rgba(140, 140, 140, 0.74); width: 100%; color: rgb(255, 255, 255);"/>
+            </engine:VisualElement>
+            <engine:VisualElement name="soldier-type-archer-team1"
+                                  style="flex-grow: 0; width: 80px; background-color: rgb(0, 89, 1); margin-top: 10px; margin-right: 10px; margin-bottom: 10px; margin-left: 10px; align-self: auto; justify-content: flex-start; align-content: auto; align-items: auto; flex-shrink: 0; background-image: url(&quot;project://database/Assets/art/2d/icons/archer.png?fileID=2800000&amp;guid=1c1d22ebf8792724ca87369613ae55e9&amp;type=3#archer&quot;); flex-direction: column-reverse;">
+                <engine:Label text="0&#10;" selectable="true"
+                              style="align-self: center; justify-content: flex-end; align-items: center; -unity-font-style: bold; font-size: 24px; -unity-text-outline-width: 1px; -unity-text-outline-color: rgb(0, 0, 0); -unity-text-align: upper-center; background-color: rgba(140, 140, 140, 0.74); width: 100%; color: rgb(255, 255, 255);"/>
+            </engine:VisualElement>
+            <engine:VisualElement name="soldier-type-swordsman-team2"
+                                  style="flex-grow: 0; width: 80px; background-color: rgb(0, 89, 1); margin-top: 10px; margin-right: 10px; margin-bottom: 10px; margin-left: 10px; align-self: auto; justify-content: flex-start; align-content: auto; align-items: auto; flex-shrink: 0; background-image: url(&quot;project://database/Assets/art/2d/icons/swordsman.png?fileID=2800000&amp;guid=87266c379ba1f9541abf4394216d1643&amp;type=3#swordsman&quot;); flex-direction: column-reverse;">
+                <engine:Label text="0&#10;" selectable="true"
+                              style="align-self: center; justify-content: flex-end; align-items: center; -unity-font-style: bold; font-size: 24px; -unity-text-outline-width: 1px; -unity-text-outline-color: rgb(0, 0, 0); -unity-text-align: upper-center; background-color: rgba(140, 140, 140, 0.74); width: 100%; color: rgb(255, 255, 255);"/>
+            </engine:VisualElement>
+            <engine:VisualElement name="soldier-type-cavalry-team2"
+                                  style="flex-grow: 0; width: 80px; background-color: rgb(0, 89, 1); margin-top: 10px; margin-right: 10px; margin-bottom: 10px; margin-left: 10px; align-self: auto; justify-content: flex-start; align-content: auto; align-items: auto; flex-shrink: 0; background-image: url(&quot;project://database/Assets/art/2d/icons/cavalry.png?fileID=2800000&amp;guid=1d6105cfd8ed2da42b92887689aa1868&amp;type=3#cavalry&quot;); flex-direction: column-reverse;">
+                <engine:Label text="0&#10;" selectable="true"
+                              style="align-self: center; justify-content: flex-end; align-items: center; -unity-font-style: bold; font-size: 24px; -unity-text-outline-width: 1px; -unity-text-outline-color: rgb(0, 0, 0); -unity-text-align: upper-center; background-color: rgba(140, 140, 140, 0.74); width: 100%; color: rgb(255, 255, 255);"/>
+            </engine:VisualElement>
+            <engine:VisualElement name="soldier-type-archer-team2"
+                                  style="flex-grow: 0; width: 80px; background-color: rgb(0, 89, 1); margin-top: 10px; margin-right: 10px; margin-bottom: 10px; margin-left: 10px; align-self: auto; justify-content: flex-start; align-content: auto; align-items: auto; flex-shrink: 0; background-image: url(&quot;project://database/Assets/art/2d/icons/archer.png?fileID=2800000&amp;guid=1c1d22ebf8792724ca87369613ae55e9&amp;type=3#archer&quot;); flex-direction: column-reverse;">
+                <engine:Label text="0&#10;" selectable="true"
+                              style="align-self: center; justify-content: flex-end; align-items: center; -unity-font-style: bold; font-size: 24px; -unity-text-outline-width: 1px; -unity-text-outline-color: rgb(0, 0, 0); -unity-text-align: upper-center; background-color: rgba(140, 140, 140, 0.74); width: 100%; color: rgb(255, 255, 255);"/>
+            </engine:VisualElement>
         </engine:VisualElement>
         <engine:VisualElement name="lowest-buttons" style="flex-grow: 1; flex-direction: row; -unity-background-image-tint-color: rgb(0, 0, 0); background-color: rgb(0, 0, 0); height: 150px;">
             <engine:VisualElement name="team-chooser"

@@ -60,7 +60,7 @@ namespace system._common.army_to_spawn_switcher.common
                 }
             }
 
-            if (systemHolder.ValueRO.desiredStatus == SystemStatus.BATTLE_PLAN)
+            if (systemHolder.ValueRO.desiredStatus == SystemStatus.PRE_BATTLE)
             {
                 if (systemHolder.ValueRO.currentStatus == SystemStatus.STRATEGY)
                 {
@@ -72,7 +72,7 @@ namespace system._common.army_to_spawn_switcher.common
             }
 
 
-            if (systemHolder.ValueRO.currentStatus == SystemStatus.BATTLE_PLAN)
+            if (systemHolder.ValueRO.currentStatus == SystemStatus.PRE_BATTLE)
             {
                 if (systemHolder.ValueRO.desiredStatus == SystemStatus.BATTLE)
                 {
@@ -110,12 +110,9 @@ namespace system._common.army_to_spawn_switcher.common
             }
 
             //todo doresit restart
-            if ((systemHolder.ValueRO.desiredStatus == SystemStatus.BATTLE_PLAN &&
-                 systemHolder.ValueRO.currentStatus == SystemStatus.STRATEGY) ||
-                (systemHolder.ValueRO.desiredStatus == SystemStatus.STRATEGY &&
-                 systemHolder.ValueRO.currentStatus == SystemStatus.BATTLE) ||
-                (systemHolder.ValueRO.desiredStatus == SystemStatus.STRATEGY &&
-                 systemHolder.ValueRO.currentStatus == SystemStatus.MENU))
+            if (systemHolder.ValueRO.desiredStatus == SystemStatus.PRE_BATTLE ||
+                systemHolder.ValueRO.desiredStatus == SystemStatus.STRATEGY ||
+                systemHolder.ValueRO.desiredStatus == SystemStatus.BATTLE)
             {
                 blockers.Add(new SystemSwitchBlocker
                 {
@@ -137,7 +134,7 @@ namespace system._common.army_to_spawn_switcher.common
             }
 
             if (systemHolder.ValueRO.currentStatus == SystemStatus.NO_STATUS &&
-                systemHolder.ValueRO.desiredStatus == SystemStatus.BATTLE_PLAN)
+                systemHolder.ValueRO.desiredStatus == SystemStatus.PRE_BATTLE)
             {
                 blockers.Add(new SystemSwitchBlocker
                 {
