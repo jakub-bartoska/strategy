@@ -6,6 +6,7 @@ using component._common.movement_agents;
 using component._common.system_switchers;
 using component.config.game_settings;
 using component.helpers;
+using component.pre_battle;
 using component.pre_battle.cards;
 using component.strategy.buy_army;
 using Unity.Burst;
@@ -50,11 +51,18 @@ namespace system._common
             {
                 desiredPosition = new float3(10000, 100, 9950)
             };
+            var prebattleUiState = new PreBattleUiState
+            {
+                selectedTeam = Team.TEAM1,
+                selectedCard = SoldierType.ARCHER,
+                preBattleEvent = PreBattleEvent.INIT
+            };
 
             ecb.AddComponent(singletonEntity, battleCamera);
             ecb.AddComponent(singletonEntity, strategyCamera);
             ecb.AddComponent(singletonEntity, random);
             ecb.AddComponent(singletonEntity, systemSwitcherMarker);
+            ecb.AddComponent(singletonEntity, prebattleUiState);
             ecb.AddComponent(singletonEntity, new SingletonEntityTag());
             ecb.AddComponent(singletonEntity, new AgentMovementAllowedTag());
             ecb.AddComponent(singletonEntity, new AgentMovementAllowedForBattleTag());
@@ -74,14 +82,11 @@ namespace system._common
             {
                 foreach (SoldierType soldierType in Enum.GetValues(typeof(SoldierType)))
                 {
-                    var enabled = team == Team.TEAM1;
-
                     cards.Add(new CardInfo
                     {
                         team = team,
                         soldierType = soldierType,
-                        battalionCount = 0,
-                        enabled = enabled
+                        battalionCount = 0
                     });
                 }
             }

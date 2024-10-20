@@ -1,7 +1,9 @@
-﻿using _Monobehaviors.ui_toolkit.pre_battle;
+﻿using System.Collections.Generic;
+using _Monobehaviors.ui_toolkit.pre_battle;
 using component;
 using component._common.system_switchers;
 using component.config.game_settings;
+using component.pre_battle;
 using component.pre_battle.cards;
 using Unity.Burst;
 using Unity.Collections;
@@ -22,6 +24,7 @@ namespace system.pre_battle
         {
             var cardInfos = SystemAPI.GetSingletonBuffer<CardInfo>();
             var battalionsToSpawn = SystemAPI.GetSingletonBuffer<BattalionToSpawn>();
+            var uiState = SystemAPI.GetSingleton<PreBattleUiState>();
 
             var battalionCounter = new NativeHashMap<(Team, SoldierType), int>(cardInfos.Length, Allocator.TempJob);
             foreach (var battalionToSpawn in battalionsToSpawn)
@@ -49,7 +52,10 @@ namespace system.pre_battle
                 var key = (cardInfo.team, cardInfo.soldierType);
                 if (battalionCounter.TryGetValue(key, out var count))
                 {
-                    if (count == cardInfo.battalionCount) continue;
+                    if (count == cardInfo.battalionCount)
+                    {
+                        continue;
+                    }
 
                     var newValue = cardInfo;
                     newValue.battalionCount = count;
@@ -59,12 +65,34 @@ namespace system.pre_battle
                 }
             }
 
-            if (cardChanged)
+            if (cardChanged || uiState.preBattleEvent == PreBattleEvent.INIT)
             {
-                PreBattleUi.instance.updateCards(cardInfos);
+                var sortedCards = getSortedCards(cardInfos);
+                CardsUi.instance.updateCardLabels(sortedCards);
+                sortedCards.Dispose();
             }
 
             battalionCounter.Dispose();
+        }
+
+        private NativeArray<CardInfo> getSortedCards(DynamicBuffer<CardInfo> cards)
+        {
+            var result = cards.ToNativeArray(Allocator.TempJob);
+            result.Sort(new CardInfoComparator());
+            return result;
+        }
+
+        public class CardInfoComparator : IComparer<CardInfo>
+        {
+            public int Compare(CardInfo e1, CardInfo e2)
+            {
+                if (e1.team != e2.team)
+                {
+                    return e1.team == Team.TEAM1 ? -1 : 1;
+                }
+
+                return e1.soldierType.CompareTo(e2.soldierType);
+            }
         }
     }
 }

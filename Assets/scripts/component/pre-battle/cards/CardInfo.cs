@@ -8,6 +8,5 @@ namespace component.pre_battle.cards
         public Team team;
         public SoldierType soldierType;
         public int battalionCount;
-        public bool enabled;
     }
 }
