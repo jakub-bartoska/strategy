@@ -173,10 +173,11 @@ namespace system.strategy.spawner
                 nextIdToBeUsed = 1,
                 nextCompanyIdToBeUsed = 1
             };
-            var marker = new SelectionMarkerState
+            var selectionMarkerState = new SelectionMarkerState
             {
                 state = MarkerState.IDLE
             };
+
             var playerSettings = new GamePlayerSettings
             {
                 playerTeam = Team.TEAM1
@@ -186,7 +187,7 @@ namespace system.strategy.spawner
                 state = UIState.ALL_CLOSED
             };
 
-            ecb.AddComponent(singletonEntity, marker);
+            ecb.AddComponent(singletonEntity, selectionMarkerState);
             ecb.AddComponent(singletonEntity, playerSettings);
             ecb.AddComponent(singletonEntity, interfaceState);
             ecb.AddComponent(singletonEntity, idGenerator);

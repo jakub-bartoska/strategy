@@ -2,6 +2,7 @@
 using component._common.system_switchers;
 using component.authoring_pairs.PrefabHolder;
 using component.config.game_settings;
+using component.pre_battle.marker;
 using system._common.army_to_spawn_switcher;
 using system.battle.utils.pre_battle;
 using Unity.Burst;
@@ -59,7 +60,10 @@ namespace system._common.blocker_systems.battle
                 });
             }
 
-            TileSpawner.spawnTiles(prefabHolder, ecb);
+            var preBattle = SystemAPI.GetSingletonBuffer<PreBattleBattalion>();
+            preBattle.Clear();
+
+            TileSpawner.spawnTiles(prefabHolder, ecb, preBattle);
         }
 
         private bool containsBlocker(DynamicBuffer<SystemSwitchBlocker> blockers)

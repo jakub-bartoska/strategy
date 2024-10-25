@@ -27,6 +27,7 @@ namespace component.authoring_pairs.PrefabHolder
         //pre-battle menu
         //tiles
         public GameObject archerTilePrefab;
+        public GameObject archerTileFilledPrefab;
     }
 
     public class PrefabHolderBaker : Baker<PrefabHolderAuthoring>
@@ -71,6 +72,8 @@ namespace component.authoring_pairs.PrefabHolder
                 battalionShadowPrefab = GetEntity(authoring.battalionShadowPrefab,
                     TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic),
                 archerTilePrefab = GetEntity(authoring.archerTilePrefab,
+                    TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic),
+                archerTileFilledPrefab = GetEntity(authoring.archerTileFilledPrefab,
                     TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic)
             });
         }

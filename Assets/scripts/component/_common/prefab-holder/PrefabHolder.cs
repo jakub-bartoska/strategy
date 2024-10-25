@@ -26,5 +26,6 @@ namespace component.authoring_pairs.PrefabHolder
         //pre-battle menu
         //tiles
         public Entity archerTilePrefab;
+        public Entity archerTileFilledPrefab;
     }
 }

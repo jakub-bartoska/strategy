@@ -8,6 +8,7 @@ using component.config.game_settings;
 using component.helpers;
 using component.pre_battle;
 using component.pre_battle.cards;
+using component.pre_battle.marker;
 using component.strategy.buy_army;
 using Unity.Burst;
 using Unity.Entities;
@@ -43,6 +44,10 @@ namespace system._common
                 desiredStatus = SystemStatus.NO_STATUS,
                 previousStatus = SystemStatus.NO_STATUS
             };
+            var preBattlePositionMarker = new PreBattlePositionMarker
+            {
+                state = PreBattleMarkerState.IDLE
+            };
             var strategyCamera = new StrategyCamera
             {
                 desiredPosition = new float3(-10, 10, -13)
@@ -58,6 +63,7 @@ namespace system._common
                 preBattleEvent = PreBattleEvent.INIT
             };
 
+            ecb.AddComponent(singletonEntity, preBattlePositionMarker);
             ecb.AddComponent(singletonEntity, battleCamera);
             ecb.AddComponent(singletonEntity, strategyCamera);
             ecb.AddComponent(singletonEntity, random);
@@ -72,6 +78,7 @@ namespace system._common
             ecb.AddBuffer<CompanyToSpawn>(singletonEntity);
             ecb.AddBuffer<BattalionToSpawn>(singletonEntity);
             ecb.AddBuffer<Damage>(singletonEntity);
+            ecb.AddBuffer<PreBattleBattalion>(singletonEntity);
             var cards = ecb.AddBuffer<CardInfo>(singletonEntity);
             addCards(cards);
         }

@@ -15,7 +15,7 @@
                     "name": "MouseLeftClick",
                     "type": "Button",
                     "id": "f7f4c1d6-41a3-4865-b927-5186d9091273",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -24,7 +24,7 @@
                     "name": "MouseRightClick",
                     "type": "Button",
                     "id": "dd44bda0-f0e5-46fb-8587-4da43d7e3a46",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -63,7 +63,7 @@
                     "name": "StartBattle",
                     "type": "Button",
                     "id": "98f18d3e-1c6e-4bbc-9394-6874d4b685e0",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -234,6 +234,54 @@
                     "action": "mouseScroll",
                     "isComposite": false,
                     "isPartOfComposite": true
+                }
+            ]
+        },
+        {
+            "name": "pre-battle",
+            "id": "43bc1966-7d3e-41be-b812-e143bb8f6d65",
+            "actions": [
+                {
+                    "name": "MouseLeftClick",
+                    "type": "Button",
+                    "id": "1e195c8b-6ba5-4d51-a139-b9a945f7c316",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "MouseRightClick",
+                    "type": "Button",
+                    "id": "c559d715-95b8-4745-836e-0de162cbf015",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "47e261e9-2476-4443-a5c9-2c1533e29e1a",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MouseLeftClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4ca8262a-4868-454b-b797-8a5917af94d5",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MouseRightClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }

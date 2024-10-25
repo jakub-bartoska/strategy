@@ -548,6 +548,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: b4a2b4ac36ca67c4188bea764b3a8716,
         type: 2}
+    - target: {fileID: 2552001751253887404, guid: a95ab48849cc0e941aae66b5428824e3,
+        type: 3}
+      propertyPath: cavalryIcon
+      value: 
+      objectReference: {fileID: 2800000, guid: 1c1d22ebf8792724ca87369613ae55e9, type: 3}
     - target: {fileID: 2619647373257025805, guid: a95ab48849cc0e941aae66b5428824e3,
         type: 3}
       propertyPath: m_IsActive
@@ -689,9 +694,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2151431705455592703, guid: a95ab48849cc0e941aae66b5428824e3, type: 3}
     m_RemovedGameObjects:
     - {fileID: 6424045513742742981, guid: a95ab48849cc0e941aae66b5428824e3, type: 3}
+    - {fileID: 4631947265833008303, guid: a95ab48849cc0e941aae66b5428824e3, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 3103455589486038129, guid: a95ab48849cc0e941aae66b5428824e3,
         type: 3}

@@ -36,6 +36,7 @@ namespace utils
         private void enableCommons()
         {
             battleInputs.Enable();
+            battleInputs.prebattle.Enable();
             battleInputs.common.Enable();
             battleInputs.strategy.Disable();
             battleInputs.battle.Disable();
@@ -52,11 +53,19 @@ namespace utils
             if (newStatus == SystemStatus.STRATEGY)
             {
                 battleInputs.strategy.Enable();
-                battleInputs.cameramovement.Enable();
             }
             else
             {
                 battleInputs.strategy.Disable();
+            }
+
+            if (newStatus == SystemStatus.PRE_BATTLE)
+            {
+                battleInputs.prebattle.Enable();
+            }
+            else
+            {
+                battleInputs.prebattle.Disable();
             }
 
             if (newStatus == SystemStatus.BATTLE)
