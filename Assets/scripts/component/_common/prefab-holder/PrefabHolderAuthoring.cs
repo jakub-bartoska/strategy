@@ -26,8 +26,18 @@ namespace component.authoring_pairs.PrefabHolder
 
         //pre-battle menu
         //tiles
-        public GameObject archerTilePrefab;
-        public GameObject archerTileFilledPrefab;
+        public GameObject emptyTilePrefab;
+
+        //red
+        public GameObject redArcherTilePrefab;
+        public GameObject redSwordsmanTilePrefab;
+
+        public GameObject redCavalryTilePrefab;
+
+        //blue
+        public GameObject blueArcherTilePrefab;
+        public GameObject blueSwordsmanTilePrefab;
+        public GameObject blueCavalryTilePrefab;
     }
 
     public class PrefabHolderBaker : Baker<PrefabHolderAuthoring>
@@ -71,9 +81,19 @@ namespace component.authoring_pairs.PrefabHolder
                     TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic),
                 battalionShadowPrefab = GetEntity(authoring.battalionShadowPrefab,
                     TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic),
-                archerTilePrefab = GetEntity(authoring.archerTilePrefab,
+                emptyTilePrefab = GetEntity(authoring.emptyTilePrefab,
                     TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic),
-                archerTileFilledPrefab = GetEntity(authoring.archerTileFilledPrefab,
+                redArcherTilePrefab = GetEntity(authoring.redArcherTilePrefab,
+                    TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic),
+                redSwordsmanTilePrefab = GetEntity(authoring.redSwordsmanTilePrefab,
+                    TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic),
+                redCavalryTilePrefab = GetEntity(authoring.redCavalryTilePrefab,
+                    TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic),
+                blueArcherTilePrefab = GetEntity(authoring.blueArcherTilePrefab,
+                    TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic),
+                blueSwordsmanTilePrefab = GetEntity(authoring.blueSwordsmanTilePrefab,
+                    TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic),
+                blueCavalryTilePrefab = GetEntity(authoring.blueCavalryTilePrefab,
                     TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic)
             });
         }

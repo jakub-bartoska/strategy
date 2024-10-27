@@ -77,7 +77,7 @@ namespace utils
                 battleInputs.battle.Disable();
             }
 
-            if (newStatus == SystemStatus.BATTLE || newStatus == SystemStatus.STRATEGY)
+            if (newStatus == SystemStatus.BATTLE || newStatus == SystemStatus.STRATEGY || newStatus == SystemStatus.PRE_BATTLE)
             {
                 battleInputs.cameramovement.Enable();
             }

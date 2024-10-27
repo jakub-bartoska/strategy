@@ -8,12 +8,20 @@ namespace component.pre_battle.marker
         public PreBattleMarkerState state;
         public float2? startPosition;
         public float2? endPosition;
+        public MarkerType MarkerType;
     }
 
     public enum PreBattleMarkerState
     {
         IDLE,
+        INIT,
         RUNNING,
         FINISHED
+    }
+
+    public enum MarkerType
+    {
+        ADD,
+        REMOVE
     }
 }

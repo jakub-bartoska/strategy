@@ -19,6 +19,9 @@ namespace system.controls
             state.RequireForUpdate<SystemStatusHolder>();
             state.RequireForUpdate<PhysicsWorldSingleton>();
             state.RequireForUpdate<CameraConfigComponentData>();
+            var strategy = state.EntityManager.CreateEntityQuery(typeof(StrategyMapStateMarker));
+            var battle = state.EntityManager.CreateEntityQuery(typeof(BattleMapStateMarker));
+            state.RequireAnyForUpdate(strategy, battle);
         }
 
         [BurstCompile]

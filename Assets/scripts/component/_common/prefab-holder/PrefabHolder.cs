@@ -25,7 +25,16 @@ namespace component.authoring_pairs.PrefabHolder
 
         //pre-battle menu
         //tiles
-        public Entity archerTilePrefab;
-        public Entity archerTileFilledPrefab;
+        public Entity emptyTilePrefab;
+
+        //red
+        public Entity redArcherTilePrefab;
+        public Entity redSwordsmanTilePrefab;
+        public Entity redCavalryTilePrefab;
+
+        //blue
+        public Entity blueArcherTilePrefab;
+        public Entity blueSwordsmanTilePrefab;
+        public Entity blueCavalryTilePrefab;
     }
 }

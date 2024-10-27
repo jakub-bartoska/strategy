@@ -188,9 +188,51 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5308266511372275989, guid: 0561992ed07a62747a5d92ae030a129b,
         type: 3}
+      propertyPath: emptyTilePrefab
+      value: 
+      objectReference: {fileID: 4667776682165521700, guid: ecde5971b475f6944964f1d219956175,
+        type: 3}
+    - target: {fileID: 5308266511372275989, guid: 0561992ed07a62747a5d92ae030a129b,
+        type: 3}
+      propertyPath: redArcherTilePrefab
+      value: 
+      objectReference: {fileID: 4150256917203079437, guid: e0d70e1a85678c24ab6d175ef6cdc74a,
+        type: 3}
+    - target: {fileID: 5308266511372275989, guid: 0561992ed07a62747a5d92ae030a129b,
+        type: 3}
+      propertyPath: blueArcherTilePrefab
+      value: 
+      objectReference: {fileID: 7776151331337071502, guid: d4c3945fa3003074cae8a9c7d3bd467b,
+        type: 3}
+    - target: {fileID: 5308266511372275989, guid: 0561992ed07a62747a5d92ae030a129b,
+        type: 3}
+      propertyPath: redCavalryTilePrefab
+      value: 
+      objectReference: {fileID: 3739187619582024976, guid: 600eb21dad1b01c4491aed0e04b7e270,
+        type: 3}
+    - target: {fileID: 5308266511372275989, guid: 0561992ed07a62747a5d92ae030a129b,
+        type: 3}
+      propertyPath: blueCavalryTilePrefab
+      value: 
+      objectReference: {fileID: 7956905821637569109, guid: 5be0bb2e9082c5e4aadd1ebd35b4d309,
+        type: 3}
+    - target: {fileID: 5308266511372275989, guid: 0561992ed07a62747a5d92ae030a129b,
+        type: 3}
       propertyPath: archerTileFilledPrefab
       value: 
       objectReference: {fileID: 4667776682165521700, guid: 5635a8a4fcaf1334eae1a1174df3f78b,
+        type: 3}
+    - target: {fileID: 5308266511372275989, guid: 0561992ed07a62747a5d92ae030a129b,
+        type: 3}
+      propertyPath: redSwordsmanTilePrefab
+      value: 
+      objectReference: {fileID: 5100271144247681053, guid: 0e8aea1dfdc193540b9451cfff47e9b5,
+        type: 3}
+    - target: {fileID: 5308266511372275989, guid: 0561992ed07a62747a5d92ae030a129b,
+        type: 3}
+      propertyPath: blueSwordsmanTilePrefab
+      value: 
+      objectReference: {fileID: 1441983516984278911, guid: d0afdb8e91b539a47a350f6d57426eb3,
         type: 3}
     - target: {fileID: 7625440588258256828, guid: 0561992ed07a62747a5d92ae030a129b,
         type: 3}

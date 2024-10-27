@@ -32,8 +32,6 @@ namespace system._common.blocker_systems.battle
             var companiesToSpawn = SystemAPI.GetSingletonBuffer<CompanyToSpawn>();
             var battalionsToSpawn = SystemAPI.GetSingletonBuffer<BattalionToSpawn>();
             var prefabHolder = SystemAPI.GetSingleton<PrefabHolder>();
-            var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
-                .CreateCommandBuffer(state.WorldUnmanaged);
             battalionsToSpawn.Clear();
             foreach (var companyToSpawn in companiesToSpawn)
             {
@@ -60,10 +58,11 @@ namespace system._common.blocker_systems.battle
                 });
             }
 
+            var newBattalionCards = TileSpawner.spawnTiles(prefabHolder, state.EntityManager);
+
             var preBattle = SystemAPI.GetSingletonBuffer<PreBattleBattalion>();
             preBattle.Clear();
-
-            TileSpawner.spawnTiles(prefabHolder, ecb, preBattle);
+            preBattle.AddRange(newBattalionCards);
         }
 
         private bool containsBlocker(DynamicBuffer<SystemSwitchBlocker> blockers)

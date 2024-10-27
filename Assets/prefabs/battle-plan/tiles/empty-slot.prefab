@@ -231,7 +231,7 @@ GameObject:
   - component: {fileID: 7615127293609811627}
   - component: {fileID: 8384598364850516309}
   m_Layer: 0
-  m_Name: slot-tile-filled
+  m_Name: empty-slot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -288,7 +288,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: eb5bc8423942e004e9461fdae3d2cbd6, type: 2}
+  - {fileID: 2100000, guid: 633a1e6bb3fed4b46bc4ca20d699dcdd, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
