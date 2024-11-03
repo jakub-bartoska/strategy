@@ -7,6 +7,7 @@ namespace component.pre_battle.cards
     {
         public Team team;
         public SoldierType soldierType;
-        public int battalionCount;
+        public int maxBattalionCount;
+        public int currentBattalionCount;
     }
 }

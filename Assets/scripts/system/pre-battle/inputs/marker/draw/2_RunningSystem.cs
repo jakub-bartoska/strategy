@@ -44,24 +44,40 @@ namespace system.pre_battle.inputs
             var prefabHolder = SystemAPI.GetSingleton<PrefabHolder>();
             var entitiesToDelete = new NativeList<Entity>(Allocator.Temp);
 
+            var battalions = SystemAPI.GetSingletonBuffer<BattalionToSpawn>();
+            var battalionIds = getBattalionIdsByTeamAndType(preBattleUiState.selectedTeam, preBattleUiState.selectedCard.Value, battalions);
+
+            var removeCall = preBattlePositionMarker.MarkerType == MarkerType.REMOVE;
+
             var newBuffer = new NativeList<PreBattleBattalion>(Allocator.Temp);
             for (int i = 0; i < cards.Length; i++)
             {
                 var card = cards[i];
                 //field is marked, but card is not marked => need to redraw to new value
-                if (!attributesMatch(card, preBattleUiState) && isPositionSelected(positions, card))
+                if (!attributesMatch(card, preBattleUiState, removeCall) && isPositionSelected(positions, card))
                 {
+                    //adding new battalions, but dont have any in reserves
+                    if (!removeCall && battalionIds.IsEmpty)
+                    {
+                        newBuffer.Add(card);
+                        continue;
+                    }
+
+                    var battalionId = getBattalionId(removeCall, battalionIds);
+
                     entitiesToDelete.Add(card.entity);
-                    var newValue = createMarkerEntity(card, prefabHolder, ecb, preBattleUiState, preBattlePositionMarker.MarkerType == MarkerType.REMOVE);
+                    var newValue = createMarkerEntity(card, prefabHolder, ecb, preBattleUiState, removeCall, battalionId);
+
                     newBuffer.Add(newValue);
                     continue;
                 }
 
                 //field is not marked, but card is marked => need to redraw to old value
-                if (attributesMatch(card, preBattleUiState) && !isPositionSelected(positions, card))
+                if (attributesMatch(card, preBattleUiState, removeCall) && !isPositionSelected(positions, card))
                 {
                     entitiesToDelete.Add(card.entity);
                     var newValue = fallBackToOldCard(card, prefabHolder, ecb);
+
                     newBuffer.Add(newValue);
                     continue;
                 }
@@ -82,7 +98,35 @@ namespace system.pre_battle.inputs
             ecb.Dispose();
         }
 
-        private PreBattleBattalion createMarkerEntity(PreBattleBattalion oldCard, PrefabHolder prefabHolder, EntityCommandBuffer ecb, PreBattleUiState preBattleUiState, bool removeCall)
+        private long? getBattalionId(bool removeCall, NativeList<long> battalionIds)
+        {
+            if (removeCall)
+            {
+                return null;
+            }
+
+            var battalionId = battalionIds[battalionIds.Length - 1];
+            battalionIds.RemoveAt(battalionIds.Length - 1);
+
+            return battalionId;
+        }
+
+        private NativeList<long> getBattalionIdsByTeamAndType(Team team, SoldierType soldierType, DynamicBuffer<BattalionToSpawn> battalions)
+        {
+            var result = new NativeList<long>(Allocator.Temp);
+            foreach (var battalion in battalions)
+            {
+                if (battalion.team == team && battalion.armyType == soldierType && !battalion.isUsed)
+                {
+                    result.Add(battalion.battalionId);
+                }
+            }
+
+            return result;
+        }
+
+        private PreBattleBattalion createMarkerEntity(PreBattleBattalion oldCard, PrefabHolder prefabHolder, EntityCommandBuffer ecb, PreBattleUiState preBattleUiState, bool removeCall,
+            long? battalionId)
         {
             Team? team = !removeCall ? preBattleUiState.selectedTeam : null;
             SoldierType? soldierType = !removeCall ? preBattleUiState.selectedCard : null;
@@ -94,8 +138,10 @@ namespace system.pre_battle.inputs
                 entity = newEntity,
                 soldierType = oldCard.soldierType,
                 team = oldCard.team,
-                teamTmp = preBattleUiState.selectedTeam,
-                soldierTypeTmp = preBattleUiState.selectedCard
+                battalionId = oldCard.battalionId,
+                teamTmp = team,
+                soldierTypeTmp = soldierType,
+                battalionIdTmp = battalionId
             };
         }
 
@@ -109,19 +155,24 @@ namespace system.pre_battle.inputs
                 entity = newEntity,
                 soldierType = oldCard.soldierType,
                 team = oldCard.team,
-                teamTmp = null,
-                soldierTypeTmp = null
+                battalionId = oldCard.battalionId,
+                teamTmp = oldCard.team,
+                soldierTypeTmp = oldCard.soldierType,
+                battalionIdTmp = oldCard.battalionId
             };
         }
 
-        private bool attributesMatch(PreBattleBattalion card, PreBattleUiState uiState)
+        private bool attributesMatch(PreBattleBattalion card, PreBattleUiState uiState, bool removeCall)
         {
-            if (card.teamTmp != uiState.selectedTeam)
+            Team? team = !removeCall ? uiState.selectedTeam : null;
+            SoldierType? soldierType = !removeCall ? uiState.selectedCard : null;
+
+            if (card.teamTmp != team)
             {
                 return false;
             }
 
-            return card.soldierTypeTmp == uiState.selectedCard;
+            return card.soldierTypeTmp == soldierType;
         }
 
         private bool isPositionSelected(MarkerPositions marked, PreBattleBattalion card)

@@ -9,6 +9,9 @@ using Unity.Entities;
 
 namespace system._common.army_to_spawn_switcher.startegy
 {
+    /**
+     * Battle agents start moving (they could be stopped by pause menu)
+     */
     public partial struct ActivateBattleAgentsSystem : ISystem
     {
         [BurstCompile]

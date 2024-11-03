@@ -95,7 +95,7 @@ namespace _Monobehaviors.ui_toolkit.pre_battle
             };
             if (cards.TryGetValue(cardKey, out var card))
             {
-                card.Q<Label>().text = cardInfo.battalionCount.ToString();
+                card.Q<Label>().text = cardInfo.currentBattalionCount + "/" + cardInfo.maxBattalionCount;
             }
         }
 

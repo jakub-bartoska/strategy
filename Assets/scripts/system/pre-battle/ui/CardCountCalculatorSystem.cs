@@ -26,22 +26,29 @@ namespace system.pre_battle
             var battalionsToSpawn = SystemAPI.GetSingletonBuffer<BattalionToSpawn>();
             var uiState = SystemAPI.GetSingleton<PreBattleUiState>();
 
-            var battalionCounter = new NativeHashMap<(Team, SoldierType), int>(cardInfos.Length, Allocator.TempJob);
+            var battalionMaxCounter = new NativeHashMap<(Team, SoldierType), int>(cardInfos.Length, Allocator.TempJob);
+            var battalionCurrentCounter = new NativeHashMap<(Team, SoldierType), int>(cardInfos.Length, Allocator.TempJob);
             foreach (var battalionToSpawn in battalionsToSpawn)
             {
-                if (battalionToSpawn.position.HasValue)
-                {
-                    continue;
-                }
-
                 var key = (battalionToSpawn.team, battalionToSpawn.armyType);
-                if (battalionCounter.TryGetValue(key, out var count))
+                if (battalionMaxCounter.TryGetValue(key, out var count))
                 {
-                    battalionCounter[key] = count + 1;
+                    battalionMaxCounter[key] = count + 1;
                 }
                 else
                 {
-                    battalionCounter.Add(key, 1);
+                    battalionMaxCounter.Add(key, 1);
+                }
+
+                if (battalionToSpawn.isUsed) continue;
+
+                if (battalionCurrentCounter.TryGetValue(key, out var currentCount))
+                {
+                    battalionCurrentCounter[key] = currentCount + 1;
+                }
+                else
+                {
+                    battalionCurrentCounter.Add(key, 1);
                 }
             }
 
@@ -50,19 +57,20 @@ namespace system.pre_battle
             {
                 var cardInfo = cardInfos[i];
                 var key = (cardInfo.team, cardInfo.soldierType);
-                if (battalionCounter.TryGetValue(key, out var count))
+                var maxCount = battalionMaxCounter.ContainsKey(key) ? battalionMaxCounter[key] : 0;
+                var currentCount = battalionCurrentCounter.ContainsKey(key) ? battalionCurrentCounter[key] : 0;
+
+                if (maxCount == cardInfo.maxBattalionCount && currentCount == cardInfo.currentBattalionCount)
                 {
-                    if (count == cardInfo.battalionCount)
-                    {
-                        continue;
-                    }
-
-                    var newValue = cardInfo;
-                    newValue.battalionCount = count;
-                    cardInfos[i] = newValue;
-
-                    cardChanged = true;
+                    continue;
                 }
+
+                var newValue = cardInfo;
+                newValue.maxBattalionCount = maxCount;
+                newValue.currentBattalionCount = currentCount;
+                cardInfos[i] = newValue;
+
+                cardChanged = true;
             }
 
             if (cardChanged || uiState.preBattleEvent == PreBattleEvent.INIT)
@@ -72,7 +80,7 @@ namespace system.pre_battle
                 sortedCards.Dispose();
             }
 
-            battalionCounter.Dispose();
+            battalionMaxCounter.Dispose();
         }
 
         private NativeArray<CardInfo> getSortedCards(DynamicBuffer<CardInfo> cards)

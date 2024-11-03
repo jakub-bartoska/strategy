@@ -80,6 +80,10 @@ namespace system._common.army_to_spawn_switcher.common
                     {
                         blocker = Blocker.SPAWN_ARMY
                     });
+                    blockers.Add(new SystemSwitchBlocker
+                    {
+                        blocker = Blocker.BATTALION_CARDS_TO_BATTALION
+                    });
                 }
             }
 

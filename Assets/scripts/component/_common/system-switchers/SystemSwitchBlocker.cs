@@ -21,5 +21,6 @@ namespace component._common.system_switchers
         SPAWN_STRATEGY,
         CAMERA_SWITCH,
         COMPANY_TO_BATTALION,
+        BATTALION_CARDS_TO_BATTALION
     }
 }

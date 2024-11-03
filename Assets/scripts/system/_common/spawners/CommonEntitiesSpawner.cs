@@ -38,6 +38,11 @@ namespace system._common
                 random = Random.CreateFromIndex(10)
             };
 
+            var battalionIdGenerator = new BattalionIdGenerator
+            {
+                nextBattalionIdToBeUsed = 0
+            };
+
             var systemSwitcherMarker = new SystemStatusHolder
             {
                 currentStatus = SystemStatus.NO_STATUS,
@@ -63,6 +68,7 @@ namespace system._common
                 preBattleEvent = PreBattleEvent.INIT
             };
 
+            ecb.AddComponent(singletonEntity, battalionIdGenerator);
             ecb.AddComponent(singletonEntity, preBattlePositionMarker);
             ecb.AddComponent(singletonEntity, battleCamera);
             ecb.AddComponent(singletonEntity, strategyCamera);
@@ -93,7 +99,7 @@ namespace system._common
                     {
                         team = team,
                         soldierType = soldierType,
-                        battalionCount = 0
+                        maxBattalionCount = 0
                     });
                 }
             }

@@ -29,10 +29,6 @@ namespace system.pre_battle.inputs
             for (int i = 0; i < cards.Length; i++)
             {
                 var card = cards[i];
-                if (!card.teamTmp.HasValue && !card.soldierTypeTmp.HasValue)
-                {
-                    continue;
-                }
 
                 cards[i] = new PreBattleBattalion
                 {
@@ -40,8 +36,10 @@ namespace system.pre_battle.inputs
                     entity = card.entity,
                     soldierType = card.soldierTypeTmp,
                     team = card.teamTmp,
+                    battalionId = card.battalionIdTmp,
                     teamTmp = null,
-                    soldierTypeTmp = null
+                    soldierTypeTmp = null,
+                    battalionIdTmp = null
                 };
             }
         }

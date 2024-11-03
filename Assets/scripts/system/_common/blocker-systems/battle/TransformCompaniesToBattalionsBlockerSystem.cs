@@ -2,6 +2,7 @@
 using component._common.system_switchers;
 using component.authoring_pairs.PrefabHolder;
 using component.config.game_settings;
+using component.pre_battle;
 using component.pre_battle.marker;
 using system._common.army_to_spawn_switcher;
 using system.battle.utils.pre_battle;
@@ -32,6 +33,7 @@ namespace system._common.blocker_systems.battle
             var companiesToSpawn = SystemAPI.GetSingletonBuffer<CompanyToSpawn>();
             var battalionsToSpawn = SystemAPI.GetSingletonBuffer<BattalionToSpawn>();
             var prefabHolder = SystemAPI.GetSingleton<PrefabHolder>();
+            var idGenerator = SystemAPI.GetSingletonRW<BattalionIdGenerator>();
             battalionsToSpawn.Clear();
             foreach (var companyToSpawn in companiesToSpawn)
             {
@@ -40,10 +42,12 @@ namespace system._common.blocker_systems.battle
                 {
                     battalionsToSpawn.Add(new BattalionToSpawn
                     {
+                        battalionId = idGenerator.ValueRW.nextBattalionIdToBeUsed++,
                         team = companyToSpawn.team,
                         armyType = companyToSpawn.armyType,
                         count = 10,
                         armyCompanyId = companyToSpawn.armyCompanyId,
+                        isUsed = false,
                     });
                 }
 
@@ -51,10 +55,12 @@ namespace system._common.blocker_systems.battle
                 if (lastBattalionSize == 0) continue;
                 battalionsToSpawn.Add(new BattalionToSpawn
                 {
+                    battalionId = idGenerator.ValueRW.nextBattalionIdToBeUsed++,
                     team = companyToSpawn.team,
                     armyType = companyToSpawn.armyType,
                     count = lastBattalionSize,
-                    armyCompanyId = companyToSpawn.armyCompanyId
+                    armyCompanyId = companyToSpawn.armyCompanyId,
+                    isUsed = false
                 });
             }
 

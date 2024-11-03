@@ -12,9 +12,11 @@ namespace component.pre_battle.marker
         //stable
         public SoldierType? soldierType;
         public Team? team;
+        public long? battalionId;
 
         //temporary
         public SoldierType? soldierTypeTmp;
         public Team? teamTmp;
+        public long? battalionIdTmp;
     }
 }

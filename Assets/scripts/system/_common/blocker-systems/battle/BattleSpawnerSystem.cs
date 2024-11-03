@@ -20,6 +20,7 @@ using Random = Unity.Mathematics.Random;
 
 namespace system
 {
+    [UpdateAfter(typeof(SetPositionsBlockerSystem))]
     [BurstCompile]
     public partial struct BattleSpawnerSystem : ISystem
     {
@@ -30,11 +31,6 @@ namespace system
             state.RequireForUpdate<GameRandom>();
             state.RequireForUpdate<CompanyToSpawn>();
             state.RequireForUpdate<SystemSwitchBlocker>();
-        }
-
-        [BurstCompile]
-        public void OnDestroy(ref SystemState state)
-        {
         }
 
         [BurstCompile]

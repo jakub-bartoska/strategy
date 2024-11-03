@@ -34,11 +34,17 @@ namespace component.config.game_settings
     [Serializable]
     public struct BattalionToSpawn : IBufferElementData
     {
+        public long battalionId;
         public long armyCompanyId;
         public Team team;
         public SoldierType armyType;
         public int count;
         public float2? position;
+
+        /**
+         * has been used as pre battle card on battlefield
+         */
+        public bool isUsed;
     }
 
     public struct CompanyToSpawnMono : IBufferElementData

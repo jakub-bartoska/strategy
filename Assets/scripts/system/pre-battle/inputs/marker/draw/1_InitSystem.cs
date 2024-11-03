@@ -28,19 +28,17 @@ namespace system.pre_battle.inputs
             for (int i = 0; i < cards.Length; i++)
             {
                 var card = cards[i];
-                if (!card.teamTmp.HasValue && !card.soldierTypeTmp.HasValue)
-                {
-                    continue;
-                }
 
                 cards[i] = new PreBattleBattalion
                 {
                     position = card.position,
                     entity = card.entity,
-                    soldierType = card.soldierTypeTmp,
-                    team = card.teamTmp,
+                    soldierType = card.soldierType,
+                    team = card.team,
+                    battalionId = card.battalionId,
                     teamTmp = card.team,
-                    soldierTypeTmp = card.soldierType
+                    soldierTypeTmp = card.soldierType,
+                    battalionIdTmp = card.battalionId
                 };
             }
         }
