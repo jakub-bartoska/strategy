@@ -14,7 +14,7 @@ using Unity.Mathematics;
 namespace system.pre_battle.inputs
 {
     [UpdateAfter(typeof(InitSystem))]
-    public partial struct RunningSystem : ISystem
+    public partial struct DrawNewlyMarkedSystem : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)

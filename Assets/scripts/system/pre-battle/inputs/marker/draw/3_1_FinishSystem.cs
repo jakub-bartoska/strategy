@@ -39,7 +39,8 @@ namespace system.pre_battle.inputs
                     battalionId = card.battalionIdTmp,
                     teamTmp = null,
                     soldierTypeTmp = null,
-                    battalionIdTmp = null
+                    battalionIdTmp = null,
+                    marked = false
                 };
             }
         }

@@ -18,5 +18,7 @@ namespace component.pre_battle.marker
         public SoldierType? soldierTypeTmp;
         public Team? teamTmp;
         public long? battalionIdTmp;
+
+        public bool marked;
     }
 }
