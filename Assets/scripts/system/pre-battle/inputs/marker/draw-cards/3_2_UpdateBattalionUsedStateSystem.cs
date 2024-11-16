@@ -21,11 +21,10 @@ namespace system.pre_battle.inputs
         {
             var cards = SystemAPI.GetSingletonBuffer<PreBattleBattalion>();
             var usedBattalionIds = new NativeHashSet<long>(cards.Length, Allocator.Temp);
-            var preBattlePositionMarker = SystemAPI.GetSingleton<PreBattlePositionMarker>();
 
             foreach (var card in cards)
             {
-                var battalionId = preBattlePositionMarker.state == PreBattleMarkerState.IDLE ? card.battalionId : card.battalionIdTmp;
+                var battalionId = card.battalionId;
 
                 if (battalionId.HasValue)
                 {
@@ -52,7 +51,7 @@ namespace system.pre_battle.inputs
                     armyType = battalion.armyType,
                     count = battalion.count,
                     position = battalion.position,
-                    isUsed = isUsed
+                    isUsed = isUsed,
                 };
             }
         }

@@ -9,11 +9,10 @@ using system.battle.utils.pre_battle;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Mathematics;
 
 namespace system.pre_battle.inputs
 {
-    [UpdateAfter(typeof(InitSystem))]
+    [UpdateAfter(typeof(OrderMarkedSystem))]
     public partial struct DrawNewlyMarkedSystem : ISystem
     {
         [BurstCompile]
@@ -32,7 +31,6 @@ namespace system.pre_battle.inputs
             }
 
             var cards = SystemAPI.GetSingletonBuffer<PreBattleBattalion>();
-            var positions = createPositions(preBattlePositionMarker);
 
             var preBattleUiState = SystemAPI.GetSingleton<PreBattleUiState>();
             if (preBattleUiState.selectedCard == null)
@@ -54,7 +52,7 @@ namespace system.pre_battle.inputs
             {
                 var card = cards[i];
                 //field is marked, but card is not marked => need to redraw to new value
-                if (!attributesMatch(card, preBattleUiState, removeCall) && isPositionSelected(positions, card))
+                if (!attributesMatch(card, preBattleUiState, removeCall) && card.marked)
                 {
                     //adding new battalions, but dont have any in reserves
                     if (!removeCall && battalionIds.IsEmpty)
@@ -73,7 +71,7 @@ namespace system.pre_battle.inputs
                 }
 
                 //field is not marked, but card is marked => need to redraw to old value
-                if (attributesMatch(card, preBattleUiState, removeCall) && !isPositionSelected(positions, card))
+                if (attributesMatch(card, preBattleUiState, removeCall) && !card.marked)
                 {
                     entitiesToDelete.Add(card.entity);
                     var newValue = fallBackToOldCard(card, prefabHolder, ecb);
@@ -141,7 +139,8 @@ namespace system.pre_battle.inputs
                 battalionId = oldCard.battalionId,
                 teamTmp = team,
                 soldierTypeTmp = soldierType,
-                battalionIdTmp = battalionId
+                battalionIdTmp = battalionId,
+                marked = oldCard.marked
             };
         }
 
@@ -158,7 +157,8 @@ namespace system.pre_battle.inputs
                 battalionId = oldCard.battalionId,
                 teamTmp = oldCard.team,
                 soldierTypeTmp = oldCard.soldierType,
-                battalionIdTmp = oldCard.battalionId
+                battalionIdTmp = oldCard.battalionId,
+                marked = oldCard.marked
             };
         }
 
@@ -173,35 +173,6 @@ namespace system.pre_battle.inputs
             }
 
             return card.soldierTypeTmp == soldierType;
-        }
-
-        private bool isPositionSelected(MarkerPositions marked, PreBattleBattalion card)
-        {
-            if (card.position.x < marked.minX || card.position.x > marked.maxX)
-            {
-                return false;
-            }
-
-            return card.position.z >= marked.minZ && card.position.z <= marked.maxZ;
-        }
-
-        private MarkerPositions createPositions(PreBattlePositionMarker preBattlePositionMarker)
-        {
-            return new MarkerPositions
-            {
-                minX = math.min(preBattlePositionMarker.startPosition.Value.x, preBattlePositionMarker.endPosition.Value.x),
-                maxX = math.max(preBattlePositionMarker.startPosition.Value.x, preBattlePositionMarker.endPosition.Value.x),
-                minZ = math.min(preBattlePositionMarker.startPosition.Value.y, preBattlePositionMarker.endPosition.Value.y),
-                maxZ = math.max(preBattlePositionMarker.startPosition.Value.y, preBattlePositionMarker.endPosition.Value.y)
-            };
-        }
-
-        public struct MarkerPositions
-        {
-            public float minX;
-            public float maxX;
-            public float minZ;
-            public float maxZ;
         }
     }
 }

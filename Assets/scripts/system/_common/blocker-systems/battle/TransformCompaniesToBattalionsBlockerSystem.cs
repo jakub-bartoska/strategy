@@ -60,7 +60,7 @@ namespace system._common.blocker_systems.battle
                     armyType = companyToSpawn.armyType,
                     count = lastBattalionSize,
                     armyCompanyId = companyToSpawn.armyCompanyId,
-                    isUsed = false
+                    isUsed = false,
                 });
             }
 

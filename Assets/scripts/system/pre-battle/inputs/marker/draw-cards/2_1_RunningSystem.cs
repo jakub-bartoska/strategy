@@ -1,13 +1,9 @@
 ﻿using component;
-using component._common.general;
 using component._common.system_switchers;
-using component.authoring_pairs.PrefabHolder;
 using component.config.game_settings;
 using component.pre_battle;
 using component.pre_battle.marker;
-using system.battle.utils.pre_battle;
 using Unity.Burst;
-using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 
@@ -45,16 +41,22 @@ namespace system.pre_battle.inputs
             for (int i = 0; i < cards.Length; i++)
             {
                 var card = cards[i];
+                bool? marked = null;
 
-                if (isPositionSelected(positions, card))
+                if (!isPositionSelected(positions, card))
                 {
-                    continue;
+                    marked = false;
                 }
 
                 //mark only cards which are not selected from previous times
                 if (attributesMatch(card, preBattleUiState, removeCall))
                 {
-                    continue;
+                    marked = false;
+                }
+
+                if (!marked.HasValue)
+                {
+                    marked = true;
                 }
 
                 cards[i] = new PreBattleBattalion
@@ -67,7 +69,7 @@ namespace system.pre_battle.inputs
                     teamTmp = card.teamTmp,
                     soldierTypeTmp = card.soldierTypeTmp,
                     battalionIdTmp = card.battalionIdTmp,
-                    marked = true
+                    marked = marked.Value
                 };
             }
         }

@@ -5,7 +5,7 @@ using Unity.Entities;
 
 namespace system.pre_battle.inputs
 {
-    [UpdateAfter(typeof(RunningSystem))]
+    [UpdateAfter(typeof(DrawNewlyMarkedSystem))]
     public partial struct FinishSystem : ISystem
     {
         [BurstCompile]
