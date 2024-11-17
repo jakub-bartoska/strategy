@@ -1,4 +1,5 @@
 ﻿using System;
+using _Monobehaviors.camera;
 using component._common.camera;
 using component._common.config.camera;
 using component._common.system_switchers;
@@ -44,7 +45,7 @@ namespace system.controls
             if (cameraYDelta < 0 && config.minValues.y < (cameraPosition.y - config.minValues.y * 0.1))
             {
                 var mousePosition =
-                    RaycastUtils.getCurrentMousePosition(SystemAPI.GetSingletonRW<PhysicsWorldSingleton>());
+                    RaycastUtils.getCurrentMousePosition(SystemAPI.GetSingletonRW<PhysicsWorldSingleton>(), GameCameraType.STRATEGY);
                 var yDeltaInPercents = math.abs(cameraYDelta / cameraPosition.y);
                 var scrollAdjustment = (mousePosition - new float3(cameraPosition)) * yDeltaInPercents;
                 cameraXZDelta += scrollAdjustment.xz;

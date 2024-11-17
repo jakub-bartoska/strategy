@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using _Monobehaviors.camera;
 using component;
 using component._common.movement_agents;
 using component._common.system_switchers;
@@ -41,7 +42,7 @@ namespace system.strategy.movement
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
                 .CreateCommandBuffer(World.Unmanaged);
 
-            var position = RaycastUtils.getCurrentMousePosition(SystemAPI.GetSingletonRW<PhysicsWorldSingleton>());
+            var position = RaycastUtils.getCurrentMousePosition(SystemAPI.GetSingletonRW<PhysicsWorldSingleton>(), GameCameraType.STRATEGY);
             var movementStatus = findMovementTarget(position);
 
             var markedArmiesList = new NativeList<long>(100, Allocator.TempJob);

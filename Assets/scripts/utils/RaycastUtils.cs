@@ -8,7 +8,7 @@ namespace utils
 {
     public class RaycastUtils
     {
-        public static float3 getCurrentMousePosition(RefRW<PhysicsWorldSingleton> physicsWorldSingleton, GameCameraType cameraType = GameCameraType.STRATEGY)
+        public static float3 getCurrentMousePosition(RefRW<PhysicsWorldSingleton> physicsWorldSingleton, GameCameraType cameraType)
         {
             var world = physicsWorldSingleton.ValueRW.PhysicsWorld;
 

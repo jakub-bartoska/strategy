@@ -51,24 +51,6 @@ namespace system.pre_battle.inputs
             for (int i = 0; i < cards.Length; i++)
             {
                 var card = cards[i];
-                //field is marked, but card is not marked => need to redraw to new value
-                if (!attributesMatch(card, preBattleUiState, removeCall) && card.marked)
-                {
-                    //adding new battalions, but dont have any in reserves
-                    if (!removeCall && battalionIds.IsEmpty)
-                    {
-                        newBuffer.Add(card);
-                        continue;
-                    }
-
-                    var battalionId = getBattalionId(removeCall, battalionIds);
-
-                    entitiesToDelete.Add(card.entity);
-                    var newValue = createMarkerEntity(card, prefabHolder, ecb, preBattleUiState, removeCall, battalionId);
-
-                    newBuffer.Add(newValue);
-                    continue;
-                }
 
                 //field is not marked, but card is marked => need to redraw to old value
                 if (attributesMatch(card, preBattleUiState, removeCall) && !card.marked)
@@ -80,7 +62,45 @@ namespace system.pre_battle.inputs
                     continue;
                 }
 
-                newBuffer.Add(card);
+                if (!card.marked)
+                {
+                    newBuffer.Add(card);
+                    continue;
+                }
+
+                //adding new battalions, but dont have any in reserves
+                if (!removeCall && battalionIds.IsEmpty)
+                {
+                    newBuffer.Add(card);
+                    continue;
+                }
+
+                var battalionId = getBattalionId(removeCall, battalionIds);
+
+                //field is marked, but card is not marked => need to redraw to new value
+                if (!attributesMatch(card, preBattleUiState, removeCall))
+                {
+                    entitiesToDelete.Add(card.entity);
+                    var newValue = createMarkerEntity(card, prefabHolder, ecb, preBattleUiState, removeCall, battalionId);
+
+                    newBuffer.Add(newValue);
+                    continue;
+                }
+
+                //just update battalionId
+                var newCard = new PreBattleBattalion
+                {
+                    position = card.position,
+                    entity = card.entity,
+                    soldierType = card.soldierType,
+                    team = card.team,
+                    battalionId = card.battalionId,
+                    teamTmp = card.teamTmp,
+                    soldierTypeTmp = card.soldierTypeTmp,
+                    battalionIdTmp = battalionId,
+                    marked = card.marked
+                };
+                newBuffer.Add(newCard);
             }
 
             foreach (var entity in entitiesToDelete)

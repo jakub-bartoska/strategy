@@ -1,5 +1,6 @@
 ﻿using System;
 using _Monobehaviors;
+using _Monobehaviors.camera;
 using component._common.movement_agents;
 using component._common.system_switchers;
 using component.strategy.army_components.ui;
@@ -38,7 +39,7 @@ namespace system.strategy.controls
                 return;
             }
 
-            var mousePosition = RaycastUtils.getCurrentMousePosition(SystemAPI.GetSingletonRW<PhysicsWorldSingleton>());
+            var mousePosition = RaycastUtils.getCurrentMousePosition(SystemAPI.GetSingletonRW<PhysicsWorldSingleton>(), GameCameraType.STRATEGY);
             var mousePosition2D = Input.mousePosition;
 
             marker.ValueRW.max = mousePosition;
@@ -73,7 +74,7 @@ namespace system.strategy.controls
             }
 
             var marker = SystemAPI.GetSingletonRW<SelectionMarkerState>();
-            var mousePosition = RaycastUtils.getCurrentMousePosition(SystemAPI.GetSingletonRW<PhysicsWorldSingleton>());
+            var mousePosition = RaycastUtils.getCurrentMousePosition(SystemAPI.GetSingletonRW<PhysicsWorldSingleton>(), GameCameraType.STRATEGY);
             var mousePosition2D = Input.mousePosition;
 
             marker.ValueRW.min = mousePosition;
@@ -98,7 +99,7 @@ namespace system.strategy.controls
             }
 
             SelectorVisualiser.instance.image.SetActive(false);
-            var mousePosition = RaycastUtils.getCurrentMousePosition(SystemAPI.GetSingletonRW<PhysicsWorldSingleton>());
+            var mousePosition = RaycastUtils.getCurrentMousePosition(SystemAPI.GetSingletonRW<PhysicsWorldSingleton>(), GameCameraType.STRATEGY);
             var mousePosition2D = Input.mousePosition;
 
             marker.ValueRW.state = MarkerState.FINISHED;
