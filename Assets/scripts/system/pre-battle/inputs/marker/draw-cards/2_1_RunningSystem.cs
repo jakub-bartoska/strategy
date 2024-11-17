@@ -89,12 +89,12 @@ namespace system.pre_battle.inputs
 
         private bool isPositionSelected(MarkerPositions marked, PreBattleBattalion card)
         {
-            if (card.position.x < marked.minX || card.position.x > marked.maxX)
+            if (card.position.x + 0.25f / 2f < marked.minX || card.position.x - 0.25f / 2f > marked.maxX)
             {
                 return false;
             }
 
-            return card.position.z >= marked.minZ && card.position.z <= marked.maxZ;
+            return card.position.z + 0.5f >= marked.minZ && card.position.z - 0.5f <= marked.maxZ;
         }
 
         private MarkerPositions createPositions(PreBattlePositionMarker preBattlePositionMarker)

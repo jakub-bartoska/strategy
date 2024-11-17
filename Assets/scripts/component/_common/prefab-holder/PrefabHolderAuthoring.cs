@@ -25,6 +25,8 @@ namespace component.authoring_pairs.PrefabHolder
         public GameObject battalionShadowPrefab;
 
         //pre-battle menu
+        public GameObject preBattleMarkerPrefab;
+
         //tiles
         public GameObject emptyTilePrefab;
 
@@ -79,8 +81,13 @@ namespace component.authoring_pairs.PrefabHolder
                     TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic),
                 battalionPrefab = GetEntity(authoring.battalionPrefab,
                     TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic),
+
+                preBattleMarkerPrefab = GetEntity(authoring.preBattleMarkerPrefab,
+                    TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic),
+
                 battalionShadowPrefab = GetEntity(authoring.battalionShadowPrefab,
                     TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic),
+
                 emptyTilePrefab = GetEntity(authoring.emptyTilePrefab,
                     TransformUsageFlags.NonUniformScale | TransformUsageFlags.Dynamic),
                 redArcherTilePrefab = GetEntity(authoring.redArcherTilePrefab,

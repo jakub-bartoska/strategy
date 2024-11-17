@@ -4,6 +4,7 @@ using component.pre_battle.marker;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
+using UnityEngine;
 using utils;
 
 namespace system.pre_battle.inputs
@@ -30,6 +31,12 @@ namespace system.pre_battle.inputs
 
         private void leftClickStarted(MarkerType markerType)
         {
+            var mousePosition2D = Input.mousePosition;
+            if (mousePosition2D.y < 230)
+            {
+                return;
+            }
+
             var mousePosition = RaycastUtils.getCurrentMousePosition(SystemAPI.GetSingletonRW<PhysicsWorldSingleton>(), GameCameraType.PRE_BATTLE);
             var preBattleMarker = SystemAPI.GetSingletonRW<PreBattlePositionMarker>();
             preBattleMarker.ValueRW.startPosition = new float2(mousePosition.x, mousePosition.z);

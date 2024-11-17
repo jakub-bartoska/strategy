@@ -24,6 +24,8 @@ namespace component.authoring_pairs.PrefabHolder
         public Entity battalionShadowPrefab;
 
         //pre-battle menu
+        public Entity preBattleMarkerPrefab;
+
         //tiles
         public Entity emptyTilePrefab;
 

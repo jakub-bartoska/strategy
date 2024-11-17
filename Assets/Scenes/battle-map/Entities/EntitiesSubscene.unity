@@ -218,6 +218,12 @@ PrefabInstance:
         type: 3}
     - target: {fileID: 5308266511372275989, guid: 0561992ed07a62747a5d92ae030a129b,
         type: 3}
+      propertyPath: preBattleMarkerPrefab
+      value: 
+      objectReference: {fileID: 7025594794173840823, guid: f78621068dfe2f648a826da6450bedb6,
+        type: 3}
+    - target: {fileID: 5308266511372275989, guid: 0561992ed07a62747a5d92ae030a129b,
+        type: 3}
       propertyPath: archerTileFilledPrefab
       value: 
       objectReference: {fileID: 4667776682165521700, guid: 5635a8a4fcaf1334eae1a1174df3f78b,
@@ -282,7 +288,7 @@ MonoBehaviour:
   armies:
   - team: 0
     armyType: 1
-    count: 100
+    count: 10000
     distanceBetweenSoldiers: 0
   - team: 0
     armyType: 0
