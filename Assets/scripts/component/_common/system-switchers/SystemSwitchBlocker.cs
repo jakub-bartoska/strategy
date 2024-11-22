@@ -20,7 +20,14 @@ namespace component._common.system_switchers
         CLEAN_BATTLE,
         SPAWN_STRATEGY,
         CAMERA_SWITCH,
+        /**
+         * transforms companies from strategy map into pre-battle objects
+         */
         COMPANY_TO_BATTALION,
-        BATTALION_CARDS_TO_BATTALION
+        /**
+         * transfroms battalion cards to battalion
+         */
+        BATTALION_CARDS_TO_BATTALION,
+        CLEAN_PRE_BATTLE
     }
 }

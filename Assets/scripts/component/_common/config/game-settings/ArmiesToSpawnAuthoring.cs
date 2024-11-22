@@ -39,7 +39,7 @@ namespace component.config.game_settings
         public Team team;
         public SoldierType armyType;
         public int count;
-        public float2? position;
+        public float3? position;
 
         /**
          * has been used as pre battle card on battlefield

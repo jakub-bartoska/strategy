@@ -16,6 +16,7 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Jobs.LowLevel.Unsafe;
 using Unity.Mathematics;
+using UnityEngine;
 using Random = Unity.Mathematics.Random;
 
 namespace system
@@ -58,17 +59,21 @@ namespace system
             var team1SoldierSum = 0;
             var team2SoldierSum = 0;
             var battalionId = 0;
+
+            Debug.Log("battalions to spawn: " + battalionsToSpawn.Length);
             foreach (var battalionToSpawn in battalionsToSpawn)
             {
                 if (battalionToSpawn.count == 0)
                 {
                     continue;
                 }
+                
+                if (!battalionToSpawn.position.HasValue) continue;
 
                 var battalionPosition =
                     CustomTransformUtils.getBattalionPositionForSoldiers(battalionToSpawn.position.Value.x,
-                        battalionToSpawn.position.Value.y);
-
+                        battalionToSpawn.position.Value.z);
+                
                 var newBattalion = BattalionSpawner.spawnBattalion(ecb, battalionToSpawn, prefabHolder, battalionId++);
 
                 var battalionSoldiers =
@@ -184,7 +189,14 @@ namespace system
                 arrowSpawner = 1
             };
 
-            var config = DebugConfigAuthoring.instance.collectData();
+            //var config = DebugConfigAuthoring.instance.collectData();
+
+            var config = new DebugConfig
+            {
+                doDamage = true,
+                speed = 1,
+                dmgPerSecond = 1
+            };
 
             ecb.AddComponent(singletonEntity, config);
             ecb.AddComponent(singletonEntity, battalionIdHolder);

@@ -66,6 +66,7 @@ namespace system.battle.utils.pre_battle
                 0
             );
 
+            entityManager.AddComponentData(newInstance, new PreBattleCleanupTag());
             entityManager.AddComponentData(newInstance, tileMarker);
             entityManager.SetComponentData(newInstance, transform);
 
@@ -124,9 +125,10 @@ namespace system.battle.utils.pre_battle
                 0
             );
 
+            ecb.AddComponent(newInstance, new PreBattleCleanupTag());
             ecb.AddComponent(newInstance, tileMarker);
             ecb.SetComponent(newInstance, transform);
-
+            
             return newInstance;
         }
     }

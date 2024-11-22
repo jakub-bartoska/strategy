@@ -16,23 +16,25 @@ namespace system.battle.utils
             return LocalTransform.FromPosition(defaulBattleMapOffset);
         }
 
-        public static float3 getBattalionPositionForSoldiers(float x, float y)
+        public static float3 getBattalionPositionForSoldiers(float x, float z)
         {
+            var newX = (x - defaulBattleMapOffset.x) * 4;
+            var newZ = (z - defaulBattleMapOffset.z) * 10;
             var distanceFromMiddle = -90;
             return new float3
             {
-                x = x * 5 + distanceFromMiddle + defaulBattleMapOffset.x,
+                x = newX * 5 + distanceFromMiddle + defaulBattleMapOffset.x,
                 y = 0 + defaulBattleMapOffset.y,
-                z = defaulBattleMapOffset.z + 40 - (y * 10)
+                z = defaulBattleMapOffset.z + 40 - (newZ * 10)
             };
         }
 
-        public static LocalTransform getBattalionPosition(float x, float y)
+        public static LocalTransform getBattalionPosition(float3 position)
         {
-            var position = getBattalionPositionForSoldiers(x, y);
-            position.y = 0.02f;
-            position.z += 5f;
-            return LocalTransform.FromPosition(position);
+            var x = (position.x - defaulBattleMapOffset.x) * 4;
+            var z = (position.z - defaulBattleMapOffset.z) * 10;
+            var res = getBattalionPositionForSoldiers(x, z);
+            return LocalTransform.FromPosition(res);
         }
 
         public static float getBattalionZPosition(int row)

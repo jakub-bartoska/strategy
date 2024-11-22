@@ -47,8 +47,13 @@ namespace system.pre_battle.inputs
 
         private void leftClickFinished(MarkerType markerType)
         {
-            var mousePosition = RaycastUtils.getCurrentMousePosition(SystemAPI.GetSingletonRW<PhysicsWorldSingleton>(), GameCameraType.PRE_BATTLE);
             var preBattleMarker = SystemAPI.GetSingletonRW<PreBattlePositionMarker>();
+            if (preBattleMarker.ValueRO.state != PreBattleMarkerState.RUNNING)
+            {
+                return;
+            }
+
+            var mousePosition = RaycastUtils.getCurrentMousePosition(SystemAPI.GetSingletonRW<PhysicsWorldSingleton>(), GameCameraType.PRE_BATTLE);
             preBattleMarker.ValueRW.endPosition = new float2(mousePosition.x, mousePosition.z);
             preBattleMarker.ValueRW.state = PreBattleMarkerState.FINISHED;
             preBattleMarker.ValueRW.MarkerType = markerType;

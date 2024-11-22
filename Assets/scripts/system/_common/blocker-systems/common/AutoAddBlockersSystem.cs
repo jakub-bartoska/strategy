@@ -5,6 +5,7 @@ using Unity.Entities;
 
 namespace system._common.army_to_spawn_switcher.common
 {
+    [UpdateInGroup(typeof(InitializationSystemGroup), OrderFirst = true)]
     public partial struct AutoAddBlockersSystem : ISystem
     {
         [BurstCompile]
@@ -83,6 +84,10 @@ namespace system._common.army_to_spawn_switcher.common
                     blockers.Add(new SystemSwitchBlocker
                     {
                         blocker = Blocker.BATTALION_CARDS_TO_BATTALION
+                    });
+                    blockers.Add(new SystemSwitchBlocker
+                    {
+                        blocker = Blocker.CLEAN_PRE_BATTLE
                     });
                 }
             }

@@ -4,6 +4,8 @@ using component.pre_battle.marker;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
+using UnityEngine;
 
 namespace system
 {
@@ -25,6 +27,25 @@ namespace system
 
             var battalionToSpawns = SystemAPI.GetSingletonBuffer<BattalionToSpawn>();
             var cards = SystemAPI.GetSingletonBuffer<PreBattleBattalion>();
+
+            var battalionIdToPosition = new NativeHashMap<long, float3>(battalionToSpawns.Length, Allocator.Temp);
+            foreach (var card in cards)
+            {
+                if (!card.battalionId.HasValue) continue;
+
+                battalionIdToPosition.Add(card.battalionId.Value, card.position);
+            }
+
+            for (var i = 0; i < battalionToSpawns.Length; i++)
+            {
+                var battalion = battalionToSpawns[i];
+                if (battalion.position.HasValue) continue;
+                if (battalionIdToPosition.TryGetValue(battalion.battalionId, out var position))
+                {
+                    battalion.position = position;
+                    battalionToSpawns[i] = battalion;
+                }
+            }
         }
 
         private bool containsArmySpawn(DynamicBuffer<SystemSwitchBlocker> blockers)
