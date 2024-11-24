@@ -1,11 +1,11 @@
 ﻿using component._common.system_switchers;
 using component.config.game_settings;
 using component.pre_battle.marker;
+using system.battle.utils;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
-using UnityEngine;
 
 namespace system
 {
@@ -42,7 +42,8 @@ namespace system
                 if (battalion.position.HasValue) continue;
                 if (battalionIdToPosition.TryGetValue(battalion.battalionId, out var position))
                 {
-                    battalion.position = position;
+                    var adjustedPosition = CustomTransformUtils.adjustPositionFromPreBattleToBattle(position);
+                    battalion.position = adjustedPosition;
                     battalionToSpawns[i] = battalion;
                 }
             }

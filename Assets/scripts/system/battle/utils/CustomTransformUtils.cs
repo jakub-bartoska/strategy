@@ -16,30 +16,29 @@ namespace system.battle.utils
             return LocalTransform.FromPosition(defaulBattleMapOffset);
         }
 
-        public static float3 getBattalionPositionForSoldiers(float x, float z)
-        {
-            var newX = (x - defaulBattleMapOffset.x) * 4;
-            var newZ = (z - defaulBattleMapOffset.z) * 10;
-            var distanceFromMiddle = -90;
-            return new float3
-            {
-                x = newX * 5 + distanceFromMiddle + defaulBattleMapOffset.x,
-                y = 0 + defaulBattleMapOffset.y,
-                z = defaulBattleMapOffset.z + 40 - (newZ * 10)
-            };
-        }
-
         public static LocalTransform getBattalionPosition(float3 position)
         {
-            var x = (position.x - defaulBattleMapOffset.x) * 4;
-            var z = (position.z - defaulBattleMapOffset.z) * 10;
-            var res = getBattalionPositionForSoldiers(x, z);
-            return LocalTransform.FromPosition(res);
+            return LocalTransform.FromPosition(position);
         }
 
-        public static float getBattalionZPosition(int row)
+        public static float getBattalionZPosition(int row, int maxRows)
         {
-            return getBattalionPositionForSoldiers(0, row).z + 5f;
+            return defaulBattleMapOffset.z + (maxRows / 2 - row) * 10 + 5;
+        }
+
+        public static float3 adjustPositionFromPreBattleToBattle(float3 oldPosition)
+        {
+            var positionDelta = oldPosition - defaulBattleMapOffset;
+            var adjustedPosition = positionDelta * 10;
+            adjustedPosition.z += 5;
+            var result = adjustedPosition + defaulBattleMapOffset;
+            result.y = 0.02f;
+            return result;
+        }
+
+        public static int positionToRow(float3 position, int maxRows)
+        {
+            return (int) ((defaulBattleMapOffset.z - position.z - 5) / 10 + maxRows / 2);
         }
 
         public static float3 calculateDesiredPosition(float3 originalPosition, BattalionWidth myWidth, BattalionWidth otherWidth, Direction direction, bool isExactPosition)

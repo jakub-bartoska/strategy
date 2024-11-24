@@ -55,7 +55,7 @@ namespace system.battle.battalion.row_change
             {
                 battalionsPerformingAction.Add(battalionMarker.id);
 
-                var targetZ = CustomTransformUtils.getBattalionZPosition(row.value);
+                var targetZ = CustomTransformUtils.getBattalionZPosition(row.value, 10);
                 var travelDistance = deltaTime * speed * 0.5f;
                 var distanceToTarget = math.abs(localTransform.Position.z - targetZ);
                 if (distanceToTarget <= travelDistance)

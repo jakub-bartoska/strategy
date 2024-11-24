@@ -40,7 +40,7 @@ namespace system.battle.utils
 
             var transformMatrix = BattalionSpawner.getPostTransformMatrixFromBattalionSize(size);
 
-            battalionPosition.z = CustomTransformUtils.getBattalionZPosition(row);
+            battalionPosition.z = CustomTransformUtils.getBattalionZPosition(row, 10);
             var battalionTransform = LocalTransform.FromPosition(battalionPosition);
 
             ecb.AddComponent(newBattalionShadow, battalionShadowMarker);

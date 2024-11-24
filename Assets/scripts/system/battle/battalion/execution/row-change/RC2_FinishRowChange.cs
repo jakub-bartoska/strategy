@@ -41,7 +41,7 @@ namespace system.battle.battalion.row_change
 
             private void Execute(ref LocalTransform localTransform, Entity entity, Row row, ChangeRow changeRow)
             {
-                var targetZ = CustomTransformUtils.getBattalionZPosition(row.value);
+                var targetZ = CustomTransformUtils.getBattalionZPosition(row.value, 10);
                 var distanceToTarget = math.abs(localTransform.Position.z - targetZ);
                 if (distanceToTarget < 0.02f)
                 {

@@ -16,7 +16,6 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Jobs.LowLevel.Unsafe;
 using Unity.Mathematics;
-using UnityEngine;
 using Random = Unity.Mathematics.Random;
 
 namespace system
@@ -60,20 +59,15 @@ namespace system
             var team2SoldierSum = 0;
             var battalionId = 0;
 
-            Debug.Log("battalions to spawn: " + battalionsToSpawn.Length);
             foreach (var battalionToSpawn in battalionsToSpawn)
             {
                 if (battalionToSpawn.count == 0)
                 {
                     continue;
                 }
-                
+
                 if (!battalionToSpawn.position.HasValue) continue;
 
-                var battalionPosition =
-                    CustomTransformUtils.getBattalionPositionForSoldiers(battalionToSpawn.position.Value.x,
-                        battalionToSpawn.position.Value.z);
-                
                 var newBattalion = BattalionSpawner.spawnBattalion(ecb, battalionToSpawn, prefabHolder, battalionId++);
 
                 var battalionSoldiers =
@@ -89,7 +83,7 @@ namespace system
                         entityIndexAdd = (team1SoldierSum + team2SoldierSum),
                         teamColor = getColor(battalionToSpawn.team, teamColors),
                         companyId = battalionToSpawn.armyCompanyId,
-                        battalionPosition = battalionPosition,
+                        battalionPosition = battalionToSpawn.position.Value,
                         battalionSoldiers = battalionSoldiers.AsParallelWriter()
                     }.Schedule(battalionToSpawn.count, 128)
                     .Complete();
@@ -194,7 +188,7 @@ namespace system
             var config = new DebugConfig
             {
                 doDamage = true,
-                speed = 1,
+                speed = 10,
                 dmgPerSecond = 1
             };
 
