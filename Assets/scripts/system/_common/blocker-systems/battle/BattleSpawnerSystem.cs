@@ -1,4 +1,5 @@
 ﻿using System;
+using _Monobehaviors.ui_toolkit.pre_battle;
 using component;
 using component._common.system_switchers;
 using component.authoring_pairs.PrefabHolder;
@@ -183,14 +184,13 @@ namespace system
                 arrowSpawner = 1
             };
 
-            //var config = DebugConfigAuthoring.instance.collectData();
-
-            var config = new DebugConfig
+            var config2 = new DebugConfig
             {
                 doDamage = true,
                 speed = 10,
                 dmgPerSecond = 1
             };
+            var config = DebugConfigButtons.instance.createDebugConfig();
 
             ecb.AddComponent(singletonEntity, config);
             ecb.AddComponent(singletonEntity, battalionIdHolder);

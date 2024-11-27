@@ -9,7 +9,6 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
 
 namespace system.battle.utils
 {
@@ -34,7 +33,6 @@ namespace system.battle.utils
                 type = BattleUnitTypeEnum.BATTALION
             };
             var rowValue = CustomTransformUtils.positionToRow(battalionToSpawn.position.Value, 10);
-            Debug.Log("spawning position: " + battalionToSpawn.position.Value + " row: " + rowValue);
             var row = new Row
             {
                 value = rowValue
