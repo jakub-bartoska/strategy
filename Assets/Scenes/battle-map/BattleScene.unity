@@ -42,7 +42,8 @@ RenderSettings:
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 12
+  serializedVersion: 13
+  m_BakeOnSceneLoad: 0
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -118,6 +119,27 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &203032583 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3462308738107438303, guid: a95ab48849cc0e941aae66b5428824e3,
+    type: 3}
+  m_PrefabInstance: {fileID: 1305179509}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &203032589
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 203032583}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3364fe002fcd480489ceede42327f67d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  debugBattleCompositionSO: {fileID: 11400000, guid: b4a2b4ac36ca67c4188bea764b3a8716,
+    type: 2}
+  debugConfigSO: {fileID: 11400000, guid: 159a1b80fbbd32a479804728b97ce731, type: 2}
 --- !u!1 &681797254 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1926715073268819227, guid: a95ab48849cc0e941aae66b5428824e3,
@@ -696,6 +718,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 2151431705455592703, guid: a95ab48849cc0e941aae66b5428824e3, type: 3}
+    - {fileID: 7288542228465953816, guid: a95ab48849cc0e941aae66b5428824e3, type: 3}
+    - {fileID: 3312561725635079564, guid: a95ab48849cc0e941aae66b5428824e3, type: 3}
     m_RemovedGameObjects:
     - {fileID: 6424045513742742981, guid: a95ab48849cc0e941aae66b5428824e3, type: 3}
     - {fileID: 4631947265833008303, guid: a95ab48849cc0e941aae66b5428824e3, type: 3}
@@ -713,6 +737,10 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1195396711}
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3462308738107438303, guid: a95ab48849cc0e941aae66b5428824e3,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 203032589}
     - targetCorrespondingSourceObject: {fileID: 8261381327945655705, guid: a95ab48849cc0e941aae66b5428824e3,
         type: 3}
       insertIndex: -1

@@ -70,6 +70,13 @@ namespace system._common.army_to_spawn_switcher.common
                         blocker = Blocker.COMPANY_TO_BATTALION
                     });
                 }
+                else
+                {
+                    blockers.Add(new SystemSwitchBlocker
+                    {
+                        blocker = Blocker.LOAD_BATTALION_POSITIONS_FROM_SO
+                    });
+                }
             }
 
 
@@ -84,6 +91,10 @@ namespace system._common.army_to_spawn_switcher.common
                     blockers.Add(new SystemSwitchBlocker
                     {
                         blocker = Blocker.BATTALION_CARDS_TO_BATTALION
+                    });
+                    blockers.Add(new SystemSwitchBlocker
+                    {
+                        blocker = Blocker.SAVE_BATTALION_POSITIONS_FROM_SO
                     });
                     blockers.Add(new SystemSwitchBlocker
                     {

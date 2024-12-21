@@ -42,9 +42,22 @@ namespace component.config.game_settings
         public float3? position;
 
         /**
+         * used only for scriptable object
+         */
+        public BattalionPosition positionForSO;
+
+        /**
          * has been used as pre battle card on battlefield
          */
         public bool isUsed;
+    }
+
+    [Serializable]
+    public struct BattalionPosition
+    {
+        public float x;
+        public float y;
+        public float z;
     }
 
     public struct CompanyToSpawnMono : IBufferElementData
