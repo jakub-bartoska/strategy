@@ -74,6 +74,13 @@ namespace system._common.army_to_spawn_switcher.common
                         blocker = Blocker.SPAWN_PRE_BATTLE_TILES
                     });
                 }
+                else
+                {
+                    blockers.Add(new SystemSwitchBlocker
+                    {
+                        blocker = Blocker.LOAD_BATTALION_POSITIONS_FROM_SO
+                    });
+                }
             }
 
 
