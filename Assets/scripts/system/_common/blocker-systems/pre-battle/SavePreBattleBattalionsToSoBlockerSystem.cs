@@ -1,13 +1,14 @@
-﻿using component._common.system_switchers;
-using component.pre_battle;
+﻿using _Monobehaviors.scriptable_objects;
+using component._common.system_switchers;
+using component.config.game_settings;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 
 namespace system._common.blocker_systems.battle
 {
-    [UpdateAfter(typeof(SavePreBattleBattalionsToSoBlockerSystem))]
-    public partial struct CleanPreBattleBlockerSystem : ISystem
+    [UpdateAfter(typeof(SetPositionsBlockerSystem))]
+    public partial struct SavePreBattleBattalionsToSoBlockerSystem : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)
@@ -22,14 +23,8 @@ namespace system._common.blocker_systems.battle
 
             if (!containsArmySpawn(blockers)) return;
 
-            var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
-                .CreateCommandBuffer(state.WorldUnmanaged);
-
-            new CleanupPreBattleJob()
-                {
-                    ecb = ecb.AsParallelWriter()
-                }.ScheduleParallel(state.Dependency)
-                .Complete();
+            var battalionToSpawns = SystemAPI.GetSingletonBuffer<BattalionToSpawn>();
+            SOHolder.instance.saveBattalionsToSpawn(battalionToSpawns);
         }
 
         private bool containsArmySpawn(DynamicBuffer<SystemSwitchBlocker> blockers)
@@ -41,7 +36,7 @@ namespace system._common.blocker_systems.battle
             var containsArmySpawn = false;
             foreach (var blocker in oldBufferData)
             {
-                if (blocker.blocker == Blocker.CLEAN_PRE_BATTLE)
+                if (blocker.blocker == Blocker.SAVE_BATTALION_POSITIONS_FROM_SO)
                 {
                     containsArmySpawn = true;
                 }
@@ -52,17 +47,6 @@ namespace system._common.blocker_systems.battle
             }
 
             return containsArmySpawn;
-        }
-
-        [BurstCompile]
-        public partial struct CleanupPreBattleJob : IJobEntity
-        {
-            public EntityCommandBuffer.ParallelWriter ecb;
-
-            private void Execute(Entity entity, PreBattleCleanupTag tag)
-            {
-                ecb.DestroyEntity(entity.Index, entity);
-            }
         }
     }
 }

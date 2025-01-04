@@ -13,10 +13,23 @@ MonoBehaviour:
   m_Name: Battle-composition
   m_EditorClassIdentifier: 
   battalions:
-  - armyCompanyId: 1
+  - battalionId: 999
+    armyCompanyId: 1829064466
     team: 0
     armyType: 1
     count: 10
-    position:
-      x: 10
-      y: 10
+    positionForSO:
+      x: -8001
+      y: 0.02
+      z: -8005.5
+    isUsed: 1
+  - battalionId: 1019
+    armyCompanyId: 225857492
+    team: 1
+    armyType: 1
+    count: 10
+    positionForSO:
+      x: -8000.25
+      y: 0.02
+      z: -8005.5
+    isUsed: 1

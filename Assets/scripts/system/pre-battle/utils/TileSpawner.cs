@@ -14,8 +14,10 @@ namespace system.battle.utils.pre_battle
 {
     public class TileSpawner
     {
-        public static NativeList<PreBattleBattalion> spawnTiles(PrefabHolder prefabHolder, EntityManager entityManager)
+        public static NativeList<PreBattleBattalion> spawnTiles(PrefabHolder prefabHolder, EntityManager entityManager,
+            NativeHashMap<float3, BattalionToSpawn> positionToBattalionMap)
         {
+            Debug.Log(positionToBattalionMap.Count);
             var rowCount = 200;
             var columnCount = 32;
             var result = new NativeList<PreBattleBattalion>(Allocator.Temp);
@@ -25,7 +27,8 @@ namespace system.battle.utils.pre_battle
                 //iterate over columns
                 for (int j = -(columnCount / 2); j < columnCount / 2; j++)
                 {
-                    var newBattalionCard = spawnTile(new float2(i, j), prefabHolder, entityManager);
+                    var newBattalionCard = spawnTile(new float2(i, j), prefabHolder, entityManager,
+                        positionToBattalionMap);
                     result.Add(newBattalionCard);
                 }
             }
@@ -33,26 +36,47 @@ namespace system.battle.utils.pre_battle
             return result;
         }
 
-        private static PreBattleBattalion spawnTile(float2 position, PrefabHolder prefabHolder, EntityManager entityManager)
+        private static PreBattleBattalion spawnTile(float2 position, PrefabHolder prefabHolder,
+            EntityManager entityManager, NativeHashMap<float3, BattalionToSpawn> positionToBattalionMap)
         {
             var offset = CustomTransformUtils.defaulBattleMapOffset;
             var adjustedPosition = new float3
             {
                 x = position.x / 4 + offset.x,
-                y = 0 + offset.y,
+                y = 0.02f + offset.y,
                 z = position.y + offset.z
             };
 
-            var entity = spawnTile(adjustedPosition, prefabHolder, entityManager, null, null);
-
-            return new PreBattleBattalion
+            if (positionToBattalionMap.TryGetValue(adjustedPosition, out var battalionToSpawn))
             {
-                position = adjustedPosition,
-                entity = entity
-            };
+                var entity = spawnTile(adjustedPosition, prefabHolder, entityManager, battalionToSpawn.team,
+                    battalionToSpawn.armyType);
+
+                Debug.Log("Spawned battalion at " + adjustedPosition);
+
+                return new PreBattleBattalion
+                {
+                    position = adjustedPosition,
+                    entity = entity,
+                    battalionId = battalionToSpawn.battalionId,
+                    soldierType = battalionToSpawn.armyType,
+                    team = battalionToSpawn.team
+                };
+            }
+            else
+            {
+                var entity = spawnTile(adjustedPosition, prefabHolder, entityManager, null, null);
+
+                return new PreBattleBattalion
+                {
+                    position = adjustedPosition,
+                    entity = entity
+                };
+            }
         }
 
-        public static Entity spawnTile(float3 position, PrefabHolder prefabHolder, EntityManager entityManager, Team? team, SoldierType? soldierType)
+        public static Entity spawnTile(float3 position, PrefabHolder prefabHolder, EntityManager entityManager,
+            Team? team, SoldierType? soldierType)
         {
             var prefab = getProperPrefab(team, soldierType, prefabHolder);
             var newInstance = entityManager.Instantiate(prefab);
@@ -111,7 +135,8 @@ namespace system.battle.utils.pre_battle
             }
         }
 
-        public static Entity spawnTile(float3 position, PrefabHolder prefabHolder, EntityCommandBuffer ecb, Team? team, SoldierType? soldierType)
+        public static Entity spawnTile(float3 position, PrefabHolder prefabHolder, EntityCommandBuffer ecb, Team? team,
+            SoldierType? soldierType)
         {
             var prefab = getProperPrefab(team, soldierType, prefabHolder);
             var newInstance = ecb.Instantiate(prefab);
@@ -128,7 +153,7 @@ namespace system.battle.utils.pre_battle
             ecb.AddComponent(newInstance, new PreBattleCleanupTag());
             ecb.AddComponent(newInstance, tileMarker);
             ecb.SetComponent(newInstance, transform);
-            
+
             return newInstance;
         }
     }

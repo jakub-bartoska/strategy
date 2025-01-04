@@ -1,11 +1,8 @@
 ﻿using component._common.general;
 using component._common.system_switchers;
-using component.authoring_pairs.PrefabHolder;
 using component.config.game_settings;
 using component.pre_battle;
-using component.pre_battle.marker;
 using system._common.army_to_spawn_switcher;
-using system.battle.utils.pre_battle;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -32,7 +29,6 @@ namespace system._common.blocker_systems.battle
 
             var companiesToSpawn = SystemAPI.GetSingletonBuffer<CompanyToSpawn>();
             var battalionsToSpawn = SystemAPI.GetSingletonBuffer<BattalionToSpawn>();
-            var prefabHolder = SystemAPI.GetSingleton<PrefabHolder>();
             var idGenerator = SystemAPI.GetSingletonRW<BattalionIdGenerator>();
             battalionsToSpawn.Clear();
             foreach (var companyToSpawn in companiesToSpawn)
@@ -63,12 +59,6 @@ namespace system._common.blocker_systems.battle
                     isUsed = false,
                 });
             }
-
-            var newBattalionCards = TileSpawner.spawnTiles(prefabHolder, state.EntityManager);
-
-            var preBattle = SystemAPI.GetSingletonBuffer<PreBattleBattalion>();
-            preBattle.Clear();
-            preBattle.AddRange(newBattalionCards);
         }
 
         private bool containsBlocker(DynamicBuffer<SystemSwitchBlocker> blockers)

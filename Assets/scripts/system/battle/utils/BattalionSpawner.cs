@@ -90,7 +90,6 @@ namespace system.battle.utils
         {
             var battalionPrefab = prefabHolder.battalionPrefab;
             var newBattalion = ecb.Instantiate(battalionPrefab);
-            battalionPosition.y = 0.02f;
             var battalionTransform = LocalTransform.FromPosition(battalionPosition);
             var battalionMarker = new BattalionMarker
             {

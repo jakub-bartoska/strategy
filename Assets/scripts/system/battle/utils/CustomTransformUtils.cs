@@ -36,12 +36,23 @@ namespace system.battle.utils
             return result;
         }
 
-        public static int positionToRow(float3 position, int maxRows)
+        public static float3 adjustPositionFromBattleToPreBattle(float3 oldPosition)
         {
-            return (int) ((defaulBattleMapOffset.z - position.z - 5) / 10 + maxRows / 2);
+            var positionDelta = oldPosition + defaulBattleMapOffset;
+            var adjustedPosition = positionDelta / 10;
+            adjustedPosition.z -= 5;
+            var result = adjustedPosition - defaulBattleMapOffset;
+            result.y = 0.02f;
+            return result;
         }
 
-        public static float3 calculateDesiredPosition(float3 originalPosition, BattalionWidth myWidth, BattalionWidth otherWidth, Direction direction, bool isExactPosition)
+        public static int positionToRow(float3 position, int maxRows)
+        {
+            return (int)((defaulBattleMapOffset.z - position.z - 5) / 10 + maxRows / 2);
+        }
+
+        public static float3 calculateDesiredPosition(float3 originalPosition, BattalionWidth myWidth,
+            BattalionWidth otherWidth, Direction direction, bool isExactPosition)
         {
             switch (direction)
             {
@@ -50,13 +61,15 @@ namespace system.battle.utils
                     return calculateDesiredPosition(originalPosition, direction, isExactPosition);
                 case Direction.LEFT:
                 case Direction.RIGHT:
-                    return calculateDesiredPositionInRow(originalPosition, myWidth, otherWidth, direction, isExactPosition);
+                    return calculateDesiredPositionInRow(originalPosition, myWidth, otherWidth, direction,
+                        isExactPosition);
                 default:
                     throw new Exception("Unknown direction");
             }
         }
 
-        private static float3 calculateDesiredPositionInRow(float3 originalPosition, BattalionWidth myWidth, BattalionWidth otherWidth, Direction direction, bool isExactPosition)
+        private static float3 calculateDesiredPositionInRow(float3 originalPosition, BattalionWidth myWidth,
+            BattalionWidth otherWidth, Direction direction, bool isExactPosition)
         {
             var diff = (myWidth.value + otherWidth.value) / 2 * 1.1f;
             var result = new float3
@@ -81,7 +94,8 @@ namespace system.battle.utils
             return result;
         }
 
-        public static float3 calculateDesiredPosition(float3 originalPosition, Direction direction, bool isExactPosition)
+        public static float3 calculateDesiredPosition(float3 originalPosition, Direction direction,
+            bool isExactPosition)
         {
             var result = new float3
             {
