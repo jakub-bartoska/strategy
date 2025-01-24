@@ -19,9 +19,9 @@ MonoBehaviour:
     armyType: 1
     count: 10
     positionForSO:
-      x: -8001
+      x: 10000
       y: 0.02
-      z: -8005.5
+      z: 9999.439
     isUsed: 1
   - battalionId: 1019
     armyCompanyId: 225857492
@@ -29,7 +29,7 @@ MonoBehaviour:
     armyType: 1
     count: 10
     positionForSO:
-      x: -8000.25
+      x: 10000
       y: 0.02
-      z: -8005.5
+      z: 9999.439
     isUsed: 1

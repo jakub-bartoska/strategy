@@ -18,8 +18,10 @@ namespace system.battle.utils.pre_battle
             NativeHashMap<float3, BattalionToSpawn> positionToBattalionMap)
         {
             Debug.Log(positionToBattalionMap.Count);
-            var rowCount = 200;
-            var columnCount = 32;
+            //var rowCount = 200;
+            var rowCount = 100;
+            //var columnCount = 32;
+            var columnCount = 100; 
             var result = new NativeList<PreBattleBattalion>(Allocator.Temp);
             //iterate over rows
             for (int i = -(rowCount / 2); i < rowCount / 2; i++)

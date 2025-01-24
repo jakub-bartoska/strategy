@@ -38,10 +38,10 @@ namespace system.battle.utils
 
         public static float3 adjustPositionFromBattleToPreBattle(float3 oldPosition)
         {
-            var positionDelta = oldPosition + defaulBattleMapOffset;
+            var positionDelta = oldPosition - defaulBattleMapOffset;
+            positionDelta.z -= 5;
             var adjustedPosition = positionDelta / 10;
-            adjustedPosition.z -= 5;
-            var result = adjustedPosition - defaulBattleMapOffset;
+            var result = adjustedPosition + defaulBattleMapOffset;
             result.y = 0.02f;
             return result;
         }
